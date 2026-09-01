@@ -21,13 +21,13 @@
       theme: {
         extend: {
           colors: {
-            fondoOscuro: '#161412',    /* Casi negro para el header */
-            fondoMedio: '#4a4138',     /* Marrón rústico para el fondo principal */
-            fondoTarjeta: '#221f1d',   /* Gris muy oscuro para los productos */
-            cobre: '#b87352',          /* Naranja quemado/Cobre para botones */
-            cobreOscuro: '#945a3f',    /* Hover del cobre */
-            textoClaro: '#f4ece2',     /* Color crema para los textos */
-            textoGris: '#a89f94'       /* Gris claro para descripciones */
+            fondoOscuro: '#161412',
+            fondoMedio: '#4a4138',
+            fondoTarjeta: '#221f1d',
+            cobre: '#b87352',
+            cobreOscuro: '#945a3f',
+            textoClaro: '#f4ece2',
+            textoGris: '#a89f94'
           },
           fontFamily: {
             titulo: ['"Playfair Display"', 'serif'],
@@ -48,6 +48,17 @@
     
     /* Scroll suave */
     html { scroll-behavior: smooth; }
+
+    /* Clases para la animación Fade-In al hacer scroll */
+    .fade-in-up {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+    .fade-in-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 
@@ -55,17 +66,10 @@
 
   <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
   <nav class="bg-fondoOscuro py-4 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center sticky top-0 z-50 border-b border-gray-800 shadow-xl">
-    
-    <!-- Logo / Nombre -->
     <div class="font-titulo text-2xl font-bold tracking-wider text-textoClaro mb-4 md:mb-0 cursor-pointer" onclick="window.scrollTo(0,0)">
       Mandalas Cosas Ricas
     </div>
-
-    <!-- Menú de Categorías (Horizontal) -->
-    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-4 md:mb-0">
-      <!-- Se inyecta por JS -->
-    </div>
-
+    
     <!-- Redes Sociales -->
     <div class="flex gap-5">
       <a href="https://www.instagram.com/mandalascosasricas" target="_blank" class="text-textoClaro hover:text-cobre text-xl transition transform hover:scale-110">
@@ -79,15 +83,13 @@
 
   <!-- SECCIÓN HERO (Portada gigante) -->
   <header class="bg-fondoOscuro flex flex-col md:flex-row min-h-[60vh] md:min-h-[70vh]">
-    
-    <!-- Lado Izquierdo: Textos -->
     <div class="md:w-1/2 flex flex-col justify-center p-10 md:p-20 order-2 md:order-1 relative z-10">
       <h1 class="font-titulo text-5xl md:text-7xl font-bold leading-tight mb-6">
         Repostería<br><span class="text-cobre italic font-normal">Artesanal</span>
       </h1>
       <p class="text-textoGris font-light leading-relaxed mb-10 max-w-md text-sm md:text-base">
         Repostería 100% artesanal hecha con amor y dedicación. Tortas personalizadas, mesas dulces y muchas delicias caseras para tus momentos especiales o la merienda de todos los días.<br><br>
-        <span class="font-semibold text-textoClaro">Pedidos con al menos 24 hs de anticipación.</span>
+        <span class="font-semibold text-textoClaro">Pedidos personalizados con anticipación.</span>
       </p>
       <div>
         <a href="#seccion-productos" class="inline-block bg-cobre hover:bg-cobreOscuro text-white text-xs md:text-sm font-semibold tracking-[0.2em] uppercase py-4 px-8 rounded-sm transition shadow-lg">
@@ -95,21 +97,30 @@
         </a>
       </div>
     </div>
-
-    <!-- Lado Derecho: Imagen Gigante -->
     <div class="md:w-1/2 order-1 md:order-2 h-64 md:h-auto">
       <img src="https://images.unsplash.com/photo-1605807646983-377bc5a76493?auto=format&fit=crop&w=1000&q=80" alt="Pastelería Artesanal" class="w-full h-full object-cover opacity-90">
     </div>
   </header>
 
-  <!-- SECCIÓN DE PRODUCTOS (Fondo Marrón) -->
+  <!-- SECCIÓN DE PRODUCTOS -->
   <main id="seccion-productos" class="py-20 px-6 md:px-12">
     
-    <div class="text-center mb-16">
+    <div class="text-center mb-10">
       <h2 id="titulo-categoria" class="font-titulo text-4xl md:text-5xl text-textoClaro capitalize mb-4">
         Todas nuestras delicias
       </h2>
-      <div class="w-24 h-1 bg-cobre mx-auto"></div>
+      <div class="w-24 h-1 bg-cobre mx-auto mb-10"></div>
+
+      <!-- BUSCADOR EN TIEMPO REAL -->
+      <div class="max-w-md mx-auto mb-12 relative">
+        <input type="text" id="buscador" onkeyup="buscarProducto()" placeholder="Buscar tortas, budines, postres..." class="w-full bg-fondoTarjeta text-textoClaro border border-gray-700 rounded-sm py-3 px-4 pl-12 focus:outline-none focus:border-cobre transition shadow-lg font-light text-sm placeholder-gray-500">
+        <i class="fa-solid fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-textoGris"></i>
+      </div>
+
+      <!-- Menú de Categorías -->
+      <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8">
+        <!-- Se inyecta por JS -->
+      </div>
     </div>
 
     <!-- Grilla de Productos -->
@@ -124,29 +135,20 @@
     Mandalas Cosas Ricas
   </footer>
 
-
-  <!-- VENTANA EMERGENTE (MODAL PREMIUM) -->
+  <!-- VENTANA EMERGENTE (MODAL) -->
   <div id="modal-producto" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center p-4 z-50 transition-opacity backdrop-blur-sm">
     <div class="bg-fondoTarjeta rounded-md max-w-3xl w-full overflow-hidden shadow-2xl relative flex flex-col md:flex-row border border-gray-700">
-      
-      <!-- Botón cerrar -->
       <button onclick="cerrarModal()" class="absolute top-4 right-4 w-10 h-10 bg-fondoOscuro bg-opacity-50 rounded-full flex items-center justify-center text-textoClaro hover:text-cobre transition z-10 border border-gray-600">
         <i class="fa-solid fa-xmark"></i>
       </button>
-
-      <!-- Imagen ampliada (Mitad izquierda) -->
       <div class="h-64 md:h-auto md:w-1/2">
         <img id="modal-img" src="" alt="Producto" class="w-full h-full object-cover">
       </div>
-
-      <!-- Detalles del producto (Mitad derecha) -->
       <div class="p-8 md:p-12 md:w-1/2 flex flex-col justify-center text-center md:text-left">
         <p id="modal-cat" class="text-cobre text-xs uppercase tracking-[0.2em] mb-2 font-semibold"></p>
         <h3 id="modal-titulo" class="font-titulo text-3xl md:text-4xl text-textoClaro mb-4"></h3>
         <div class="w-12 h-[2px] bg-gray-700 mx-auto md:mx-0 mb-6"></div>
         <p id="modal-desc" class="text-textoGris text-sm mb-8 leading-relaxed font-light"></p>
-        
-        <!-- Botón Consultar WhatsApp -->
         <a id="modal-btn-wpp" href="#" target="_blank" class="inline-flex items-center justify-center gap-3 bg-cobre hover:bg-cobreOscuro text-white text-sm font-semibold tracking-widest uppercase py-4 px-6 rounded-sm transition shadow-lg">
           Consultar 
           <i class="fa-brands fa-whatsapp text-lg"></i>
@@ -155,15 +157,11 @@
     </div>
   </div>
 
-
   <!-- SCRIPTS FUNCIONALES -->
   <script>
-    // 1. Número de WhatsApp y Categorías
     const NUMERO_WHATSAPP = "543755641575"; 
-    // Categorías actualizadas con "materas" y "pascuas"
     const categorias = ["tortas", "budines", "materas", "postres", "tartas", "navidad", "pascuas", "mesas dulces"];
 
-    // 2. Base de datos (Mismos productos por ahora)
     const productos = [
       { id: 1, nombre: "Torta de Manzana Invertida", categoria: "tortas", descripcion: "La clásica receta de la abuela, con manzanas caramelizadas y masa súper húmeda.", imagen: "https://images.unsplash.com/photo-1568458178963-0761376d299b?auto=format&fit=crop&w=600&q=80" },
       { id: 2, nombre: "Torta Rogel Casera", categoria: "tortas", descripcion: "Capas de masa crocante, abundante dulce de leche repostero y merengue italiano.", imagen: "https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&w=600&q=80" },
@@ -178,7 +176,15 @@
       { id: 11, nombre: "Mesa Dulce Rústica", categoria: "mesas dulces", descripcion: "Armamos tu mesa dulce con tartas, cuadraditos, alfajorcitos de maicena y shots.", imagen: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=600&q=80" }
     ];
 
-    // 3. Renderizar el Menú (Ahora es Horizontal arriba)
+    // Observador para animaciones Fade-In
+    const observador = new IntersectionObserver((entradas) => {
+      entradas.forEach(entrada => {
+        if (entrada.isIntersecting) {
+          entrada.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
     function renderizarMenu() {
       const menu = document.getElementById("menu-categorias");
       menu.innerHTML = `<button onclick="filtrar('todos')" class="menu-btn menu-activo text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
@@ -192,37 +198,64 @@
       });
     }
 
-    // 4. Renderizar Grilla de Productos (Estilo Cuadrado y Oscuro)
     function renderizarProductos(items) {
       const grilla = document.getElementById("grilla-productos");
       grilla.innerHTML = "";
 
+      if (items.length === 0) {
+        grilla.innerHTML = `<p class="text-textoGris text-center col-span-full py-10">No se encontraron delicias con esa búsqueda.</p>`;
+        return;
+      }
+
       items.forEach(prod => {
-        grilla.innerHTML += `
-          <div onclick="abrirModal(${prod.id})" class="bg-fondoTarjeta p-5 rounded-sm shadow-xl hover:-translate-y-2 transition transform duration-300 cursor-pointer group flex flex-col items-center border border-gray-800">
-            <div class="w-full h-64 overflow-hidden rounded-sm mb-6">
-              <img src="${prod.imagen}" alt="${prod.nombre}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
-            </div>
-            <h3 class="font-titulo font-bold text-center text-textoClaro text-xl mb-2 leading-tight group-hover:text-cobre transition">${prod.nombre}</h3>
-            <div class="h-[1px] w-12 bg-cobre opacity-50 mt-2 mb-4"></div>
-            <p class="text-textoGris text-xs uppercase tracking-widest">Ver Detalles</p>
+        // Creamos el elemento div directamente para poder asignarle el observador de animación
+        const tarjeta = document.createElement('div');
+        tarjeta.className = "fade-in-up bg-fondoTarjeta p-5 rounded-sm shadow-xl hover:-translate-y-2 transition transform duration-300 cursor-pointer group flex flex-col items-center border border-gray-800";
+        tarjeta.onclick = () => abrirModal(prod.id);
+        
+        tarjeta.innerHTML = `
+          <div class="w-full h-64 overflow-hidden rounded-sm mb-6">
+            <img src="${prod.imagen}" alt="${prod.nombre}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
           </div>
+          <h3 class="font-titulo font-bold text-center text-textoClaro text-xl mb-2 leading-tight group-hover:text-cobre transition">${prod.nombre}</h3>
+          <div class="h-[1px] w-12 bg-cobre opacity-50 mt-2 mb-4"></div>
+          <p class="text-textoGris text-xs uppercase tracking-widest">Ver Detalles</p>
         `;
+        
+        grilla.appendChild(tarjeta);
+        observador.observe(tarjeta); // Activamos la animación para esta tarjeta
       });
     }
 
-    // 5. Filtrar por categoría
+    // Lógica del Buscador en tiempo real
+    function buscarProducto() {
+      const texto = document.getElementById("buscador").value.toLowerCase();
+      
+      // Reiniciar los estilos del menú de categorías al usar el buscador
+      const botones = document.querySelectorAll(".menu-btn");
+      botones.forEach(btn => btn.classList.remove("menu-activo"));
+      botones[0].classList.add("menu-activo"); // Activar "Todo" visualmente
+      
+      document.getElementById("titulo-categoria").innerText = texto === "" ? "Todas nuestras delicias" : "Resultados de búsqueda";
+
+      const filtrados = productos.filter(p => 
+        p.nombre.toLowerCase().includes(texto) || 
+        p.descripcion.toLowerCase().includes(texto) ||
+        p.categoria.toLowerCase().includes(texto)
+      );
+      
+      renderizarProductos(filtrados);
+    }
+
     function filtrar(cat) {
-      // Actualizar estilos del menú horizontal
+      document.getElementById("buscador").value = ""; // Limpiar el buscador al tocar una categoría
+
       const botones = document.querySelectorAll(".menu-btn");
       botones.forEach(btn => btn.classList.remove("menu-activo"));
       event.currentTarget.classList.add("menu-activo");
 
-      // Actualizar Título
-      const titulo = document.getElementById("titulo-categoria");
-      titulo.innerText = cat === "todos" ? "Todas nuestras delicias" : cat;
+      document.getElementById("titulo-categoria").innerText = cat === "todos" ? "Todas nuestras delicias" : cat;
 
-      // Filtrar y renderizar
       if (cat === "todos") {
         renderizarProductos(productos);
       } else {
@@ -231,16 +264,13 @@
       }
     }
 
-    // 6. Funciones del Modal
     function abrirModal(id) {
       const prod = productos.find(p => p.id === id);
-      
       document.getElementById("modal-img").src = prod.imagen;
       document.getElementById("modal-titulo").innerText = prod.nombre;
       document.getElementById("modal-cat").innerText = prod.categoria;
       document.getElementById("modal-desc").innerText = prod.descripcion;
       
-      // WhatsApp Link con el número correcto
       const mensaje = encodeURIComponent(`¡Hola! Quisiera consultar por: ${prod.nombre}.`);
       document.getElementById("modal-btn-wpp").href = `https://wa.me/${NUMERO_WHATSAPP}?text=${mensaje}`;
 
@@ -251,7 +281,6 @@
       document.getElementById("modal-producto").classList.add("hidden");
     }
 
-    // Cerrar modal al hacer clic afuera
     document.getElementById("modal-producto").addEventListener('click', function(e) {
       if(e.target === this) { cerrarModal(); }
     });
