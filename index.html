@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mandalas Cosas Ricas | Bakery</title>
+  <title>Mandalas Cosas Ricas</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -58,7 +58,7 @@
     
     <!-- Logo / Nombre -->
     <div class="font-titulo text-2xl font-bold tracking-wider text-textoClaro mb-4 md:mb-0 cursor-pointer" onclick="window.scrollTo(0,0)">
-      Mandalas<span class="text-cobre text-sm font-texto ml-2 italic font-normal tracking-widest">BAKERY</span>
+      Mandalas Cosas Ricas
     </div>
 
     <!-- Menú de Categorías (Horizontal) -->
@@ -83,10 +83,11 @@
     <!-- Lado Izquierdo: Textos -->
     <div class="md:w-1/2 flex flex-col justify-center p-10 md:p-20 order-2 md:order-1 relative z-10">
       <h1 class="font-titulo text-5xl md:text-7xl font-bold leading-tight mb-6">
-        Pasión<br>por lo <span class="text-cobre italic font-normal">Artesanal</span>
+        Repostería<br><span class="text-cobre italic font-normal">Artesanal</span>
       </h1>
       <p class="text-textoGris font-light leading-relaxed mb-10 max-w-md text-sm md:text-base">
-        Pastelería de autor, budines rústicos y mesas dulces creadas con ingredientes seleccionados y mucho amor. Cada bocado cuenta una historia.
+        Repostería 100% artesanal hecha con amor y dedicación. Tortas personalizadas, mesas dulces y muchas delicias caseras para tus momentos especiales o la merienda de todos los días.<br><br>
+        <span class="font-semibold text-textoClaro">Pedidos personalizados con anticipación.</span>
       </p>
       <div>
         <a href="#seccion-productos" class="inline-block bg-cobre hover:bg-cobreOscuro text-white text-xs md:text-sm font-semibold tracking-[0.2em] uppercase py-4 px-8 rounded-sm transition shadow-lg">
@@ -120,7 +121,7 @@
 
   <!-- PIE DE PÁGINA -->
   <footer class="bg-fondoOscuro text-center py-8 text-textoGris text-xs tracking-widest uppercase border-t border-gray-800">
-    Mandalas Cosas Ricas © 2024
+    Mandalas Cosas Ricas
   </footer>
 
 
@@ -159,9 +160,10 @@
   <script>
     // 1. Número de WhatsApp y Categorías
     const NUMERO_WHATSAPP = "543755641575"; 
-    const categorias = ["tortas", "budines", "postres", "tartas", "navidad", "mesas dulces"];
+    // Categorías actualizadas con "materas" y "pascuas"
+    const categorias = ["tortas", "budines", "materas", "postres", "tartas", "navidad", "pascuas", "mesas dulces"];
 
-    // 2. Base de datos (Mismos productos)
+    // 2. Base de datos (Mismos productos por ahora)
     const productos = [
       { id: 1, nombre: "Torta de Manzana Invertida", categoria: "tortas", descripcion: "La clásica receta de la abuela, con manzanas caramelizadas y masa súper húmeda.", imagen: "https://images.unsplash.com/photo-1568458178963-0761376d299b?auto=format&fit=crop&w=600&q=80" },
       { id: 2, nombre: "Torta Rogel Casera", categoria: "tortas", descripcion: "Capas de masa crocante, abundante dulce de leche repostero y merengue italiano.", imagen: "https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&w=600&q=80" },
