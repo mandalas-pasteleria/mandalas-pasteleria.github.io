@@ -4,30 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mandalas Cosas Ricas</title>
-  
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Fuentes Elegantes: Playfair Display (Títulos) y Montserrat (Textos) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  
-  <!-- FontAwesome (Íconos) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            fondoOscuro: '#161412',
-            fondoMedio: '#4a4138',
-            fondoTarjeta: '#221f1d',
-            cobre: '#b87352',
-            cobreOscuro: '#945a3f',
-            textoClaro: '#f4ece2',
-            textoGris: '#a89f94'
+            fondoOscuro: '#161412', fondoMedio: '#4a4138', fondoTarjeta: '#221f1d',
+            cobre: '#b87352', cobreOscuro: '#945a3f', textoClaro: '#f4ece2', textoGris: '#a89f94'
           },
           fontFamily: {
             titulo: ['"Playfair Display"', 'serif'],
@@ -37,132 +26,46 @@
       }
     }
   </script>
-
   <style>
-    /* Estilo elegante para el menú activo */
-    .menu-activo {
-      color: #b87352 !important;
-      border-bottom: 2px solid #b87352;
-      padding-bottom: 2px;
-    }
-    
-    /* Scroll suave */
-    html { scroll-behavior: smooth; }
-
-    /* Clases para la animación Fade-In al hacer scroll */
-    .fade-in-up {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-    }
-    .fade-in-up.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .menu-activo { color: #b87352 !important; border-bottom: 2px solid #b87352; padding-bottom: 2px; }
+    .fade-in-up { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+    .fade-in-up.visible { opacity: 1; transform: translateY(0); }
+    .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
-
 <body class="bg-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
 
-  <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
-  <nav class="bg-fondoOscuro py-4 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center sticky top-0 z-50 border-b border-gray-800 shadow-xl">
-    <div class="font-titulo text-2xl font-bold tracking-wider text-textoClaro mb-4 md:mb-0 cursor-pointer" onclick="window.scrollTo(0,0)">
-      Mandalas Cosas Ricas
-    </div>
-    
-    <!-- Redes Sociales -->
-    <div class="flex gap-5">
-      <a href="https://www.instagram.com/mandalascosasricas" target="_blank" class="text-textoClaro hover:text-cobre text-xl transition transform hover:scale-110">
-        <i class="fa-brands fa-instagram"></i>
-      </a>
-      <a href="https://wa.me/543755641575" target="_blank" class="text-textoClaro hover:text-cobre text-xl transition transform hover:scale-110">
-        <i class="fa-brands fa-whatsapp"></i>
-      </a>
-    </div>
-  </nav>
-
-  <!-- SECCIÓN HERO (Portada gigante) -->
-  <header class="bg-fondoOscuro flex flex-col md:flex-row min-h-[60vh] md:min-h-[70vh]">
-    <div class="md:w-1/2 flex flex-col justify-center p-10 md:p-20 order-2 md:order-1 relative z-10">
-      <h1 class="font-titulo text-5xl md:text-7xl font-bold leading-tight mb-6">
-        Repostería<br><span class="text-cobre italic font-normal">Artesanal</span>
-      </h1>
-      <p class="text-textoGris font-light leading-relaxed mb-10 max-w-md text-sm md:text-base">
-        Repostería 100% artesanal hecha con amor y dedicación. Tortas personalizadas, mesas dulces y muchas delicias caseras para tus momentos especiales o la merienda de todos los días.<br><br>
-        <span class="font-semibold text-textoClaro">Pedidos personalizados con anticipación.</span>
-      </p>
-      <div>
-        <a href="#seccion-productos" class="inline-block bg-cobre hover:bg-cobreOscuro text-white text-xs md:text-sm font-semibold tracking-[0.2em] uppercase py-4 px-8 rounded-sm transition shadow-lg">
-          Ver Catálogo
-        </a>
-      </div>
-    </div>
-    <div class="md:w-1/2 order-1 md:order-2 h-64 md:h-auto">
-      <img src="97569.png" alt="Mandala Portada" class="w-full h-full object-cover opacity-90">
-    </div>
+  <header class="bg-fondoOscuro py-16 px-6 text-center border-b border-gray-800 shadow-2xl">
+    <h1 class="font-titulo text-4xl md:text-6xl font-bold text-textoClaro tracking-wide mb-4">Mandalas <span class="text-cobre italic font-normal text-3xl md:text-5xl">Cosas Ricas</span></h1>
+    <p class="text-textoGris max-w-xl mx-auto text-sm leading-relaxed">Elaboración artesanal con dedicación y los mejores ingredientes.</p>
   </header>
 
-  <!-- SECCIÓN DE PRODUCTOS -->
-  <main id="seccion-productos" class="py-20 px-6 md:px-12">
-    
-    <div class="text-center mb-10">
-      <h2 id="titulo-categoria" class="font-titulo text-4xl md:text-5xl text-textoClaro capitalize mb-4">
-        Todas nuestras delicias
-      </h2>
-      <div class="w-24 h-1 bg-cobre mx-auto mb-10"></div>
-
-      <!-- BUSCADOR EN TIEMPO REAL -->
-      <div class="max-w-md mx-auto mb-12 relative">
-        <input type="text" id="buscador" onkeyup="buscarProducto()" placeholder="Buscar tortas, budines, postres..." class="w-full bg-fondoTarjeta text-textoClaro border border-gray-700 rounded-sm py-3 px-4 pl-12 focus:outline-none focus:border-cobre transition shadow-lg font-light text-sm placeholder-gray-500">
-        <i class="fa-solid fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-textoGris"></i>
-      </div>
-
-      <!-- Menú de Categorías -->
-      <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8">
-        <!-- Se inyecta por JS -->
-      </div>
+  <main class="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full flex-grow">
+    <!-- Menú de categorías dinámico -->
+    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-16 border-b border-gray-800 pb-4">
+      <!-- Se llena desde JS -->
     </div>
 
-    <!-- Grilla de Productos -->
-    <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-      <!-- Los productos se inyectan acá -->
+    <!-- Grilla de productos -->
+    <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      <p class="text-center w-full col-span-full py-10 text-textoGris"><i class="fa-solid fa-spinner fa-spin text-cobre text-2xl mb-2"></i><br>Cargando delicias...</p>
     </div>
-
   </main>
 
-  <!-- PIE DE PÁGINA -->
-  <footer class="bg-fondoOscuro text-center py-8 text-textoGris text-xs tracking-widest uppercase border-t border-gray-800">
-    Mandalas Cosas Ricas
-  </footer>
-
-  <!-- VENTANA EMERGENTE (MODAL) -->
-  <div id="modal-producto" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center p-4 z-50 transition-opacity backdrop-blur-sm">
-    <div class="bg-fondoTarjeta rounded-md max-w-3xl w-full overflow-hidden shadow-2xl relative flex flex-col md:flex-row border border-gray-700">
-      <button onclick="cerrarModal()" class="absolute top-4 right-4 w-10 h-10 bg-fondoOscuro bg-opacity-50 rounded-full flex items-center justify-center text-textoClaro hover:text-cobre transition z-10 border border-gray-600">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div class="h-64 md:h-auto md:w-1/2">
-        <img id="modal-img" src="" class="w-full aspect-[3/4] object-contain bg-fondoOscuro md:h-full md:object-cover rounded-t-md md:rounded-none md:rounded-l-md" alt="Detalle del producto">
-      </div>
-      <div class="p-8 md:p-12 md:w-1/2 flex flex-col justify-center text-center md:text-left">
-        <p id="modal-cat" class="text-cobre text-xs uppercase tracking-[0.2em] mb-2 font-semibold"></p>
-        <h3 id="modal-titulo" class="font-titulo text-3xl md:text-4xl text-textoClaro mb-4"></h3>
-        <div class="w-12 h-[2px] bg-gray-700 mx-auto md:mx-0 mb-6"></div>
-        <p id="modal-desc" class="text-textoGris text-sm mb-8 leading-relaxed font-light"></p>
-        <a id="modal-btn-wpp" href="#" target="_blank" class="inline-flex items-center justify-center gap-3 bg-cobre hover:bg-cobreOscuro text-white text-sm font-semibold tracking-widest uppercase py-4 px-6 rounded-sm transition shadow-lg">
-          Consultar 
-          <i class="fa-brands fa-whatsapp text-lg"></i>
-        </a>
-      </div>
-    </div>
+  <!-- Modal Rediseñado (Foto Vertical + Texto Abajo) -->
+  <div id="modal-producto" class="fixed inset-0 bg-black bg-opacity-95 hidden flex-col items-center justify-center p-4 z-50 transition-opacity">
+    <!-- Se llena desde JS -->
   </div>
 
-  <!-- SCRIPTS FUNCIONALES CON FIREBASE -->
+  <footer class="bg-fondoOscuro py-8 text-center border-t border-gray-800 mt-auto">
+    <p class="text-textoGris text-xs uppercase tracking-widest">&copy; 2024 Mandalas Cosas Ricas. Todos los derechos reservados.</p>
+  </footer>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. Configuración Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBw3U23D7b8nPhZa4z5sSNkqHPx1jVdIIg",
       authDomain: "mandalas-bd.firebaseapp.com",
@@ -175,41 +78,71 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 2. Variables de la app
-    const NUMERO_WHATSAPP = "543755641575"; 
-    const categorias = ["tortas", "budines", "materas", "postres", "tartas", "navidad", "pascuas", "mesas dulces"];
-    let productos = []; // Arranca vacío, espera a Firebase
+    let productos = [];
+    let categorias = [];
 
-    // 3. Observador para animaciones Fade-In
+    // --- CONTADOR DE VISITAS INVISIBLE ---
+    async function registrarVisita() {
+      if (!sessionStorage.getItem("visitaContada")) {
+        try {
+          await setDoc(doc(db, "estadisticas", "visitas"), { total: increment(1) }, { merge: true });
+          sessionStorage.setItem("visitaContada", "true");
+        } catch (error) { console.log("Error al contar visita"); }
+      }
+    }
+    registrarVisita();
+
+    // Observador para la animación al hacer scroll
     const observador = new IntersectionObserver((entradas) => {
       entradas.forEach(entrada => {
-        if (entrada.isIntersecting) {
-          entrada.target.classList.add('visible');
-        }
+        if (entrada.isIntersecting) { entrada.target.classList.add('visible'); }
       });
-    }, { threshold: 0.1 });
+    });
 
-    // 4. Renderizar el Menú
+    async function cargarDatos() {
+      // 1. Cargar Categorías
+      const catSnap = await getDocs(collection(db, "categorias"));
+      catSnap.forEach((doc) => { categorias.push({ id: doc.id, ...doc.data() }); });
+      
+      // 2. Cargar Productos
+      const prodSnap = await getDocs(collection(db, "productos"));
+      prodSnap.forEach((doc) => { productos.push({ id: doc.id, ...doc.data() }); });
+      
+      renderizarMenu();
+      filtrar('todos');
+    }
+
     function renderizarMenu() {
       const menu = document.getElementById("menu-categorias");
-      menu.innerHTML = `<button onclick="filtrar('todos')" class="menu-btn menu-activo text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
+      menu.innerHTML = `<button onclick="filtrar('todos')" class="menu-btn menu-activo text-textoGris hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
       
-      categorias.forEach(cat => {
-        menu.innerHTML += `
-          <button onclick="filtrar('${cat}')" class="menu-btn text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">
-            ${cat}
-          </button>
-        `;
+      // Filtramos para mostrar SOLO las categorías que NO están ocultas
+      const categoriasVisibles = categorias.filter(cat => !cat.oculta);
+      
+      categoriasVisibles.forEach(cat => {
+        menu.innerHTML += `<button onclick="filtrar('${cat.nombre}')" class="menu-btn text-textoGris hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">${cat.nombre}</button>`;
       });
     }
 
-    // 5. Renderizar Grilla de Productos
-  function renderizarProductos(items) {
+    window.filtrar = function(catNombre) {
+      const botones = document.querySelectorAll(".menu-btn");
+      botones.forEach(btn => {
+        btn.classList.remove("menu-activo");
+        const textoBoton = btn.innerText.toLowerCase();
+        if (catNombre === "todos" && textoBoton === "todo") btn.classList.add("menu-activo");
+        else if (textoBoton === catNombre.toLowerCase()) btn.classList.add("menu-activo");
+      });
+
+      const filtrados = catNombre === "todos" ? productos : productos.filter(p => p.categoria.toLowerCase() === catNombre.toLowerCase());
+      renderizarProductos(filtrados);
+    }
+
+    function renderizarProductos(items) {
       const grilla = document.getElementById("grilla-productos");
       grilla.innerHTML = "";
 
       if (items.length === 0) {
-        grilla.innerHTML = `<p class="text-textoGris text-center col-span-full py-10">No se encontraron delicias para mostrar.</p>`;
+        grilla.innerHTML = `<p class="text-textoGris text-center col-span-full py-10">No se encontraron delicias en esta categoría.</p>`;
         return;
       }
 
@@ -218,7 +151,6 @@
         tarjeta.className = "fade-in-up bg-fondoTarjeta p-5 rounded-sm shadow-xl hover:-translate-y-2 transition transform duration-300 cursor-pointer group flex flex-col items-center border border-gray-800";
         tarjeta.onclick = () => window.abrirModal(prod.id);
         
-        // ACÁ ESTÁ LA MAGIA: Cambiamos h-64 por aspect-[3/4]
         tarjeta.innerHTML = `
           <div class="w-full aspect-[3/4] overflow-hidden rounded-sm mb-6 bg-fondoOscuro flex items-center justify-center">
             <img src="${prod.imagen}" loading="lazy" alt="${prod.nombre}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
@@ -233,55 +165,7 @@
       });
     }
 
-    // 6. Cargar productos desde Firebase
-    async function cargarDesdeFirebase() {
-      const querySnapshot = await getDocs(collection(db, "productos"));
-      productos = [];
-      querySnapshot.forEach((doc) => {
-        productos.push({ id: doc.id, ...doc.data() });
-      });
-      renderizarProductos(productos);
-    }
-
-    // 7. Lógica del Buscador (Expuesto globalmente)
-    window.buscarProducto = function() {
-      const texto = document.getElementById("buscador").value.toLowerCase();
-      
-      const botones = document.querySelectorAll(".menu-btn");
-      botones.forEach(btn => btn.classList.remove("menu-activo"));
-      if(botones.length > 0) botones[0].classList.add("menu-activo");
-      
-      document.getElementById("titulo-categoria").innerText = texto === "" ? "Todas nuestras delicias" : "Resultados de búsqueda";
-
-      const filtrados = productos.filter(p => 
-        p.nombre.toLowerCase().includes(texto) || 
-        p.descripcion.toLowerCase().includes(texto) ||
-        p.categoria.toLowerCase().includes(texto)
-      );
-      
-      renderizarProductos(filtrados);
-    }
-
-    // 8. Filtrar por categorías (Expuesto globalmente)
-    window.filtrar = function(cat) {
-      document.getElementById("buscador").value = ""; 
-
-      const botones = document.querySelectorAll(".menu-btn");
-      botones.forEach(btn => btn.classList.remove("menu-activo"));
-      event.currentTarget.classList.add("menu-activo");
-
-      document.getElementById("titulo-categoria").innerText = cat === "todos" ? "Todas nuestras delicias" : cat;
-
-      if (cat === "todos") {
-        renderizarProductos(productos);
-      } else {
-        const filtrados = productos.filter(p => p.categoria === cat);
-        renderizarProductos(filtrados);
-      }
-    }
-
-    // 9. Funciones del Modal
-window.abrirModal = function(id) {
+    window.abrirModal = function(id) {
       const prod = productos.find(p => p.id === id);
       if (!prod) return;
 
@@ -289,27 +173,20 @@ window.abrirModal = function(id) {
       modal.classList.remove("hidden");
       modal.classList.add("flex");
 
-      // Rediseño del modal: Foto arriba, textos abajo en fondo oscuro
       modal.innerHTML = `
-        <div class="bg-fondoTarjeta w-full max-w-md mx-auto rounded-md overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh] animate-fade-in-up">
-          
-          <!-- Botón Cerrar -->
+        <div class="bg-fondoTarjeta w-full max-w-md mx-auto rounded-md overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh] animate-fade-in-up border border-gray-700">
           <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/90 text-white rounded-full w-8 h-8 flex items-center justify-center z-10 transition border border-gray-600">
             <i class="fa-solid fa-xmark"></i>
           </button>
 
-          <!-- Mitad Superior: Imagen (limitamos su altura para que no ocupe todo) -->
           <div class="w-full aspect-[3/4] max-h-[45vh] overflow-hidden bg-fondoOscuro relative">
             <img src="${prod.imagen}" class="w-full h-full object-cover object-center" alt="${prod.nombre}">
           </div>
 
-          <!-- Mitad Inferior: Textos y Botón -->
           <div class="p-6 flex flex-col items-center text-center overflow-y-auto">
             <p class="text-cobre text-[10px] uppercase font-bold tracking-widest mb-1">${prod.categoria}</p>
             <h3 class="font-titulo text-3xl text-textoClaro mb-3">${prod.nombre}</h3>
-            
             <p class="text-textoGris text-sm mb-6 leading-relaxed">${prod.descripcion}</p>
-            
             <a href="https://wa.me/543755641575?text=Hola!%20Me%20gustar%C3%ADa%20consultar%20por%20el/la%20${encodeURIComponent(prod.nombre)}" target="_blank" class="w-full bg-cobre hover:bg-cobreOscuro text-white font-bold py-3 rounded transition uppercase tracking-widest text-sm flex justify-center items-center gap-2 mt-auto">
               Consultar <i class="fa-brands fa-whatsapp text-lg"></i>
             </a>
@@ -319,16 +196,12 @@ window.abrirModal = function(id) {
     }
 
     window.cerrarModal = function() {
-      document.getElementById("modal-producto").classList.add("hidden");
+      const modal = document.getElementById("modal-producto");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
     }
 
-    document.getElementById("modal-producto").addEventListener('click', function(e) {
-      if(e.target === this) { window.cerrarModal(); }
-    });
-
-    // Iniciar la app
-    renderizarMenu();
-    cargarDesdeFirebase();
+    cargarDatos();
   </script>
 </body>
 </html>
