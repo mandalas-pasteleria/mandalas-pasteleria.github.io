@@ -88,7 +88,6 @@
   </div>
 
   <script type="module">
-    // LLAVE DE IMGBB APLICADA:
     const IMGBB_API_KEY = "ce0938ece2bee753e1fdb8725e95e854";
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -109,6 +108,45 @@
     const categorias = ["tortas", "budines", "materas", "postres", "tartas", "navidad", "pascuas", "mesas dulces"];
     let productos = [];
     let urlImagenActual = ""; 
+
+    // --- MOTOR DE COMPRESIÓN DE IMÁGENES ---
+    const comprimirImagen = (archivo) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(archivo);
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            // Ancho máximo de 800px (ideal para web)
+            const MAX_WIDTH = 800; 
+            const scaleSize = MAX_WIDTH / img.width;
+            
+            // Si la imagen ya es chica, no la escalamos
+            if (scaleSize < 1) {
+              canvas.width = MAX_WIDTH;
+              canvas.height = img.height * scaleSize;
+            } else {
+              canvas.width = img.width;
+              canvas.height = img.height;
+            }
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Convertir a JPEG con 75% de calidad
+            canvas.toBlob((blob) => {
+              const archivoComprimido = new File([blob], archivo.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              });
+              resolve(archivoComprimido);
+            }, 'image/jpeg', 0.75); 
+          };
+        };
+      });
+    };
 
     function inicializarUI() {
       const menu = document.getElementById("menu-categorias");
@@ -186,12 +224,11 @@
       }
     }
 
-    // LÓGICA DE SUBIDA CON IMGBB APLICADA
     document.getElementById('form-producto').addEventListener('submit', async (e) => {
       e.preventDefault();
       const boton = document.getElementById('btn-guardar');
       const originalText = boton.innerHTML;
-      boton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
+      
       boton.disabled = true;
 
       try {
@@ -200,10 +237,14 @@
         let urlFinal = urlImagenActual; 
 
         if (archivoFoto) {
-          boton.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Subiendo foto...';
-          
+          // 1. Comprimimos la imagen primero
+          boton.innerHTML = '<i class="fa-solid fa-compress fa-fade"></i> Achicando foto...';
+          const fotoComprimida = await comprimirImagen(archivoFoto);
+
+          // 2. Subimos la imagen ya liviana
+          boton.innerHTML = '<i class="fa-solid fa-cloud-arrow-up fa-fade"></i> Subiendo...';
           const formData = new FormData();
-          formData.append("image", archivoFoto);
+          formData.append("image", fotoComprimida);
 
           const respuestaImgBB = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
             method: "POST",
@@ -227,10 +268,10 @@
         };
 
         if (id) {
-          boton.innerHTML = '<i class="fa-solid fa-database"></i> Actualizando...';
+          boton.innerHTML = '<i class="fa-solid fa-database"></i> Guardando...';
           await updateDoc(doc(db, "productos", id), datosProducto);
         } else {
-          boton.innerHTML = '<i class="fa-solid fa-database"></i> Creando...';
+          boton.innerHTML = '<i class="fa-solid fa-database"></i> Guardando...';
           await addDoc(collection(db, "productos"), datosProducto);
         }
 
