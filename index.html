@@ -4,12 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mandalas Cosas Ricas</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <script>
     tailwind.config = {
       theme: {
@@ -28,43 +29,88 @@
   </script>
   <style>
     .menu-activo { color: #b87352 !important; border-bottom: 2px solid #b87352; padding-bottom: 2px; }
-    .fade-in-up { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+    html { scroll-behavior: smooth; }
+    .fade-in-up { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
     .fade-in-up.visible { opacity: 1; transform: translateY(0); }
     .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
+
 <body class="bg-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
 
-  <header class="bg-fondoOscuro py-12 px-6 text-center border-b border-gray-800 shadow-2xl flex flex-col items-center">
-    
-    <!-- Imagen de inicio recuperada -->
-    <img src="97569.png" alt="Mandalas Logo" class="w-32 h-32 md:w-48 md:h-48 object-contain mb-6 drop-shadow-2xl hover:scale-105 transition-transform duration-300">
-    
-    <h1 class="font-titulo text-4xl md:text-6xl font-bold text-textoClaro tracking-wide mb-3">Mandalas <span class="text-cobre italic font-normal text-3xl md:text-5xl">Cosas Ricas</span></h1>
-    <p class="text-textoGris max-w-xl mx-auto text-sm leading-relaxed">Elaboración artesanal con dedicación y los mejores ingredientes.</p>
+  <!-- BARRA DE NAVEGACIÓN SUPERIOR ORIGINAL -->
+  <nav class="bg-fondoOscuro py-4 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center sticky top-0 z-40 border-b border-gray-800 shadow-xl">
+    <div class="font-titulo text-2xl font-bold tracking-wider text-textoClaro mb-4 md:mb-0 cursor-pointer" onclick="window.scrollTo(0,0)">
+      Mandalas Cosas Ricas
+    </div>
+    <div class="flex gap-5">
+      <a href="https://www.instagram.com/mandalascosasricas" target="_blank" class="text-textoClaro hover:text-cobre text-xl transition transform hover:scale-110">
+        <i class="fa-brands fa-instagram"></i>
+      </a>
+      <a href="https://wa.me/543755641575" target="_blank" class="text-textoClaro hover:text-cobre text-xl transition transform hover:scale-110">
+        <i class="fa-brands fa-whatsapp"></i>
+      </a>
+    </div>
+  </nav>
+
+  <!-- SECCIÓN HERO ORIGINAL -->
+  <header class="bg-fondoOscuro flex flex-col md:flex-row min-h-[60vh] md:min-h-[70vh]">
+    <div class="md:w-1/2 flex flex-col justify-center p-10 md:p-20 order-2 md:order-1 relative z-10">
+      <h1 class="font-titulo text-5xl md:text-7xl font-bold leading-tight mb-6">
+        Repostería<br><span class="text-cobre italic font-normal">Artesanal</span>
+      </h1>
+      <p class="text-textoGris font-light leading-relaxed mb-10 max-w-md text-sm md:text-base">
+        Repostería 100% artesanal hecha con amor y dedicación. Tortas personalizadas, mesas dulces y muchas delicias caseras para tus momentos especiales o la merienda de todos los días.<br><br>
+        <span class="font-semibold text-textoClaro">Pedidos personalizados con anticipación.</span>
+      </p>
+      <div>
+        <a href="#seccion-productos" class="inline-block bg-cobre hover:bg-cobreOscuro text-white text-xs md:text-sm font-semibold tracking-[0.2em] uppercase py-4 px-8 rounded-sm transition shadow-lg">
+          Ver Catálogo
+        </a>
+      </div>
+    </div>
+    <div class="md:w-1/2 order-1 md:order-2 h-64 md:h-auto">
+      <img src="97569.png" alt="Mandala Portada" class="w-full h-full object-cover opacity-90">
+    </div>
   </header>
 
-  <main class="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full flex-grow">
-    <!-- Menú de categorías dinámico -->
-    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-16 border-b border-gray-800 pb-4">
-      <!-- Se llena desde JS -->
+  <!-- SECCIÓN DE PRODUCTOS -->
+  <main id="seccion-productos" class="py-20 px-6 md:px-12">
+    
+    <div class="text-center mb-10">
+      <h2 id="titulo-categoria" class="font-titulo text-4xl md:text-5xl text-textoClaro capitalize mb-4">
+        Todas nuestras delicias
+      </h2>
+      <div class="w-24 h-1 bg-cobre mx-auto mb-10"></div>
+
+      <!-- BUSCADOR ORIGINAL RECUPERADO -->
+      <div class="max-w-md mx-auto mb-12 relative">
+        <input type="text" id="buscador" onkeyup="buscarProducto()" placeholder="Buscar tortas, budines, postres..." class="w-full bg-fondoTarjeta text-textoClaro border border-gray-700 rounded-sm py-3 px-4 pl-12 focus:outline-none focus:border-cobre transition shadow-lg font-light text-sm placeholder-gray-500">
+        <i class="fa-solid fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-textoGris"></i>
+      </div>
+
+      <!-- Menú de Categorías (Dinámico) -->
+      <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 border-b border-gray-800 pb-4">
+        <!-- Se inyecta por JS -->
+      </div>
     </div>
 
-    <!-- Grilla de productos -->
-    <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <!-- Grilla de Productos -->
+    <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
       <p class="text-center w-full col-span-full py-10 text-textoGris"><i class="fa-solid fa-spinner fa-spin text-cobre text-2xl mb-2"></i><br>Cargando delicias...</p>
     </div>
-  </main>
 
-  <!-- Modal Rediseñado (Foto Vertical + Texto Abajo) -->
-  <div id="modal-producto" class="fixed inset-0 bg-black bg-opacity-95 hidden flex-col items-center justify-center p-4 z-50 transition-opacity">
-    <!-- Se llena desde JS -->
-  </div>
+  </main>
 
   <footer class="bg-fondoOscuro py-8 text-center border-t border-gray-800 mt-auto">
     <p class="text-textoGris text-xs uppercase tracking-widest">&copy; 2024 Mandalas Cosas Ricas. Todos los derechos reservados.</p>
   </footer>
+
+  <!-- Modal Rediseñado (Dinámico para foto vertical sin cortar) -->
+  <div id="modal-producto" class="fixed inset-0 bg-black bg-opacity-95 hidden flex-col items-center justify-center p-4 z-50 transition-opacity backdrop-blur-sm">
+    <!-- Se llena desde JS -->
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -96,19 +142,16 @@
     }
     registrarVisita();
 
-    // Observador para la animación al hacer scroll
     const observador = new IntersectionObserver((entradas) => {
       entradas.forEach(entrada => {
         if (entrada.isIntersecting) { entrada.target.classList.add('visible'); }
       });
-    });
+    }, { threshold: 0.1 });
 
     async function cargarDatos() {
-      // 1. Cargar Categorías
       const catSnap = await getDocs(collection(db, "categorias"));
       catSnap.forEach((doc) => { categorias.push({ id: doc.id, ...doc.data() }); });
       
-      // 2. Cargar Productos
       const prodSnap = await getDocs(collection(db, "productos"));
       prodSnap.forEach((doc) => { productos.push({ id: doc.id, ...doc.data() }); });
       
@@ -120,7 +163,6 @@
       const menu = document.getElementById("menu-categorias");
       menu.innerHTML = `<button onclick="filtrar('todos')" class="menu-btn menu-activo text-textoGris hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
       
-      // Filtramos para mostrar SOLO las categorías que NO están ocultas
       const categoriasVisibles = categorias.filter(cat => !cat.oculta);
       
       categoriasVisibles.forEach(cat => {
@@ -128,7 +170,32 @@
       });
     }
 
+    // Lógica del Buscador 
+    window.buscarProducto = function() {
+      const texto = document.getElementById("buscador").value.toLowerCase();
+      const botones = document.querySelectorAll(".menu-btn");
+      
+      botones.forEach(btn => btn.classList.remove("menu-activo"));
+      
+      if(texto === "") {
+        document.getElementById("titulo-categoria").innerText = "Todas nuestras delicias";
+        if(botones.length > 0) botones[0].classList.add("menu-activo");
+      } else {
+        document.getElementById("titulo-categoria").innerText = "Resultados de búsqueda";
+      }
+
+      const filtrados = productos.filter(p => 
+        p.nombre.toLowerCase().includes(texto) || 
+        p.descripcion.toLowerCase().includes(texto) ||
+        p.categoria.toLowerCase().includes(texto)
+      );
+      
+      renderizarProductos(filtrados);
+    }
+
     window.filtrar = function(catNombre) {
+      document.getElementById("buscador").value = ""; 
+      
       const botones = document.querySelectorAll(".menu-btn");
       botones.forEach(btn => {
         btn.classList.remove("menu-activo");
@@ -137,7 +204,9 @@
         else if (textoBoton === catNombre.toLowerCase()) btn.classList.add("menu-activo");
       });
 
+      document.getElementById("titulo-categoria").innerText = catNombre === "todos" ? "Todas nuestras delicias" : catNombre;
       const filtrados = catNombre === "todos" ? productos : productos.filter(p => p.categoria.toLowerCase() === catNombre.toLowerCase());
+      
       renderizarProductos(filtrados);
     }
 
@@ -146,7 +215,7 @@
       grilla.innerHTML = "";
 
       if (items.length === 0) {
-        grilla.innerHTML = `<p class="text-textoGris text-center col-span-full py-10">No se encontraron delicias en esta categoría.</p>`;
+        grilla.innerHTML = `<p class="text-textoGris text-center col-span-full py-10">No se encontraron delicias para mostrar.</p>`;
         return;
       }
 
@@ -182,11 +251,9 @@
           <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/90 text-white rounded-full w-8 h-8 flex items-center justify-center z-10 transition border border-gray-600">
             <i class="fa-solid fa-xmark"></i>
           </button>
-
           <div class="w-full aspect-[3/4] max-h-[45vh] overflow-hidden bg-fondoOscuro relative">
             <img src="${prod.imagen}" class="w-full h-full object-cover object-center" alt="${prod.nombre}">
           </div>
-
           <div class="p-6 flex flex-col items-center text-center overflow-y-auto">
             <p class="text-cobre text-[10px] uppercase font-bold tracking-widest mb-1">${prod.categoria}</p>
             <h3 class="font-titulo text-3xl text-textoClaro mb-3">${prod.nombre}</h3>
@@ -204,6 +271,10 @@
       modal.classList.add("hidden");
       modal.classList.remove("flex");
     }
+
+    document.getElementById("modal-producto").addEventListener('click', function(e) {
+      if(e.target === this) { window.cerrarModal(); }
+    });
 
     cargarDatos();
   </script>
