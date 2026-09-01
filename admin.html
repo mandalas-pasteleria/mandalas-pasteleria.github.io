@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Mandalas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-10 font-sans">
+
+  <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Cargar Nuevo Producto 🍰</h2>
+    
+    <form id="form-producto" class="flex flex-col gap-4">
+      
+      <div>
+        <label class="block text-sm font-semibold text-gray-600">Nombre del producto</label>
+        <input type="text" id="nombre" required class="w-full border p-2 rounded mt-1" placeholder="Ej: Torta de Chocolate">
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-600">Categoría</label>
+        <select id="categoria" class="w-full border p-2 rounded mt-1">
+          <option value="tortas">Tortas</option>
+          <option value="budines">Budines</option>
+          <option value="postres">Postres</option>
+          <option value="tartas">Tartas</option>
+          <option value="navidad">Navidad</option>
+          <option value="mesas dulces">Mesas Dulces</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-600">Descripción</label>
+        <textarea id="descripcion" required class="w-full border p-2 rounded mt-1" rows="3" placeholder="Ingredientes, detalles..."></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-600">Link de la Imagen (URL)</label>
+        <input type="url" id="imagen" required class="w-full border p-2 rounded mt-1" placeholder="https://ejemplo.com/foto.jpg">
+      </div>
+
+      <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded mt-4 transition">
+        Guardar Producto
+      </button>
+    </form>
+    
+    <div id="mensaje" class="mt-4 text-green-600 font-bold hidden text-center">¡Producto guardado con éxito!</div>
+  </div>
+
+  <!-- CÓDIGO FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBw3U23D7b8nPhZa4z5sSNkqHPx1jVdIIg",
+      authDomain: "mandalas-bd.firebaseapp.com",
+      projectId: "mandalas-bd",
+      storageBucket: "mandalas-bd.firebasestorage.app",
+      messagingSenderId: "401668436120",
+      appId: "1:401668436120:web:16b4cec5606b6e846ee0ed"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById('form-producto').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const boton = e.target.querySelector('button');
+      boton.innerText = "Guardando...";
+
+      try {
+        await addDoc(collection(db, "productos"), {
+          nombre: document.getElementById('nombre').value,
+          categoria: document.getElementById('categoria').value,
+          descripcion: document.getElementById('descripcion').value,
+          imagen: document.getElementById('imagen').value,
+          fecha: new Date()
+        });
+
+        document.getElementById('form-producto').reset();
+        document.getElementById('mensaje').classList.remove('hidden');
+        setTimeout(() => document.getElementById('mensaje').classList.add('hidden'), 3000);
+      } catch (error) {
+        alert("Hubo un error: " + error.message);
+      } finally {
+        boton.innerText = "Guardar Producto";
+      }
+    });
+  </script>
+</body>
+</html>
