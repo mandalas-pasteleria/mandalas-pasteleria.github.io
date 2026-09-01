@@ -167,12 +167,25 @@
       filtrarAdmin('todos');
     }
 
-    window.filtrarAdmin = function(cat) {
+window.filtrarAdmin = function(cat) {
+      // 1. Manejar estilos del menú de forma segura
       const botones = document.querySelectorAll(".menu-btn");
-      botones.forEach(btn => btn.classList.remove("menu-activo"));
-      event.currentTarget.classList.add("menu-activo");
+      botones.forEach(btn => {
+        btn.classList.remove("menu-activo"); // Apagamos todos
+        
+        // Encendemos solo el que corresponde
+        const textoBoton = btn.innerText.toLowerCase();
+        if (cat === "todos" && textoBoton === "todo") {
+          btn.classList.add("menu-activo");
+        } else if (textoBoton === cat) {
+          btn.classList.add("menu-activo");
+        }
+      });
+
+      // 2. Cambiar título
       document.getElementById("titulo-categoria").innerText = cat === "todos" ? "Todos los productos" : cat;
 
+      // 3. Filtrar e inyectar productos
       const filtrados = cat === "todos" ? productos : productos.filter(p => p.categoria === cat);
       const grilla = document.getElementById("grilla-admin");
       grilla.innerHTML = "";
