@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mandalas Cosas Ricas</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    // Configuración de colores personalizados en Tailwind
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            crema: '#FAF6F0',
+            beige: '#EADDCF',
+            marronClaro: '#C2A38E',
+            marronOscuro: '#5A3E2B',
+            verdeWpp: '#7FB88A' // Un verde pastel para que no desentone
+          },
+          fontFamily: {
+            titulo: ['"Dancing Script"', 'cursive'],
+            texto: ['"Quicksand"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Estilo para la pestaña activa en el menú */
+    .menu-activo {
+      background-color: #C2A38E !important;
+      color: #FAF6F0 !important;
+      font-weight: 700;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body class="bg-crema text-marronOscuro font-texto min-h-screen flex flex-col md:flex-row">
+
+  <aside class="w-full md:w-64 bg-beige shadow-lg flex flex-col justify-between p-6 md:min-h-screen">
+    
+    <div>
+      <h1 class="font-titulo text-4xl md:text-5xl text-center text-marronOscuro mb-8 leading-tight mt-4">
+        Mandalas<br>Cosas Ricas
+      </h1>
+
+      <nav class="flex flex-col gap-3" id="menu-categorias">
+        </nav>
+    </div>
+
+<!-- Redes Sociales (Abajo a la izquierda) -->
+    <div class="mt-10 flex justify-center gap-4">
+      
+      <!-- Botón de Instagram -->
+      <a href="https://www.instagram.com/mandalascosasricas" target="_blank" class="w-12 h-12 rounded-full bg-crema text-marronOscuro hover:bg-marronClaro hover:text-crema flex items-center justify-center text-2xl transition shadow-sm">
+        <i class="fa-brands fa-instagram"></i>
+      </a>
+
+      <!-- Botón de WhatsApp -->
+      <a href="https://wa.me/543755641575" target="_blank" class="w-12 h-12 rounded-full bg-crema text-marronOscuro hover:bg-verdeWpp hover:text-white flex items-center justify-center text-2xl transition shadow-sm">
+        <i class="fa-brands fa-whatsapp"></i>
+      </a>
+      
+    </div>  </aside>
+
+  <main class="flex-1 p-6 md:p-10">
+    <h2 id="titulo-categoria" class="font-titulo text-3xl mb-6 text-marronClaro capitalize text-center md:text-left">
+      Todos nuestros productos
+    </h2>
+
+    <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      </div>
+  </main>
+
+  <div id="modal-producto" class="fixed inset-0 bg-marronOscuro bg-opacity-60 hidden flex items-center justify-center p-4 z-50 transition-opacity">
+    <div class="bg-crema rounded-3xl max-w-md w-full overflow-hidden shadow-2xl relative">
+      
+      <button onclick="cerrarModal()" class="absolute top-3 right-3 w-8 h-8 bg-white bg-opacity-80 rounded-full flex items-center justify-center text-marronOscuro hover:bg-marronClaro hover:text-white transition z-10">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="h-64 sm:h-80 w-full">
+        <img id="modal-img" src="" alt="Producto" class="w-full h-full object-cover">
+      </div>
+
+      <div class="p-6 text-center">
+        <h3 id="modal-titulo" class="font-titulo text-3xl text-marronOscuro mb-2"></h3>
+        <p id="modal-desc" class="text-marronOscuro text-sm mb-6 leading-relaxed"></p>
+        
+        <a id="modal-btn-wpp" href="#" target="_blank" class="inline-flex items-center gap-2 bg-verdeWpp hover:bg-opacity-80 text-white font-bold py-2 px-6 rounded-full transition shadow-md">
+          <i class="fa-brands fa-whatsapp text-lg"></i>
+          Consultar
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. Número de WhatsApp
+    const NUMERO_WHATSAPP = "543755641575"; 
+
+    // 2. Base de datos de Productos (Con ejemplos de abuelita)
+    const productos = [
+      { id: 1, nombre: "Torta de Manzana Invertida", categoria: "tortas", descripcion: "La clásica receta de la abuela, con manzanas caramelizadas y masa súper húmeda.", imagen: "https://images.unsplash.com/photo-1568458178963-0761376d299b?auto=format&fit=crop&w=600&q=80" },
+      { id: 2, nombre: "Torta Rogel Casera", categoria: "tortas", descripcion: "Capas de masa crocante, abundante dulce de leche repostero y merengue italiano.", imagen: "https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&w=600&q=80" },
+      { id: 3, nombre: "Budín de Limón Húmedo", categoria: "budines", descripcion: "Sabor intenso a limón con un glaseado crujiente por fuera. Ideal para el mate.", imagen: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?auto=format&fit=crop&w=600&q=80" },
+      { id: 4, nombre: "Budín Marmolado", categoria: "budines", descripcion: "Vainilla y chocolate unidos en un budín súper esponjoso.", imagen: "https://images.unsplash.com/photo-1605335198463-71a25de81559?auto=format&fit=crop&w=600&q=80" },
+      { id: 5, nombre: "Flan Mixto", categoria: "postres", descripcion: "Flan casero de huevos, acompañado con crema chantilly y dulce de leche.", imagen: "https://images.unsplash.com/photo-1582293041079-7814c279c788?auto=format&fit=crop&w=600&q=80" },
+      { id: 6, nombre: "Arroz con Leche", categoria: "postres", descripcion: "Cremoso, con un toque de vainilla y espolvoreado con canela.", imagen: "https://images.unsplash.com/photo-1517568579450-482a6fdfde16?auto=format&fit=crop&w=600&q=80" },
+      { id: 7, nombre: "Pasta Frola de Membrillo", categoria: "tartas", descripcion: "Masa quebrada súper tierna con dulce de membrillo de primera calidad.", imagen: "https://images.unsplash.com/photo-1601000938259-9e92002320b2?auto=format&fit=crop&w=600&q=80" },
+      { id: 8, nombre: "Tarta de Coco y Dulce de Leche", categoria: "tartas", descripcion: "Base crocante, relleno abundante de dulce de leche y cubierta de coco rallado.", imagen: "https://images.unsplash.com/photo-1549487920-d3b5550a2b53?auto=format&fit=crop&w=600&q=80" },
+      { id: 9, nombre: "Pan Dulce Tradicional", categoria: "navidad", descripcion: "Masa madre de fermentación lenta, con frutas abrillantadas, pasas y nueces.", imagen: "https://images.unsplash.com/photo-1576686161405-24c6536b3793?auto=format&fit=crop&w=600&q=80" },
+      { id: 10, nombre: "Turrón de Almendras", categoria: "navidad", descripcion: "Turrón semi-blando casero repleto de almendras tostadas.", imagen: "https://images.unsplash.com/photo-1577312157545-21d9ca1aebf4?auto=format&fit=crop&w=600&q=80" },
+      { id: 11, nombre: "Mesa Dulce Rústica", categoria: "mesas dulces", descripcion: "Armamos tu mesa dulce con tartas, cuadraditos, alfajorcitos de maicena y shots.", imagen: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=600&q=80" }
+    ];
+
+    const categorias = ["tortas", "budines", "postres", "tartas", "navidad", "mesas dulces"];
+
+    // 3. Renderizar el Menú
+    function renderizarMenu() {
+      const menu = document.getElementById("menu-categorias");
+      menu.innerHTML = `<button onclick="filtrar('todos')" class="menu-btn menu-activo text-left px-4 py-3 rounded-2xl bg-crema text-marronOscuro transition">Todas las delicias</button>`;
+      
+      categorias.forEach(cat => {
+        menu.innerHTML += `
+          <button onclick="filtrar('${cat}')" class="menu-btn text-left px-4 py-3 rounded-2xl bg-crema text-marronOscuro hover:bg-marronClaro hover:text-crema transition capitalize">
+            ${cat}
+          </button>
+        `;
+      });
+    }
+
+    // 4. Renderizar Grilla de Productos
+    function renderizarProductos(items) {
+      const grilla = document.getElementById("grilla-productos");
+      grilla.innerHTML = "";
+
+      items.forEach(prod => {
+        grilla.innerHTML += `
+          <div onclick="abrirModal(${prod.id})" class="bg-white rounded-3xl p-3 shadow-sm hover:shadow-md transition cursor-pointer group flex flex-col items-center">
+            <div class="w-full h-48 overflow-hidden rounded-2xl mb-3">
+              <img src="${prod.imagen}" alt="${prod.nombre}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+            </div>
+            <h3 class="font-bold text-center text-marronOscuro text-lg px-2 pb-2 leading-tight">${prod.nombre}</h3>
+          </div>
+        `;
+      });
+    }
+
+    // 5. Filtrar por categoría
+    function filtrar(cat) {
+      // Estilos del menú
+      const botones = document.querySelectorAll(".menu-btn");
+      botones.forEach(btn => btn.classList.remove("menu-activo"));
+      event.currentTarget.classList.add("menu-activo");
+
+      // Título
+      const titulo = document.getElementById("titulo-categoria");
+      titulo.innerText = cat === "todos" ? "Todos nuestros productos" : cat;
+
+      // Filtrado
+      if (cat === "todos") {
+        renderizarProductos(productos);
+      } else {
+        const filtrados = productos.filter(p => p.categoria === cat);
+        renderizarProductos(filtrados);
+      }
+    }
+
+    // 6. Funciones del Modal (Ventana emergente)
+    function abrirModal(id) {
+      const prod = productos.find(p => p.id === id);
+      
+      document.getElementById("modal-img").src = prod.imagen;
+      document.getElementById("modal-titulo").innerText = prod.nombre;
+      document.getElementById("modal-desc").innerText = prod.descripcion;
+      
+      // Armar el link de WhatsApp
+      const mensaje = encodeURIComponent(`¡Hola! Quisiera consultar por: ${prod.nombre}.`);
+      document.getElementById("modal-btn-wpp").href = `https://wa.me/${NUMERO_WHATSAPP}?text=${mensaje}`;
+
+      document.getElementById("modal-producto").classList.remove("hidden");
+    }
+
+    function cerrarModal() {
+      document.getElementById("modal-producto").classList.add("hidden");
+    }
+
+    // Cerrar modal al hacer clic afuera
+    document.getElementById("modal-producto").addEventListener('click', function(e) {
+      if(e.target === this) { cerrarModal(); }
+    });
+
+    // Iniciar
+    renderizarMenu();
+    renderizarProductos(productos);
+  </script>
+</body>
+</html>
