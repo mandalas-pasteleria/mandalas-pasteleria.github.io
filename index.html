@@ -98,7 +98,7 @@
       </div>
     </div>
     <div class="md:w-1/2 order-1 md:order-2 h-64 md:h-auto">
-      <img src="https://images.unsplash.com/photo-1605807646983-377bc5a76493?auto=format&fit=crop&w=1000&q=80" alt="Pastelería Artesanal" class="w-full h-full object-cover opacity-90">
+      <img src="97569.png" alt="Mandala Portada" class="w-full h-full object-cover opacity-90">
     </div>
   </header>
 
@@ -157,26 +157,30 @@
     </div>
   </div>
 
-  <!-- SCRIPTS FUNCIONALES -->
-  <script>
+  <!-- SCRIPTS FUNCIONALES CON FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // 1. Configuración Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBw3U23D7b8nPhZa4z5sSNkqHPx1jVdIIg",
+      authDomain: "mandalas-bd.firebaseapp.com",
+      projectId: "mandalas-bd",
+      storageBucket: "mandalas-bd.firebasestorage.app",
+      messagingSenderId: "401668436120",
+      appId: "1:401668436120:web:16b4cec5606b6e846ee0ed"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 2. Variables de la app
     const NUMERO_WHATSAPP = "543755641575"; 
     const categorias = ["tortas", "budines", "materas", "postres", "tartas", "navidad", "pascuas", "mesas dulces"];
+    let productos = []; // Arranca vacío, espera a Firebase
 
-    const productos = [
-      { id: 1, nombre: "Torta de Manzana Invertida", categoria: "tortas", descripcion: "La clásica receta de la abuela, con manzanas caramelizadas y masa súper húmeda.", imagen: "https://images.unsplash.com/photo-1568458178963-0761376d299b?auto=format&fit=crop&w=600&q=80" },
-      { id: 2, nombre: "Torta Rogel Casera", categoria: "tortas", descripcion: "Capas de masa crocante, abundante dulce de leche repostero y merengue italiano.", imagen: "https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&w=600&q=80" },
-      { id: 3, nombre: "Budín de Limón Húmedo", categoria: "budines", descripcion: "Sabor intenso a limón con un glaseado crujiente por fuera. Ideal para el mate.", imagen: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?auto=format&fit=crop&w=600&q=80" },
-      { id: 4, nombre: "Budín Marmolado", categoria: "budines", descripcion: "Vainilla y chocolate unidos en un budín súper esponjoso.", imagen: "https://images.unsplash.com/photo-1605335198463-71a25de81559?auto=format&fit=crop&w=600&q=80" },
-      { id: 5, nombre: "Flan Mixto", categoria: "postres", descripcion: "Flan casero de huevos, acompañado con crema chantilly y dulce de leche.", imagen: "https://images.unsplash.com/photo-1582293041079-7814c279c788?auto=format&fit=crop&w=600&q=80" },
-      { id: 6, nombre: "Arroz con Leche", categoria: "postres", descripcion: "Cremoso, con un toque de vainilla y espolvoreado con canela.", imagen: "https://images.unsplash.com/photo-1517568579450-482a6fdfde16?auto=format&fit=crop&w=600&q=80" },
-      { id: 7, nombre: "Pasta Frola de Membrillo", categoria: "tartas", descripcion: "Masa quebrada súper tierna con dulce de membrillo de primera calidad.", imagen: "https://images.unsplash.com/photo-1601000938259-9e92002320b2?auto=format&fit=crop&w=600&q=80" },
-      { id: 8, nombre: "Tarta de Coco y Dulce de Leche", categoria: "tartas", descripcion: "Base crocante, relleno abundante de dulce de leche y cubierta de coco rallado.", imagen: "https://images.unsplash.com/photo-1549487920-d3b5550a2b53?auto=format&fit=crop&w=600&q=80" },
-      { id: 9, nombre: "Pan Dulce Tradicional", categoria: "navidad", descripcion: "Masa madre de fermentación lenta, con frutas abrillantadas, pasas y nueces.", imagen: "https://images.unsplash.com/photo-1576686161405-24c6536b3793?auto=format&fit=crop&w=600&q=80" },
-      { id: 10, nombre: "Turrón de Almendras", categoria: "navidad", descripcion: "Turrón semi-blando casero repleto de almendras tostadas.", imagen: "https://images.unsplash.com/photo-1577312157545-21d9ca1aebf4?auto=format&fit=crop&w=600&q=80" },
-      { id: 11, nombre: "Mesa Dulce Rústica", categoria: "mesas dulces", descripcion: "Armamos tu mesa dulce con tartas, cuadraditos, alfajorcitos de maicena y shots.", imagen: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=600&q=80" }
-    ];
-
-    // Observador para animaciones Fade-In
+    // 3. Observador para animaciones Fade-In
     const observador = new IntersectionObserver((entradas) => {
       entradas.forEach(entrada => {
         if (entrada.isIntersecting) {
@@ -185,6 +189,7 @@
       });
     }, { threshold: 0.1 });
 
+    // 4. Renderizar el Menú
     function renderizarMenu() {
       const menu = document.getElementById("menu-categorias");
       menu.innerHTML = `<button onclick="filtrar('todos')" class="menu-btn menu-activo text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
@@ -198,20 +203,20 @@
       });
     }
 
+    // 5. Renderizar Grilla de Productos
     function renderizarProductos(items) {
       const grilla = document.getElementById("grilla-productos");
       grilla.innerHTML = "";
 
       if (items.length === 0) {
-        grilla.innerHTML = `<p class="text-textoGris text-center col-span-full py-10">No se encontraron delicias con esa búsqueda.</p>`;
+        grilla.innerHTML = `<p class="text-textoGris text-center col-span-full py-10">No se encontraron delicias para mostrar.</p>`;
         return;
       }
 
       items.forEach(prod => {
-        // Creamos el elemento div directamente para poder asignarle el observador de animación
         const tarjeta = document.createElement('div');
         tarjeta.className = "fade-in-up bg-fondoTarjeta p-5 rounded-sm shadow-xl hover:-translate-y-2 transition transform duration-300 cursor-pointer group flex flex-col items-center border border-gray-800";
-        tarjeta.onclick = () => abrirModal(prod.id);
+        tarjeta.onclick = () => window.abrirModal(prod.id);
         
         tarjeta.innerHTML = `
           <div class="w-full h-64 overflow-hidden rounded-sm mb-6">
@@ -227,14 +232,23 @@
       });
     }
 
-    // Lógica del Buscador en tiempo real
-    function buscarProducto() {
+    // 6. Cargar productos desde Firebase
+    async function cargarDesdeFirebase() {
+      const querySnapshot = await getDocs(collection(db, "productos"));
+      productos = [];
+      querySnapshot.forEach((doc) => {
+        productos.push({ id: doc.id, ...doc.data() });
+      });
+      renderizarProductos(productos);
+    }
+
+    // 7. Lógica del Buscador (Expuesto globalmente)
+    window.buscarProducto = function() {
       const texto = document.getElementById("buscador").value.toLowerCase();
       
-      // Reiniciar los estilos del menú de categorías al usar el buscador
       const botones = document.querySelectorAll(".menu-btn");
       botones.forEach(btn => btn.classList.remove("menu-activo"));
-      botones[0].classList.add("menu-activo"); // Activar "Todo" visualmente
+      if(botones.length > 0) botones[0].classList.add("menu-activo");
       
       document.getElementById("titulo-categoria").innerText = texto === "" ? "Todas nuestras delicias" : "Resultados de búsqueda";
 
@@ -247,8 +261,9 @@
       renderizarProductos(filtrados);
     }
 
-    function filtrar(cat) {
-      document.getElementById("buscador").value = ""; // Limpiar el buscador al tocar una categoría
+    // 8. Filtrar por categorías (Expuesto globalmente)
+    window.filtrar = function(cat) {
+      document.getElementById("buscador").value = ""; 
 
       const botones = document.querySelectorAll(".menu-btn");
       botones.forEach(btn => btn.classList.remove("menu-activo"));
@@ -264,7 +279,8 @@
       }
     }
 
-    function abrirModal(id) {
+    // 9. Funciones del Modal
+    window.abrirModal = function(id) {
       const prod = productos.find(p => p.id === id);
       document.getElementById("modal-img").src = prod.imagen;
       document.getElementById("modal-titulo").innerText = prod.nombre;
@@ -277,17 +293,17 @@
       document.getElementById("modal-producto").classList.remove("hidden");
     }
 
-    function cerrarModal() {
+    window.cerrarModal = function() {
       document.getElementById("modal-producto").classList.add("hidden");
     }
 
     document.getElementById("modal-producto").addEventListener('click', function(e) {
-      if(e.target === this) { cerrarModal(); }
+      if(e.target === this) { window.cerrarModal(); }
     });
 
     // Iniciar la app
     renderizarMenu();
-    renderizarProductos(productos);
+    cargarDesdeFirebase();
   </script>
 </body>
 </html>
