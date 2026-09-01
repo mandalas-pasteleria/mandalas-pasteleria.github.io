@@ -281,17 +281,41 @@
     }
 
     // 9. Funciones del Modal
-    window.abrirModal = function(id) {
+window.abrirModal = function(id) {
       const prod = productos.find(p => p.id === id);
-      document.getElementById("modal-img").src = prod.imagen;
-      document.getElementById("modal-titulo").innerText = prod.nombre;
-      document.getElementById("modal-cat").innerText = prod.categoria;
-      document.getElementById("modal-desc").innerText = prod.descripcion;
-      
-      const mensaje = encodeURIComponent(`¡Hola! Quisiera consultar por: ${prod.nombre}.`);
-      document.getElementById("modal-btn-wpp").href = `https://wa.me/${NUMERO_WHATSAPP}?text=${mensaje}`;
+      if (!prod) return;
 
-      document.getElementById("modal-producto").classList.remove("hidden");
+      const modal = document.getElementById("modal-producto");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+
+      // Rediseño del modal: Foto arriba, textos abajo en fondo oscuro
+      modal.innerHTML = `
+        <div class="bg-fondoTarjeta w-full max-w-md mx-auto rounded-md overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh] animate-fade-in-up">
+          
+          <!-- Botón Cerrar -->
+          <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/90 text-white rounded-full w-8 h-8 flex items-center justify-center z-10 transition border border-gray-600">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+
+          <!-- Mitad Superior: Imagen (limitamos su altura para que no ocupe todo) -->
+          <div class="w-full aspect-[3/4] max-h-[45vh] overflow-hidden bg-fondoOscuro relative">
+            <img src="${prod.imagen}" class="w-full h-full object-cover object-center" alt="${prod.nombre}">
+          </div>
+
+          <!-- Mitad Inferior: Textos y Botón -->
+          <div class="p-6 flex flex-col items-center text-center overflow-y-auto">
+            <p class="text-cobre text-[10px] uppercase font-bold tracking-widest mb-1">${prod.categoria}</p>
+            <h3 class="font-titulo text-3xl text-textoClaro mb-3">${prod.nombre}</h3>
+            
+            <p class="text-textoGris text-sm mb-6 leading-relaxed">${prod.descripcion}</p>
+            
+            <a href="https://wa.me/543755641575?text=Hola!%20Me%20gustar%C3%ADa%20consultar%20por%20el/la%20${encodeURIComponent(prod.nombre)}" target="_blank" class="w-full bg-cobre hover:bg-cobreOscuro text-white font-bold py-3 rounded transition uppercase tracking-widest text-sm flex justify-center items-center gap-2 mt-auto">
+              Consultar <i class="fa-brands fa-whatsapp text-lg"></i>
+            </a>
+          </div>
+        </div>
+      `;
     }
 
     window.cerrarModal = function() {
