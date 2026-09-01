@@ -2,55 +2,113 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Admin - Mandalas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Mandalas Cosas Ricas</title>
+  
+  <!-- Tailwind y Fuentes (Igual que la principal) -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            fondoOscuro: '#161412', fondoMedio: '#4a4138', fondoTarjeta: '#221f1d',
+            cobre: '#b87352', cobreOscuro: '#945a3f', textoClaro: '#f4ece2', textoGris: '#a89f94'
+          },
+          fontFamily: {
+            titulo: ['"Playfair Display"', 'serif'],
+            texto: ['"Montserrat"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .menu-activo { color: #b87352 !important; border-bottom: 2px solid #b87352; padding-bottom: 2px; }
+  </style>
 </head>
-<body class="bg-gray-100 p-10 font-sans">
 
-  <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold mb-6 text-gray-800">Cargar Nuevo Producto 🍰</h2>
+<body class="bg-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
+
+  <!-- BARRA SUPERIOR ADMIN -->
+  <nav class="bg-fondoOscuro py-4 px-6 md:px-12 flex justify-between items-center border-b border-gray-800 shadow-xl sticky top-0 z-40">
+    <div class="font-titulo text-xl font-bold text-textoClaro">
+      Panel de Control <span class="text-cobre italic font-normal text-sm">Mandalas</span>
+    </div>
+    <button onclick="abrirModalNuevo()" class="bg-cobre hover:bg-cobreOscuro text-white text-xs font-bold py-2 px-4 rounded transition shadow flex items-center gap-2 uppercase tracking-wider">
+      <i class="fa-solid fa-plus"></i> Nuevo Producto
+    </button>
+  </nav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="py-10 px-6 md:px-12 max-w-7xl mx-auto w-full">
     
-    <form id="form-producto" class="flex flex-col gap-4">
+    <!-- Menú de Categorías -->
+    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-12">
+      <!-- Inyectado por JS -->
+    </div>
+
+    <h2 id="titulo-categoria" class="font-titulo text-3xl text-textoClaro capitalize mb-6 text-center">Todo</h2>
+
+    <!-- Grilla de Productos Admin -->
+    <div id="grilla-admin" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Los productos se cargan acá -->
+    </div>
+  </main>
+
+  <!-- MODAL FORMULARIO (NUEVO / EDITAR) -->
+  <div id="modal-form" class="fixed inset-0 bg-black bg-opacity-90 hidden flex items-center justify-center p-4 z-50 transition-opacity">
+    <div class="bg-fondoTarjeta rounded-md max-w-md w-full p-8 border border-gray-700 shadow-2xl relative">
       
-      <div>
-        <label class="block text-sm font-semibold text-gray-600">Nombre del producto</label>
-        <input type="text" id="nombre" required class="w-full border p-2 rounded mt-1" placeholder="Ej: Torta de Chocolate">
-      </div>
-
-      <div>
-        <label class="block text-sm font-semibold text-gray-600">Categoría</label>
-        <select id="categoria" class="w-full border p-2 rounded mt-1">
-          <option value="tortas">Tortas</option>
-          <option value="budines">Budines</option>
-          <option value="postres">Postres</option>
-          <option value="tartas">Tartas</option>
-          <option value="navidad">Navidad</option>
-          <option value="mesas dulces">Mesas Dulces</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block text-sm font-semibold text-gray-600">Descripción</label>
-        <textarea id="descripcion" required class="w-full border p-2 rounded mt-1" rows="3" placeholder="Ingredientes, detalles..."></textarea>
-      </div>
-
-      <div>
-        <label class="block text-sm font-semibold text-gray-600">Link de la Imagen (URL)</label>
-        <input type="url" id="imagen" required class="w-full border p-2 rounded mt-1" placeholder="https://ejemplo.com/foto.jpg">
-      </div>
-
-      <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded mt-4 transition">
-        Guardar Producto
+      <button onclick="cerrarModal()" class="absolute top-4 right-4 text-textoGris hover:text-textoClaro transition">
+        <i class="fa-solid fa-xmark text-xl"></i>
       </button>
-    </form>
-    
-    <div id="mensaje" class="mt-4 text-green-600 font-bold hidden text-center">¡Producto guardado con éxito!</div>
+
+      <h3 id="modal-titulo" class="font-titulo text-2xl text-cobre mb-6 border-b border-gray-700 pb-2">Agregar Producto</h3>
+      
+      <form id="form-producto" class="flex flex-col gap-4">
+        <input type="hidden" id="prod-id"> <!-- Oculto, para saber si editamos -->
+        
+        <div>
+          <label class="block text-xs font-semibold text-textoGris uppercase tracking-wider mb-1">Nombre</label>
+          <input type="text" id="nombre" required class="w-full bg-fondoOscuro border border-gray-700 text-textoClaro p-2 rounded focus:border-cobre outline-none transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-textoGris uppercase tracking-wider mb-1">Categoría</label>
+          <select id="categoria" class="w-full bg-fondoOscuro border border-gray-700 text-textoClaro p-2 rounded focus:border-cobre outline-none transition">
+            <!-- Se llena con JS -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-textoGris uppercase tracking-wider mb-1">Descripción</label>
+          <textarea id="descripcion" required class="w-full bg-fondoOscuro border border-gray-700 text-textoClaro p-2 rounded focus:border-cobre outline-none transition" rows="3"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-textoGris uppercase tracking-wider mb-1">Foto (Desde tu celu o PC)</label>
+          <input type="file" id="imagen-file" accept="image/*" class="w-full text-sm text-textoGris file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-cobre file:text-white hover:file:bg-cobreOscuro transition">
+          <p id="foto-actual-msg" class="text-xs text-cobre mt-2 hidden">Ya tiene una foto. Subí otra solo si querés cambiarla.</p>
+        </div>
+
+        <button type="submit" id="btn-guardar" class="bg-cobre hover:bg-cobreOscuro text-white font-bold py-3 rounded mt-4 transition uppercase tracking-widest text-sm flex justify-center items-center gap-2">
+          Guardar Producto
+        </button>
+      </form>
+    </div>
   </div>
 
-  <!-- CÓDIGO FIREBASE -->
+  <!-- CÓDIGOS DE FIREBASE Y LÓGICA -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBw3U23D7b8nPhZa4z5sSNkqHPx1jVdIIg",
@@ -63,31 +121,143 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const storage = getStorage(app); // Iniciamos el disco duro de fotos
 
+    const categorias = ["tortas", "budines", "materas", "postres", "tartas", "navidad", "pascuas", "mesas dulces"];
+    let productos = [];
+    let urlImagenActual = ""; 
+
+    // Renderizar Menú y Select de Formulario
+    function inicializarUI() {
+      const menu = document.getElementById("menu-categorias");
+      const selectCat = document.getElementById("categoria");
+      
+      menu.innerHTML = `<button onclick="filtrarAdmin('todos')" class="menu-btn menu-activo text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
+      
+      categorias.forEach(cat => {
+        menu.innerHTML += `<button onclick="filtrarAdmin('${cat}')" class="menu-btn text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">${cat}</button>`;
+        selectCat.innerHTML += `<option value="${cat}">${cat.toUpperCase()}</option>`;
+      });
+    }
+
+    // Cargar y mostrar productos
+    async function cargarProductos() {
+      document.getElementById("grilla-admin").innerHTML = `<p class="text-center w-full col-span-full py-10 text-textoGris">Cargando...</p>`;
+      const querySnapshot = await getDocs(collection(db, "productos"));
+      productos = [];
+      querySnapshot.forEach((doc) => { productos.push({ id: doc.id, ...doc.data() }); });
+      filtrarAdmin('todos');
+    }
+
+    window.filtrarAdmin = function(cat) {
+      const botones = document.querySelectorAll(".menu-btn");
+      botones.forEach(btn => btn.classList.remove("menu-activo"));
+      event.currentTarget.classList.add("menu-activo");
+      document.getElementById("titulo-categoria").innerText = cat === "todos" ? "Todos los productos" : cat;
+
+      const filtrados = cat === "todos" ? productos : productos.filter(p => p.categoria === cat);
+      const grilla = document.getElementById("grilla-admin");
+      grilla.innerHTML = "";
+
+      filtrados.forEach(prod => {
+        grilla.innerHTML += `
+          <div class="bg-fondoTarjeta p-4 rounded border border-gray-700 flex flex-col">
+            <img src="${prod.imagen}" class="w-full h-40 object-cover rounded mb-3 opacity-90">
+            <p class="text-cobre text-[10px] uppercase font-bold tracking-widest">${prod.categoria}</p>
+            <h3 class="font-titulo text-lg text-textoClaro mb-2 leading-tight">${prod.nombre}</h3>
+            <div class="mt-auto flex gap-2 border-t border-gray-700 pt-3">
+              <button onclick="editarProducto('${prod.id}')" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-xs py-2 rounded transition"><i class="fa-solid fa-pen"></i> Editar</button>
+              <button onclick="borrarProducto('${prod.id}')" class="flex-1 bg-red-900 hover:bg-red-800 text-white text-xs py-2 rounded transition"><i class="fa-solid fa-trash"></i> Borrar</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // FUNCIONES DEL MODAL (NUEVO Y EDITAR)
+    window.abrirModalNuevo = function() {
+      document.getElementById('form-producto').reset();
+      document.getElementById('prod-id').value = "";
+      document.getElementById('modal-titulo').innerText = "Nuevo Producto";
+      document.getElementById('foto-actual-msg').classList.add('hidden');
+      document.getElementById("modal-form").classList.remove("hidden");
+      document.getElementById('imagen-file').required = true; // Foto obligatoria si es nuevo
+    }
+
+    window.editarProducto = function(id) {
+      const prod = productos.find(p => p.id === id);
+      document.getElementById('prod-id').value = prod.id;
+      document.getElementById('nombre').value = prod.nombre;
+      document.getElementById('categoria').value = prod.categoria;
+      document.getElementById('descripcion').value = prod.descripcion;
+      urlImagenActual = prod.imagen; // Guardamos la foto vieja por si no sube una nueva
+      
+      document.getElementById('modal-titulo').innerText = "Editar Producto";
+      document.getElementById('foto-actual-msg').classList.remove('hidden');
+      document.getElementById('imagen-file').required = false; // No es obligatorio subir foto al editar
+      
+      document.getElementById("modal-form").classList.remove("hidden");
+    }
+
+    window.cerrarModal = function() { document.getElementById("modal-form").classList.add("hidden"); }
+
+    // BORRAR PRODUCTO
+    window.borrarProducto = async function(id) {
+      if(confirm("¿Seguro que querés borrar este producto? No se puede deshacer.")) {
+        await deleteDoc(doc(db, "productos", id));
+        cargarProductos();
+      }
+    }
+
+    // GUARDAR (NUEVO O EDITAR) CON SUBIDA DE FOTO
     document.getElementById('form-producto').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      const boton = e.target.querySelector('button');
-      boton.innerText = "Guardando...";
+      const boton = document.getElementById('btn-guardar');
+      const originalText = boton.innerHTML;
+      boton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo...';
+      boton.disabled = true;
 
       try {
-        await addDoc(collection(db, "productos"), {
+        const id = document.getElementById('prod-id').value;
+        const archivoFoto = document.getElementById('imagen-file').files[0];
+        let urlFinal = urlImagenActual; 
+
+        // Si tu mamá eligió una foto nueva, la subimos a Firebase Storage
+        if (archivoFoto) {
+          boton.innerHTML = '<i class="fa-solid fa-image"></i> Guardando foto...';
+          const fotoRef = ref(storage, 'productos/' + Date.now() + '_' + archivoFoto.name);
+          await uploadBytes(fotoRef, archivoFoto);
+          urlFinal = await getDownloadURL(fotoRef);
+        }
+
+        const datosProducto = {
           nombre: document.getElementById('nombre').value,
           categoria: document.getElementById('categoria').value,
           descripcion: document.getElementById('descripcion').value,
-          imagen: document.getElementById('imagen').value,
-          fecha: new Date()
-        });
+          imagen: urlFinal
+        };
 
-        document.getElementById('form-producto').reset();
-        document.getElementById('mensaje').classList.remove('hidden');
-        setTimeout(() => document.getElementById('mensaje').classList.add('hidden'), 3000);
+        // Si hay ID, actualizamos. Si no, creamos uno nuevo.
+        if (id) {
+          boton.innerHTML = '<i class="fa-solid fa-cloud"></i> Actualizando...';
+          await updateDoc(doc(db, "productos", id), datosProducto);
+        } else {
+          boton.innerHTML = '<i class="fa-solid fa-cloud"></i> Creando...';
+          await addDoc(collection(db, "productos"), datosProducto);
+        }
+
+        cerrarModal();
+        cargarProductos(); // Recargar la grilla para ver los cambios
       } catch (error) {
         alert("Hubo un error: " + error.message);
       } finally {
-        boton.innerText = "Guardar Producto";
+        boton.innerHTML = originalText;
+        boton.disabled = false;
       }
     });
+
+    inicializarUI();
+    cargarProductos();
   </script>
 </body>
 </html>
