@@ -3,31 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mandalas Cosas Ricas</title>
+  <title>Mandalas Cosas Ricas | Bakery</title>
   
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
+  <!-- Fuentes Elegantes: Playfair Display (Títulos) y Montserrat (Textos) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   
+  <!-- FontAwesome (Íconos) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <script>
-    // Configuración de colores personalizados en Tailwind
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            crema: '#FAF6F0',
-            beige: '#EADDCF',
-            marronClaro: '#C2A38E',
-            marronOscuro: '#5A3E2B',
-            verdeWpp: '#7FB88A' // Un verde pastel para que no desentone
+            fondoOscuro: '#161412',    /* Casi negro para el header */
+            fondoMedio: '#4a4138',     /* Marrón rústico para el fondo principal */
+            fondoTarjeta: '#221f1d',   /* Gris muy oscuro para los productos */
+            cobre: '#b87352',          /* Naranja quemado/Cobre para botones */
+            cobreOscuro: '#945a3f',    /* Hover del cobre */
+            textoClaro: '#f4ece2',     /* Color crema para los textos */
+            textoGris: '#a89f94'       /* Gris claro para descripciones */
           },
           fontFamily: {
-            titulo: ['"Dancing Script"', 'cursive'],
-            texto: ['"Quicksand"', 'sans-serif'],
+            titulo: ['"Playfair Display"', 'serif'],
+            texto: ['"Montserrat"', 'sans-serif'],
           }
         }
       }
@@ -35,81 +39,129 @@
   </script>
 
   <style>
-    /* Estilo para la pestaña activa en el menú */
+    /* Estilo elegante para el menú activo */
     .menu-activo {
-      background-color: #C2A38E !important;
-      color: #FAF6F0 !important;
-      font-weight: 700;
-      transform: scale(1.05);
+      color: #b87352 !important;
+      border-bottom: 2px solid #b87352;
+      padding-bottom: 2px;
     }
+    
+    /* Scroll suave */
+    html { scroll-behavior: smooth; }
   </style>
 </head>
 
-<body class="bg-crema text-marronOscuro font-texto min-h-screen flex flex-col md:flex-row">
+<body class="bg-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
 
-  <aside class="w-full md:w-64 bg-beige shadow-lg flex flex-col justify-between p-6 md:min-h-screen">
+  <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+  <nav class="bg-fondoOscuro py-4 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center sticky top-0 z-50 border-b border-gray-800 shadow-xl">
     
-    <div>
-      <h1 class="font-titulo text-4xl md:text-5xl text-center text-marronOscuro mb-8 leading-tight mt-4">
-        Mandalas<br>Cosas Ricas
-      </h1>
-
-      <nav class="flex flex-col gap-3" id="menu-categorias">
-        </nav>
+    <!-- Logo / Nombre -->
+    <div class="font-titulo text-2xl font-bold tracking-wider text-textoClaro mb-4 md:mb-0 cursor-pointer" onclick="window.scrollTo(0,0)">
+      Mandalas<span class="text-cobre text-sm font-texto ml-2 italic font-normal tracking-widest">BAKERY</span>
     </div>
 
-<!-- Redes Sociales (Abajo a la izquierda) -->
-    <div class="mt-10 flex justify-center gap-4">
-      
-      <!-- Botón de Instagram -->
-      <a href="https://www.instagram.com/mandalascosasricas" target="_blank" class="w-12 h-12 rounded-full bg-crema text-marronOscuro hover:bg-marronClaro hover:text-crema flex items-center justify-center text-2xl transition shadow-sm">
+    <!-- Menú de Categorías (Horizontal) -->
+    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-4 md:mb-0">
+      <!-- Se inyecta por JS -->
+    </div>
+
+    <!-- Redes Sociales -->
+    <div class="flex gap-5">
+      <a href="https://www.instagram.com/mandalascosasricas" target="_blank" class="text-textoClaro hover:text-cobre text-xl transition transform hover:scale-110">
         <i class="fa-brands fa-instagram"></i>
       </a>
-
-      <!-- Botón de WhatsApp -->
-      <a href="https://wa.me/543755641575" target="_blank" class="w-12 h-12 rounded-full bg-crema text-marronOscuro hover:bg-verdeWpp hover:text-white flex items-center justify-center text-2xl transition shadow-sm">
+      <a href="https://wa.me/543755641575" target="_blank" class="text-textoClaro hover:text-cobre text-xl transition transform hover:scale-110">
         <i class="fa-brands fa-whatsapp"></i>
       </a>
-      
-    </div>  </aside>
+    </div>
+  </nav>
 
-  <main class="flex-1 p-6 md:p-10">
-    <h2 id="titulo-categoria" class="font-titulo text-3xl mb-6 text-marronClaro capitalize text-center md:text-left">
-      Todos nuestros productos
-    </h2>
-
-    <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  <!-- SECCIÓN HERO (Portada gigante) -->
+  <header class="bg-fondoOscuro flex flex-col md:flex-row min-h-[60vh] md:min-h-[70vh]">
+    
+    <!-- Lado Izquierdo: Textos -->
+    <div class="md:w-1/2 flex flex-col justify-center p-10 md:p-20 order-2 md:order-1 relative z-10">
+      <h1 class="font-titulo text-5xl md:text-7xl font-bold leading-tight mb-6">
+        Pasión<br>por lo <span class="text-cobre italic font-normal">Artesanal</span>
+      </h1>
+      <p class="text-textoGris font-light leading-relaxed mb-10 max-w-md text-sm md:text-base">
+        Pastelería de autor, budines rústicos y mesas dulces creadas con ingredientes seleccionados y mucho amor. Cada bocado cuenta una historia.
+      </p>
+      <div>
+        <a href="#seccion-productos" class="inline-block bg-cobre hover:bg-cobreOscuro text-white text-xs md:text-sm font-semibold tracking-[0.2em] uppercase py-4 px-8 rounded-sm transition shadow-lg">
+          Ver Catálogo
+        </a>
       </div>
+    </div>
+
+    <!-- Lado Derecho: Imagen Gigante -->
+    <div class="md:w-1/2 order-1 md:order-2 h-64 md:h-auto">
+      <img src="https://images.unsplash.com/photo-1605807646983-377bc5a76493?auto=format&fit=crop&w=1000&q=80" alt="Pastelería Artesanal" class="w-full h-full object-cover opacity-90">
+    </div>
+  </header>
+
+  <!-- SECCIÓN DE PRODUCTOS (Fondo Marrón) -->
+  <main id="seccion-productos" class="py-20 px-6 md:px-12">
+    
+    <div class="text-center mb-16">
+      <h2 id="titulo-categoria" class="font-titulo text-4xl md:text-5xl text-textoClaro capitalize mb-4">
+        Todas nuestras delicias
+      </h2>
+      <div class="w-24 h-1 bg-cobre mx-auto"></div>
+    </div>
+
+    <!-- Grilla de Productos -->
+    <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+      <!-- Los productos se inyectan acá -->
+    </div>
+
   </main>
 
-  <div id="modal-producto" class="fixed inset-0 bg-marronOscuro bg-opacity-60 hidden flex items-center justify-center p-4 z-50 transition-opacity">
-    <div class="bg-crema rounded-3xl max-w-md w-full overflow-hidden shadow-2xl relative">
+  <!-- PIE DE PÁGINA -->
+  <footer class="bg-fondoOscuro text-center py-8 text-textoGris text-xs tracking-widest uppercase border-t border-gray-800">
+    Mandalas Cosas Ricas © 2024
+  </footer>
+
+
+  <!-- VENTANA EMERGENTE (MODAL PREMIUM) -->
+  <div id="modal-producto" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center p-4 z-50 transition-opacity backdrop-blur-sm">
+    <div class="bg-fondoTarjeta rounded-md max-w-3xl w-full overflow-hidden shadow-2xl relative flex flex-col md:flex-row border border-gray-700">
       
-      <button onclick="cerrarModal()" class="absolute top-3 right-3 w-8 h-8 bg-white bg-opacity-80 rounded-full flex items-center justify-center text-marronOscuro hover:bg-marronClaro hover:text-white transition z-10">
+      <!-- Botón cerrar -->
+      <button onclick="cerrarModal()" class="absolute top-4 right-4 w-10 h-10 bg-fondoOscuro bg-opacity-50 rounded-full flex items-center justify-center text-textoClaro hover:text-cobre transition z-10 border border-gray-600">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-      <div class="h-64 sm:h-80 w-full">
+      <!-- Imagen ampliada (Mitad izquierda) -->
+      <div class="h-64 md:h-auto md:w-1/2">
         <img id="modal-img" src="" alt="Producto" class="w-full h-full object-cover">
       </div>
 
-      <div class="p-6 text-center">
-        <h3 id="modal-titulo" class="font-titulo text-3xl text-marronOscuro mb-2"></h3>
-        <p id="modal-desc" class="text-marronOscuro text-sm mb-6 leading-relaxed"></p>
+      <!-- Detalles del producto (Mitad derecha) -->
+      <div class="p-8 md:p-12 md:w-1/2 flex flex-col justify-center text-center md:text-left">
+        <p id="modal-cat" class="text-cobre text-xs uppercase tracking-[0.2em] mb-2 font-semibold"></p>
+        <h3 id="modal-titulo" class="font-titulo text-3xl md:text-4xl text-textoClaro mb-4"></h3>
+        <div class="w-12 h-[2px] bg-gray-700 mx-auto md:mx-0 mb-6"></div>
+        <p id="modal-desc" class="text-textoGris text-sm mb-8 leading-relaxed font-light"></p>
         
-        <a id="modal-btn-wpp" href="#" target="_blank" class="inline-flex items-center gap-2 bg-verdeWpp hover:bg-opacity-80 text-white font-bold py-2 px-6 rounded-full transition shadow-md">
+        <!-- Botón Consultar WhatsApp -->
+        <a id="modal-btn-wpp" href="#" target="_blank" class="inline-flex items-center justify-center gap-3 bg-cobre hover:bg-cobreOscuro text-white text-sm font-semibold tracking-widest uppercase py-4 px-6 rounded-sm transition shadow-lg">
+          Consultar 
           <i class="fa-brands fa-whatsapp text-lg"></i>
-          Consultar
         </a>
       </div>
     </div>
   </div>
 
-  <script>
-    // 1. Número de WhatsApp
-    const NUMERO_WHATSAPP = "543755641575"; 
 
-    // 2. Base de datos de Productos (Con ejemplos de abuelita)
+  <!-- SCRIPTS FUNCIONALES -->
+  <script>
+    // 1. Número de WhatsApp y Categorías
+    const NUMERO_WHATSAPP = "543755641575"; 
+    const categorias = ["tortas", "budines", "postres", "tartas", "navidad", "mesas dulces"];
+
+    // 2. Base de datos (Mismos productos)
     const productos = [
       { id: 1, nombre: "Torta de Manzana Invertida", categoria: "tortas", descripcion: "La clásica receta de la abuela, con manzanas caramelizadas y masa súper húmeda.", imagen: "https://images.unsplash.com/photo-1568458178963-0761376d299b?auto=format&fit=crop&w=600&q=80" },
       { id: 2, nombre: "Torta Rogel Casera", categoria: "tortas", descripcion: "Capas de masa crocante, abundante dulce de leche repostero y merengue italiano.", imagen: "https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&w=600&q=80" },
@@ -124,34 +176,34 @@
       { id: 11, nombre: "Mesa Dulce Rústica", categoria: "mesas dulces", descripcion: "Armamos tu mesa dulce con tartas, cuadraditos, alfajorcitos de maicena y shots.", imagen: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=600&q=80" }
     ];
 
-    const categorias = ["tortas", "budines", "postres", "tartas", "navidad", "mesas dulces"];
-
-    // 3. Renderizar el Menú
+    // 3. Renderizar el Menú (Ahora es Horizontal arriba)
     function renderizarMenu() {
       const menu = document.getElementById("menu-categorias");
-      menu.innerHTML = `<button onclick="filtrar('todos')" class="menu-btn menu-activo text-left px-4 py-3 rounded-2xl bg-crema text-marronOscuro transition">Todas las delicias</button>`;
+      menu.innerHTML = `<button onclick="filtrar('todos')" class="menu-btn menu-activo text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
       
       categorias.forEach(cat => {
         menu.innerHTML += `
-          <button onclick="filtrar('${cat}')" class="menu-btn text-left px-4 py-3 rounded-2xl bg-crema text-marronOscuro hover:bg-marronClaro hover:text-crema transition capitalize">
+          <button onclick="filtrar('${cat}')" class="menu-btn text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">
             ${cat}
           </button>
         `;
       });
     }
 
-    // 4. Renderizar Grilla de Productos
+    // 4. Renderizar Grilla de Productos (Estilo Cuadrado y Oscuro)
     function renderizarProductos(items) {
       const grilla = document.getElementById("grilla-productos");
       grilla.innerHTML = "";
 
       items.forEach(prod => {
         grilla.innerHTML += `
-          <div onclick="abrirModal(${prod.id})" class="bg-white rounded-3xl p-3 shadow-sm hover:shadow-md transition cursor-pointer group flex flex-col items-center">
-            <div class="w-full h-48 overflow-hidden rounded-2xl mb-3">
-              <img src="${prod.imagen}" alt="${prod.nombre}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+          <div onclick="abrirModal(${prod.id})" class="bg-fondoTarjeta p-5 rounded-sm shadow-xl hover:-translate-y-2 transition transform duration-300 cursor-pointer group flex flex-col items-center border border-gray-800">
+            <div class="w-full h-64 overflow-hidden rounded-sm mb-6">
+              <img src="${prod.imagen}" alt="${prod.nombre}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
             </div>
-            <h3 class="font-bold text-center text-marronOscuro text-lg px-2 pb-2 leading-tight">${prod.nombre}</h3>
+            <h3 class="font-titulo font-bold text-center text-textoClaro text-xl mb-2 leading-tight group-hover:text-cobre transition">${prod.nombre}</h3>
+            <div class="h-[1px] w-12 bg-cobre opacity-50 mt-2 mb-4"></div>
+            <p class="text-textoGris text-xs uppercase tracking-widest">Ver Detalles</p>
           </div>
         `;
       });
@@ -159,16 +211,16 @@
 
     // 5. Filtrar por categoría
     function filtrar(cat) {
-      // Estilos del menú
+      // Actualizar estilos del menú horizontal
       const botones = document.querySelectorAll(".menu-btn");
       botones.forEach(btn => btn.classList.remove("menu-activo"));
       event.currentTarget.classList.add("menu-activo");
 
-      // Título
+      // Actualizar Título
       const titulo = document.getElementById("titulo-categoria");
-      titulo.innerText = cat === "todos" ? "Todos nuestros productos" : cat;
+      titulo.innerText = cat === "todos" ? "Todas nuestras delicias" : cat;
 
-      // Filtrado
+      // Filtrar y renderizar
       if (cat === "todos") {
         renderizarProductos(productos);
       } else {
@@ -177,15 +229,16 @@
       }
     }
 
-    // 6. Funciones del Modal (Ventana emergente)
+    // 6. Funciones del Modal
     function abrirModal(id) {
       const prod = productos.find(p => p.id === id);
       
       document.getElementById("modal-img").src = prod.imagen;
       document.getElementById("modal-titulo").innerText = prod.nombre;
+      document.getElementById("modal-cat").innerText = prod.categoria;
       document.getElementById("modal-desc").innerText = prod.descripcion;
       
-      // Armar el link de WhatsApp
+      // WhatsApp Link con el número correcto
       const mensaje = encodeURIComponent(`¡Hola! Quisiera consultar por: ${prod.nombre}.`);
       document.getElementById("modal-btn-wpp").href = `https://wa.me/${NUMERO_WHATSAPP}?text=${mensaje}`;
 
@@ -201,7 +254,7 @@
       if(e.target === this) { cerrarModal(); }
     });
 
-    // Iniciar
+    // Iniciar la app
     renderizarMenu();
     renderizarProductos(productos);
   </script>
