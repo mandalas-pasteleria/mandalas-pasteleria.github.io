@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin - Mandalas Cosas Ricas</title>
   
-  <!-- Tailwind y Fuentes (Igual que la principal) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +34,6 @@
 
 <body class="bg-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
 
-  <!-- BARRA SUPERIOR ADMIN -->
   <nav class="bg-fondoOscuro py-4 px-6 md:px-12 flex justify-between items-center border-b border-gray-800 shadow-xl sticky top-0 z-40">
     <div class="font-titulo text-xl font-bold text-textoClaro">
       Panel de Control <span class="text-cobre italic font-normal text-sm">Mandalas</span>
@@ -45,34 +43,21 @@
     </button>
   </nav>
 
-  <!-- CONTENIDO PRINCIPAL -->
   <main class="py-10 px-6 md:px-12 max-w-7xl mx-auto w-full">
-    
-    <!-- Menú de Categorías -->
-    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-12">
-      <!-- Inyectado por JS -->
-    </div>
-
+    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-12"></div>
     <h2 id="titulo-categoria" class="font-titulo text-3xl text-textoClaro capitalize mb-6 text-center">Todo</h2>
-
-    <!-- Grilla de Productos Admin -->
-    <div id="grilla-admin" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <!-- Los productos se cargan acá -->
-    </div>
+    <div id="grilla-admin" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
   </main>
 
-  <!-- MODAL FORMULARIO (NUEVO / EDITAR) -->
   <div id="modal-form" class="fixed inset-0 bg-black bg-opacity-90 hidden flex items-center justify-center p-4 z-50 transition-opacity">
     <div class="bg-fondoTarjeta rounded-md max-w-md w-full p-8 border border-gray-700 shadow-2xl relative">
-      
       <button onclick="cerrarModal()" class="absolute top-4 right-4 text-textoGris hover:text-textoClaro transition">
         <i class="fa-solid fa-xmark text-xl"></i>
       </button>
-
       <h3 id="modal-titulo" class="font-titulo text-2xl text-cobre mb-6 border-b border-gray-700 pb-2">Agregar Producto</h3>
       
       <form id="form-producto" class="flex flex-col gap-4">
-        <input type="hidden" id="prod-id"> <!-- Oculto, para saber si editamos -->
+        <input type="hidden" id="prod-id">
         
         <div>
           <label class="block text-xs font-semibold text-textoGris uppercase tracking-wider mb-1">Nombre</label>
@@ -81,9 +66,7 @@
 
         <div>
           <label class="block text-xs font-semibold text-textoGris uppercase tracking-wider mb-1">Categoría</label>
-          <select id="categoria" class="w-full bg-fondoOscuro border border-gray-700 text-textoClaro p-2 rounded focus:border-cobre outline-none transition">
-            <!-- Se llena con JS -->
-          </select>
+          <select id="categoria" class="w-full bg-fondoOscuro border border-gray-700 text-textoClaro p-2 rounded focus:border-cobre outline-none transition"></select>
         </div>
 
         <div>
@@ -104,11 +87,12 @@
     </div>
   </div>
 
-  <!-- CÓDIGOS DE FIREBASE Y LÓGICA -->
   <script type="module">
+    // LLAVE DE IMGBB APLICADA:
+    const IMGBB_API_KEY = "ce0938ece2bee753e1fdb8725e95e854";
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBw3U23D7b8nPhZa4z5sSNkqHPx1jVdIIg",
@@ -121,17 +105,14 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const storage = getStorage(app); // Iniciamos el disco duro de fotos
 
     const categorias = ["tortas", "budines", "materas", "postres", "tartas", "navidad", "pascuas", "mesas dulces"];
     let productos = [];
     let urlImagenActual = ""; 
 
-    // Renderizar Menú y Select de Formulario
     function inicializarUI() {
       const menu = document.getElementById("menu-categorias");
       const selectCat = document.getElementById("categoria");
-      
       menu.innerHTML = `<button onclick="filtrarAdmin('todos')" class="menu-btn menu-activo text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
       
       categorias.forEach(cat => {
@@ -140,7 +121,6 @@
       });
     }
 
-    // Cargar y mostrar productos
     async function cargarProductos() {
       document.getElementById("grilla-admin").innerHTML = `<p class="text-center w-full col-span-full py-10 text-textoGris">Cargando...</p>`;
       const querySnapshot = await getDocs(collection(db, "productos"));
@@ -174,14 +154,13 @@
       });
     }
 
-    // FUNCIONES DEL MODAL (NUEVO Y EDITAR)
     window.abrirModalNuevo = function() {
       document.getElementById('form-producto').reset();
       document.getElementById('prod-id').value = "";
       document.getElementById('modal-titulo').innerText = "Nuevo Producto";
       document.getElementById('foto-actual-msg').classList.add('hidden');
       document.getElementById("modal-form").classList.remove("hidden");
-      document.getElementById('imagen-file').required = true; // Foto obligatoria si es nuevo
+      document.getElementById('imagen-file').required = true;
     }
 
     window.editarProducto = function(id) {
@@ -190,18 +169,16 @@
       document.getElementById('nombre').value = prod.nombre;
       document.getElementById('categoria').value = prod.categoria;
       document.getElementById('descripcion').value = prod.descripcion;
-      urlImagenActual = prod.imagen; // Guardamos la foto vieja por si no sube una nueva
+      urlImagenActual = prod.imagen; 
       
       document.getElementById('modal-titulo').innerText = "Editar Producto";
       document.getElementById('foto-actual-msg').classList.remove('hidden');
-      document.getElementById('imagen-file').required = false; // No es obligatorio subir foto al editar
-      
+      document.getElementById('imagen-file').required = false; 
       document.getElementById("modal-form").classList.remove("hidden");
     }
 
     window.cerrarModal = function() { document.getElementById("modal-form").classList.add("hidden"); }
 
-    // BORRAR PRODUCTO
     window.borrarProducto = async function(id) {
       if(confirm("¿Seguro que querés borrar este producto? No se puede deshacer.")) {
         await deleteDoc(doc(db, "productos", id));
@@ -209,12 +186,12 @@
       }
     }
 
-    // GUARDAR (NUEVO O EDITAR) CON SUBIDA DE FOTO
+    // LÓGICA DE SUBIDA CON IMGBB APLICADA
     document.getElementById('form-producto').addEventListener('submit', async (e) => {
       e.preventDefault();
       const boton = document.getElementById('btn-guardar');
       const originalText = boton.innerHTML;
-      boton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo...';
+      boton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
       boton.disabled = true;
 
       try {
@@ -222,12 +199,24 @@
         const archivoFoto = document.getElementById('imagen-file').files[0];
         let urlFinal = urlImagenActual; 
 
-        // Si tu mamá eligió una foto nueva, la subimos a Firebase Storage
         if (archivoFoto) {
-          boton.innerHTML = '<i class="fa-solid fa-image"></i> Guardando foto...';
-          const fotoRef = ref(storage, 'productos/' + Date.now() + '_' + archivoFoto.name);
-          await uploadBytes(fotoRef, archivoFoto);
-          urlFinal = await getDownloadURL(fotoRef);
+          boton.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Subiendo foto...';
+          
+          const formData = new FormData();
+          formData.append("image", archivoFoto);
+
+          const respuestaImgBB = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: "POST",
+            body: formData
+          });
+          
+          const datosImgBB = await respuestaImgBB.json();
+          
+          if (datosImgBB.success) {
+            urlFinal = datosImgBB.data.url; 
+          } else {
+            throw new Error("No se pudo subir la foto a ImgBB");
+          }
         }
 
         const datosProducto = {
@@ -237,17 +226,16 @@
           imagen: urlFinal
         };
 
-        // Si hay ID, actualizamos. Si no, creamos uno nuevo.
         if (id) {
-          boton.innerHTML = '<i class="fa-solid fa-cloud"></i> Actualizando...';
+          boton.innerHTML = '<i class="fa-solid fa-database"></i> Actualizando...';
           await updateDoc(doc(db, "productos", id), datosProducto);
         } else {
-          boton.innerHTML = '<i class="fa-solid fa-cloud"></i> Creando...';
+          boton.innerHTML = '<i class="fa-solid fa-database"></i> Creando...';
           await addDoc(collection(db, "productos"), datosProducto);
         }
 
         cerrarModal();
-        cargarProductos(); // Recargar la grilla para ver los cambios
+        cargarProductos(); 
       } catch (error) {
         alert("Hubo un error: " + error.message);
       } finally {
