@@ -62,13 +62,9 @@
       </h1>
       <p class="text-textoGris font-light leading-relaxed mb-10 max-w-md text-sm md:text-base">
         Repostería 100% artesanal hecha con amor y dedicación. Tortas personalizadas, mesas dulces y muchas delicias caseras para tus momentos especiales o la merienda de todos los días.<br><br>
-        <span class="font-semibold text-textoClaro">Pedidos personalizados con anticipación.</span>
+        <span class="font-semibold text-textoClaro">Pedidos con al menos 24 hs de anticipacion.</span>
       </p>
-      <div>
-        <a href="#seccion-productos" class="inline-block bg-cobre hover:bg-cobreOscuro text-white text-xs md:text-sm font-semibold tracking-[0.2em] uppercase py-4 px-8 rounded-sm transition shadow-lg">
-          Ver Catálogo
-        </a>
-      </div>
+      <!-- Botón "Ver Catálogo" eliminado a pedido tuyo -->
     </div>
     <div class="md:w-1/2 order-1 md:order-2 h-64 md:h-auto">
       <img src="97569.png" alt="Mandala Portada" class="w-full h-full object-cover opacity-90">
@@ -84,13 +80,13 @@
       </h2>
       <div class="w-24 h-1 bg-cobre mx-auto mb-10"></div>
 
-      <!-- BUSCADOR ORIGINAL RECUPERADO -->
+      <!-- BUSCADOR -->
       <div class="max-w-md mx-auto mb-12 relative">
         <input type="text" id="buscador" onkeyup="buscarProducto()" placeholder="Buscar tortas, budines, postres..." class="w-full bg-fondoTarjeta text-textoClaro border border-gray-700 rounded-sm py-3 px-4 pl-12 focus:outline-none focus:border-cobre transition shadow-lg font-light text-sm placeholder-gray-500">
         <i class="fa-solid fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-textoGris"></i>
       </div>
 
-      <!-- Menú de Categorías (Dinámico) -->
+      <!-- Menú de Categorías -->
       <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 border-b border-gray-800 pb-4">
         <!-- Se inyecta por JS -->
       </div>
@@ -107,7 +103,7 @@
     <p class="text-textoGris text-xs uppercase tracking-widest">&copy; 2024 Mandalas Cosas Ricas. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- Modal Rediseñado (Dinámico para foto vertical sin cortar) -->
+  <!-- Modal -->
   <div id="modal-producto" class="fixed inset-0 bg-black bg-opacity-95 hidden flex-col items-center justify-center p-4 z-50 transition-opacity backdrop-blur-sm">
     <!-- Se llena desde JS -->
   </div>
@@ -131,7 +127,7 @@
     let productos = [];
     let categorias = [];
 
-    // --- CONTADOR DE VISITAS INVISIBLE ---
+    // Contador de visitas
     async function registrarVisita() {
       if (!sessionStorage.getItem("visitaContada")) {
         try {
@@ -170,7 +166,12 @@
       });
     }
 
-    // Lógica del Buscador 
+    // NUEVO: Función para obtener SOLO los productos de las categorías que NO están ocultas
+    function obtenerProductosVisibles() {
+      const nombresCategoriasVisibles = categorias.filter(c => !c.oculta).map(c => c.nombre.toLowerCase());
+      return productos.filter(p => nombresCategoriasVisibles.includes(p.categoria.toLowerCase()));
+    }
+
     window.buscarProducto = function() {
       const texto = document.getElementById("buscador").value.toLowerCase();
       const botones = document.querySelectorAll(".menu-btn");
@@ -184,7 +185,10 @@
         document.getElementById("titulo-categoria").innerText = "Resultados de búsqueda";
       }
 
-      const filtrados = productos.filter(p => 
+      // Buscar solo entre los productos visibles (evita mostrar ocultos en los resultados)
+      const productosPermitidos = obtenerProductosVisibles();
+
+      const filtrados = productosPermitidos.filter(p => 
         p.nombre.toLowerCase().includes(texto) || 
         p.descripcion.toLowerCase().includes(texto) ||
         p.categoria.toLowerCase().includes(texto)
@@ -205,7 +209,12 @@
       });
 
       document.getElementById("titulo-categoria").innerText = catNombre === "todos" ? "Todas nuestras delicias" : catNombre;
-      const filtrados = catNombre === "todos" ? productos : productos.filter(p => p.categoria.toLowerCase() === catNombre.toLowerCase());
+      
+      // Filtramos usando solo los productos que están en categorías visibles
+      const productosPermitidos = obtenerProductosVisibles();
+      const filtrados = catNombre === "todos" 
+        ? productosPermitidos 
+        : productosPermitidos.filter(p => p.categoria.toLowerCase() === catNombre.toLowerCase());
       
       renderizarProductos(filtrados);
     }
