@@ -55,19 +55,28 @@
   </nav>
 
   <!-- SECCIÓN HERO ORIGINAL -->
+  <!-- SECCIÓN HERO CON EFECTO VIÑETA -->
   <header class="bg-fondoOscuro flex flex-col md:flex-row min-h-[60vh] md:min-h-[70vh]">
     <div class="md:w-1/2 flex flex-col justify-center p-10 md:p-20 order-2 md:order-1 relative z-10">
       <h1 class="font-titulo text-5xl md:text-7xl font-bold leading-tight mb-6">
         Repostería<br><span class="text-cobre italic font-normal">Artesanal</span>
       </h1>
-      <p class="text-textoGris font-light leading-relaxed mb-10 max-w-md text-sm md:text-base">
+      <p class="text-textoGris font-light leading-relaxed max-w-md text-sm md:text-base">
         Repostería 100% artesanal hecha con amor y dedicación. Tortas personalizadas, mesas dulces y muchas delicias caseras para tus momentos especiales o la merienda de todos los días.<br><br>
         <span class="font-semibold text-textoClaro">Pedidos con al menos 24 hs de anticipacion.</span>
       </p>
-      <!-- Botón "Ver Catálogo" eliminado a pedido tuyo -->
     </div>
-    <div class="md:w-1/2 order-1 md:order-2 h-64 md:h-auto">
-      <img src="97569.png" alt="Mandala Portada" class="w-full h-full object-cover opacity-90">
+    
+    <!-- CONTENEDOR DE LA IMAGEN CON MÁSCARA -->
+    <div class="md:w-1/2 order-1 md:order-2 h-64 md:h-auto relative flex items-center justify-center overflow-hidden">
+      
+      <!-- Degradado de sombra a la izquierda para asegurar que se fusione con el texto -->
+      <div class="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-fondoOscuro to-transparent z-10"></div>
+      
+      <!-- La imagen con el efecto Viñeta (Radial Mask) -->
+      <img src="97569.png" alt="Mandala Portada" class="w-full h-full object-cover opacity-90 transition duration-700" 
+           style="-webkit-mask-image: radial-gradient(circle at center, black 35%, transparent 85%); mask-image: radial-gradient(circle at center, black 35%, transparent 85%);">
+           
     </div>
   </header>
 
