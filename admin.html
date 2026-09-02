@@ -56,7 +56,7 @@
 
   <main class="py-10 px-6 md:px-12 max-w-7xl mx-auto w-full">
     
-    <!-- TARJETA DE ESTADÍSTICAS -->
+    <!-- TARJETA DE ESTADÍSTICAS CON BOTÓN RESET -->
     <div class="flex justify-center mb-10">
       <div class="bg-fondoTarjeta border border-gray-700 px-8 py-5 rounded-md shadow-xl flex items-center gap-5">
         <div class="bg-cobre/20 text-cobre p-4 rounded-full flex items-center justify-center">
@@ -64,7 +64,12 @@
         </div>
         <div>
           <p class="text-textoGris text-xs uppercase tracking-widest font-bold mb-1">Visitas a la página</p>
-          <p id="contador-visitas" class="text-4xl font-titulo text-textoClaro">...</p>
+          <div class="flex items-center gap-3">
+            <p id="contador-visitas" class="text-4xl font-titulo text-textoClaro">...</p>
+            <button onclick="reiniciarVisitas()" class="text-gray-500 hover:text-cobre transition text-sm ml-2 mt-2" title="Reiniciar a cero">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -164,6 +169,20 @@
         if (docSnap.exists()) { document.getElementById("contador-visitas").innerText = docSnap.data().total; } 
         else { document.getElementById("contador-visitas").innerText = "0"; }
       } catch (error) { console.log("Error al cargar visitas", error); }
+    }
+
+    // --- REINICIAR VISITAS A CERO ---
+    window.reiniciarVisitas = async function() {
+      if(confirm("¿Estás seguro que querés volver el contador de visitas a CERO? Esta acción no se puede deshacer.")) {
+        try {
+          await updateDoc(doc(db, "estadisticas", "visitas"), { total: 0 });
+          document.getElementById("contador-visitas").innerText = "0";
+          alert("El contador se reinició correctamente.");
+        } catch (error) {
+          console.log("Error al reiniciar visitas", error);
+          alert("Hubo un error al intentar reiniciar.");
+        }
+      }
     }
 
     // --- CARGAR Y AUTO-MIGRAR CATEGORÍAS ---
