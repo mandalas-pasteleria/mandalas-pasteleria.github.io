@@ -34,24 +34,13 @@
     .fade-in-up.visible { opacity: 1; transform: translateY(0); }
     .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    body {
-      position: relative;
-    }
-    body::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      /* Esto inyecta una textura sutil sin usar imágenes externas */
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      opacity: 0.04; /* Ajustá esto (0.02 a 0.08) para hacerlo más o menos visible */
-      pointer-events: none;
-      z-index: 50;
-    }
   </style>
 </head>
 
 <body class="bg-gradient-to-b from-fondoOscuro via-fondoOscuro to-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
+<!-- Luces de fondo (Efecto Iluminación Cobre) -->
+  <div class="fixed top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-cobre opacity-[0.04] blur-[120px] rounded-full pointer-events-none z-0"></div>
+  <div class="fixed bottom-[-10%] right-[-5%] w-[30rem] h-[30rem] bg-cobre opacity-[0.05] blur-[100px] rounded-full pointer-events-none z-0"></div>
 
   <!-- BARRA DE NAVEGACIÓN SUPERIOR ORIGINAL -->
   <nav class="bg-fondoOscuro py-4 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center sticky top-0 z-40 border-b border-gray-800 shadow-xl">
