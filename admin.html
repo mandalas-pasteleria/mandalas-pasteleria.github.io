@@ -40,7 +40,6 @@
     </div>
     
     <div class="flex gap-3">
-      <!-- BOTÓN DE RESPALDO -->
       <button onclick="descargarRespaldo()" class="bg-gray-800 hover:bg-gray-700 text-white text-[10px] sm:text-xs font-bold py-2 px-3 sm:px-4 rounded transition shadow flex items-center gap-2 uppercase tracking-wider border border-gray-600">
         <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Respaldo</span>
       </button>
@@ -56,7 +55,6 @@
 
   <main class="py-10 px-6 md:px-12 max-w-7xl mx-auto w-full">
     
-    <!-- TARJETA DE ESTADÍSTICAS CON BOTÓN RESET -->
     <div class="flex justify-center mb-10">
       <div class="bg-fondoTarjeta border border-gray-700 px-8 py-5 rounded-md shadow-xl flex items-center gap-5">
         <div class="bg-cobre/20 text-cobre p-4 rounded-full flex items-center justify-center">
@@ -74,7 +72,6 @@
       </div>
     </div>
 
-    <!-- Menú y Grilla -->
     <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-12"></div>
     <h2 id="titulo-categoria" class="font-titulo text-3xl text-textoClaro capitalize mb-6 text-center">Todo</h2>
     <div id="grilla-admin" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
@@ -82,7 +79,7 @@
 
   <!-- Modal Nuevo Producto -->
   <div id="modal-form" class="fixed inset-0 bg-black bg-opacity-90 hidden flex items-center justify-center p-4 z-50 transition-opacity overflow-y-auto py-10">
-    <div class="bg-fondoTarjeta rounded-md max-w-md w-full p-8 border border-gray-700 shadow-2xl relative">
+    <div class="bg-fondoTarjeta rounded-md max-w-lg w-full p-8 border border-gray-700 shadow-2xl relative mt-20 mb-10">
       <button onclick="cerrarModal()" class="absolute top-4 right-4 text-textoGris hover:text-textoClaro transition">
         <i class="fa-solid fa-xmark text-xl"></i>
       </button>
@@ -106,13 +103,20 @@
           <textarea id="descripcion" required class="w-full bg-fondoOscuro border border-gray-700 text-textoClaro p-2 rounded focus:border-cobre outline-none transition" rows="3"></textarea>
         </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-textoGris uppercase tracking-wider mb-1">Foto (Desde tu celu o PC)</label>
+        <div class="bg-fondoOscuro p-3 rounded border border-gray-700">
+          <label class="block text-xs font-semibold text-cobre uppercase tracking-wider mb-1"><i class="fa-solid fa-image"></i> Foto de Portada (Obligatoria)</label>
           <input type="file" id="imagen-file" accept="image/*" class="w-full text-sm text-textoGris file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-cobre file:text-white hover:file:bg-cobreOscuro transition">
-          <p id="foto-actual-msg" class="text-xs text-cobre mt-2 hidden">Ya tiene una foto. Subí otra solo si querés cambiarla.</p>
+          <p id="foto-actual-msg" class="text-xs text-textoGris mt-2 hidden">Ya tiene portada. Subí otra solo si querés cambiarla.</p>
         </div>
 
-        <button type="submit" id="btn-guardar" class="bg-cobre hover:bg-cobreOscuro text-white font-bold py-3 rounded mt-4 transition uppercase tracking-widest text-sm flex justify-center items-center gap-2">
+        <div class="bg-fondoOscuro p-3 rounded border border-gray-700">
+          <label class="block text-xs font-semibold text-cobre uppercase tracking-wider mb-1"><i class="fa-solid fa-images"></i> Galería (Opcional - Múltiples fotos)</label>
+          <p class="text-[10px] text-textoGris mb-2">Seleccioná varias fotos manteniendo presionada la tecla Ctrl (PC) o seleccionando varias (Celu).</p>
+          <input type="file" id="galeria-files" accept="image/*" multiple class="w-full text-sm text-textoGris file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gray-700 file:text-white hover:file:bg-gray-600 transition">
+          <div id="galeria-actual-container" class="flex gap-3 mt-3 flex-wrap"></div>
+        </div>
+
+        <button type="submit" id="btn-guardar" class="bg-cobre hover:bg-cobreOscuro text-white font-bold py-3 rounded mt-2 transition uppercase tracking-widest text-sm flex justify-center items-center gap-2">
           Guardar Producto
         </button>
       </form>
@@ -133,9 +137,7 @@
       </form>
 
       <div class="max-h-64 overflow-y-auto pr-2">
-        <ul id="lista-gestion-categorias" class="flex flex-col gap-3">
-          <!-- Lista inyectada por JS -->
-        </ul>
+        <ul id="lista-gestion-categorias" class="flex flex-col gap-3"></ul>
       </div>
     </div>
   </div>
@@ -161,8 +163,8 @@
     let productos = [];
     let categorias = [];
     let urlImagenActual = ""; 
+    let galeriaActual = []; // Para almacenar las fotos extra del producto que se está editando
 
-    // --- CARGAR VISITAS ---
     async function cargarVisitas() {
       try {
         const docSnap = await getDoc(doc(db, "estadisticas", "visitas"));
@@ -171,7 +173,6 @@
       } catch (error) { console.log("Error al cargar visitas", error); }
     }
 
-    // --- REINICIAR VISITAS A CERO ---
     window.reiniciarVisitas = async function() {
       if(confirm("¿Estás seguro que querés volver el contador de visitas a CERO? Esta acción no se puede deshacer.")) {
         try {
@@ -179,17 +180,14 @@
           document.getElementById("contador-visitas").innerText = "0";
           alert("El contador se reinició correctamente.");
         } catch (error) {
-          console.log("Error al reiniciar visitas", error);
           alert("Hubo un error al intentar reiniciar.");
         }
       }
     }
 
-    // --- CARGAR Y AUTO-MIGRAR CATEGORÍAS ---
     async function inicializarCategorias() {
       const snap = await getDocs(collection(db, "categorias"));
       if (snap.empty) {
-        // Migración automática para no perder nada viejo
         const catsAntiguas = ["tortas", "budines", "materas", "postres", "tartas", "navidad", "pascuas", "mesas dulces"];
         for (let cat of catsAntiguas) {
           await addDoc(collection(db, "categorias"), { nombre: cat, oculta: false });
@@ -202,10 +200,7 @@
       const snap = await getDocs(collection(db, "categorias"));
       categorias = [];
       snap.forEach(doc => { categorias.push({ id: doc.id, ...doc.data() }); });
-      
-      // Ordenar alfabéticamente
       categorias.sort((a, b) => a.nombre.localeCompare(b.nombre)); 
-      
       renderizarUI();
     }
 
@@ -219,12 +214,10 @@
       listaGestion.innerHTML = "";
       
       categorias.forEach(cat => {
-        // En el admin mostramos el ojito tachado si está oculta
         const iconoOculto = cat.oculta ? ' <i class="fa-solid fa-eye-slash text-gray-500"></i>' : '';
         menu.innerHTML += `<button onclick="filtrarAdmin('${cat.nombre}')" class="menu-btn text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase flex items-center gap-1">${cat.nombre}${iconoOculto}</button>`;
         selectCat.innerHTML += `<option value="${cat.nombre}">${cat.nombre}</option>`;
 
-        // Modal de gestión de categorías
         const colorBtnOjo = cat.oculta ? 'text-gray-600 hover:text-gray-400' : 'text-green-500 hover:text-green-400';
         const iconOjo = cat.oculta ? 'fa-eye-slash' : 'fa-eye';
         listaGestion.innerHTML += `
@@ -239,7 +232,6 @@
       });
     }
 
-    // Funciones del Gestor de Categorías
     window.abrirModalCategorias = function() { document.getElementById("modal-categorias").classList.remove("hidden"); }
     window.cerrarModalCategorias = function() { document.getElementById("modal-categorias").classList.add("hidden"); }
     
@@ -263,7 +255,6 @@
       }
     }
 
-    // --- CARGAR Y RENDERIZAR PRODUCTOS ---
     async function cargarProductos() {
       document.getElementById("grilla-admin").innerHTML = `<p class="text-center w-full col-span-full py-10 text-textoGris">Cargando...</p>`;
       const querySnapshot = await getDocs(collection(db, "productos"));
@@ -288,9 +279,16 @@
       grilla.innerHTML = "";
 
       filtrados.forEach(prod => {
+        // Marcador visual si el producto tiene galería
+        const tieneGaleria = prod.galeria && prod.galeria.length > 0;
+        const badgeGaleria = tieneGaleria ? `<div class="absolute top-2 right-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded-full"><i class="fa-solid fa-images"></i> +${prod.galeria.length}</div>` : '';
+
         grilla.innerHTML += `
           <div class="bg-fondoTarjeta p-4 rounded border border-gray-700 flex flex-col">
-            <div class="w-full aspect-[3/4] overflow-hidden mb-3 bg-fondoOscuro rounded"><img src="${prod.imagen}" class="w-full h-full object-cover opacity-90"></div>
+            <div class="w-full aspect-[3/4] overflow-hidden mb-3 bg-fondoOscuro rounded relative">
+              <img src="${prod.imagen}" class="w-full h-full object-cover opacity-90">
+              ${badgeGaleria}
+            </div>
             <p class="text-cobre text-[10px] uppercase font-bold tracking-widest">${prod.categoria}</p>
             <h3 class="font-titulo text-lg text-textoClaro mb-2 leading-tight">${prod.nombre}</h3>
             <div class="mt-auto flex gap-2 border-t border-gray-700 pt-3">
@@ -302,24 +300,18 @@
       });
     }
 
-    // --- FUNCIÓN PARA DESCARGAR COPIA DE SEGURIDAD ---
     window.descargarRespaldo = function() {
-      if (productos.length === 0) {
-        alert("No hay productos para respaldar todavía.");
-        return;
-      }
+      if (productos.length === 0) return alert("No hay productos para respaldar todavía.");
       const datos = JSON.stringify(productos, null, 2);
       const archivo = new Blob([datos], { type: 'application/json' });
       const url = URL.createObjectURL(archivo);
       const enlace = document.createElement('a');
       enlace.href = url;
-      const fecha = new Date().toLocaleDateString().replaceAll('/', '-');
-      enlace.download = `mandalas_respaldo_${fecha}.json`;
+      enlace.download = `mandalas_respaldo_${new Date().toLocaleDateString().replaceAll('/', '-')}.json`;
       enlace.click(); 
       URL.revokeObjectURL(url);
     }
 
-    // Funciones de Productos
     const comprimirImagen = (archivo) => {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -350,6 +342,8 @@
       document.getElementById('foto-actual-msg').classList.add('hidden');
       document.getElementById("modal-form").classList.remove("hidden");
       document.getElementById('imagen-file').required = true;
+      galeriaActual = [];
+      renderizarGaleriaActual();
     }
 
     window.editarProducto = function(id) {
@@ -360,10 +354,34 @@
       document.getElementById('descripcion').value = prod.descripcion;
       urlImagenActual = prod.imagen; 
       
+      galeriaActual = prod.galeria || []; // Cargar fotos extra si existen
+      renderizarGaleriaActual();
+      
       document.getElementById('modal-titulo').innerText = "Editar Producto";
       document.getElementById('foto-actual-msg').classList.remove('hidden');
       document.getElementById('imagen-file').required = false; 
       document.getElementById("modal-form").classList.remove("hidden");
+    }
+
+    // Funciones para gestionar visualmente las fotos de la galería actual en el form
+    window.renderizarGaleriaActual = function() {
+      const container = document.getElementById('galeria-actual-container');
+      container.innerHTML = "";
+      if (galeriaActual.length > 0) {
+        galeriaActual.forEach((url, index) => {
+          container.innerHTML += `
+            <div class="relative w-16 h-16 rounded overflow-hidden border border-gray-600 group">
+              <img src="${url}" class="w-full h-full object-cover">
+              <button type="button" onclick="eliminarFotoGaleria(${index})" class="absolute inset-0 bg-black/60 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-trash text-xs"></i></button>
+            </div>
+          `;
+        });
+      }
+    }
+
+    window.eliminarFotoGaleria = function(index) {
+      galeriaActual.splice(index, 1);
+      renderizarGaleriaActual();
     }
 
     window.cerrarModal = function() { document.getElementById("modal-form").classList.add("hidden"); }
@@ -384,27 +402,44 @@
       try {
         const id = document.getElementById('prod-id').value;
         const archivoFoto = document.getElementById('imagen-file').files[0];
+        const archivosGaleria = document.getElementById('galeria-files').files;
         let urlFinal = urlImagenActual; 
 
+        // 1. Subir Foto Portada
         if (archivoFoto) {
-          boton.innerHTML = '<i class="fa-solid fa-compress fa-fade"></i> Achicando foto...';
+          boton.innerHTML = '<i class="fa-solid fa-compress fa-fade"></i> Procesando portada...';
           const fotoComprimida = await comprimirImagen(archivoFoto);
-
-          boton.innerHTML = '<i class="fa-solid fa-cloud-arrow-up fa-fade"></i> Subiendo...';
           const formData = new FormData();
           formData.append("image", fotoComprimida);
-
           const respuestaImgBB = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
           const datosImgBB = await respuestaImgBB.json();
           if (datosImgBB.success) { urlFinal = datosImgBB.data.url; } 
-          else { throw new Error("No se pudo subir la foto"); }
+          else { throw new Error("No se pudo subir la foto de portada"); }
         }
+
+        // 2. Subir Fotos de Galería
+        let nuevasUrlsGaleria = [];
+        if (archivosGaleria.length > 0) {
+          for (let i = 0; i < archivosGaleria.length; i++) {
+            boton.innerHTML = `<i class="fa-solid fa-cloud-arrow-up fa-fade"></i> Subiendo galería (${i+1}/${archivosGaleria.length})...`;
+            const fotoCom = await comprimirImagen(archivosGaleria[i]);
+            const formGal = new FormData();
+            formGal.append("image", fotoCom);
+            const respGal = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formGal });
+            const dataGal = await respGal.json();
+            if (dataGal.success) { nuevasUrlsGaleria.push(dataGal.data.url); }
+          }
+        }
+        
+        // Juntamos las que ya estaban (y no borraste) con las nuevas
+        const galeriaFinal = [...galeriaActual, ...nuevasUrlsGaleria];
 
         const datosProducto = {
           nombre: document.getElementById('nombre').value,
           categoria: document.getElementById('categoria-select').value,
           descripcion: document.getElementById('descripcion').value,
-          imagen: urlFinal
+          imagen: urlFinal,
+          galeria: galeriaFinal
         };
 
         boton.innerHTML = '<i class="fa-solid fa-database"></i> Guardando...';
@@ -421,7 +456,6 @@
       }
     });
 
-    // Iniciar el sistema
     cargarVisitas();
     inicializarCategorias().then(() => cargarProductos());
   </script>
