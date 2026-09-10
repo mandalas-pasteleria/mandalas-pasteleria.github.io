@@ -38,11 +38,9 @@
 </head>
 
 <body class="bg-gradient-to-b from-fondoOscuro via-fondoOscuro to-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
-<!-- Luces de fondo (Efecto Iluminación Cobre) -->
   <div class="fixed top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-cobre opacity-[0.04] blur-[120px] rounded-full pointer-events-none z-0"></div>
   <div class="fixed bottom-[-10%] right-[-5%] w-[30rem] h-[30rem] bg-cobre opacity-[0.05] blur-[100px] rounded-full pointer-events-none z-0"></div>
 
-  <!-- BARRA DE NAVEGACIÓN SUPERIOR ORIGINAL -->
   <nav class="bg-fondoOscuro py-4 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center sticky top-0 z-40 border-b border-gray-800 shadow-xl">
     <div class="font-titulo text-2xl font-bold tracking-wider text-textoClaro mb-4 md:mb-0 cursor-pointer" onclick="window.scrollTo(0,0)">
       Mandalas Cosas Ricas
@@ -57,8 +55,6 @@
     </div>
   </nav>
 
-  <!-- SECCIÓN HERO ORIGINAL -->
-  <!-- SECCIÓN HERO CON EFECTO VIÑETA -->
   <header class="flex flex-col md:flex-row min-h-[60vh] md:min-h-[70vh]">
     <div class="md:w-1/2 flex flex-col justify-center p-10 md:p-20 order-2 md:order-1 relative z-10">
       <h1 class="font-titulo text-5xl md:text-7xl font-bold leading-tight mb-6">
@@ -70,20 +66,13 @@
       </p>
     </div>
     
-    <!-- CONTENEDOR DE LA IMAGEN (Versión Original Difuminada) -->
     <div class="md:w-1/2 order-1 md:order-2 h-64 md:h-auto relative flex items-center justify-center overflow-hidden">
-      
-      <!-- Degradado de sombra a la izquierda para que se fusione con el texto -->
       <div class="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-fondoOscuro to-transparent z-10"></div>
-      
-      <!-- La imagen con el efecto Viñeta original -->
       <img src="97569.png" alt="Mandala Portada" class="w-full h-full object-cover opacity-90 transition duration-700" 
            style="-webkit-mask-image: radial-gradient(circle at center, black 35%, transparent 85%); mask-image: radial-gradient(circle at center, black 35%, transparent 85%);">
-           
     </div>
   </header>
 
-  <!-- SECCIÓN DE PRODUCTOS -->
   <main id="seccion-productos" class="py-20 px-6 md:px-12">
     
     <div class="text-center mb-10">
@@ -92,19 +81,14 @@
       </h2>
       <div class="w-24 h-1 bg-cobre mx-auto mb-10"></div>
 
-      <!-- BUSCADOR -->
       <div class="max-w-md mx-auto mb-12 relative">
         <input type="text" id="buscador" onkeyup="buscarProducto()" placeholder="Buscar tortas, budines, postres..." class="w-full bg-fondoTarjeta text-textoClaro border border-gray-700 rounded-sm py-3 px-4 pl-12 focus:outline-none focus:border-cobre transition shadow-lg font-light text-sm placeholder-gray-500">
         <i class="fa-solid fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-textoGris"></i>
       </div>
 
-      <!-- Menú de Categorías -->
-      <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 border-b border-gray-800 pb-4">
-        <!-- Se inyecta por JS -->
-      </div>
+      <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 border-b border-gray-800 pb-4"></div>
     </div>
 
-    <!-- Grilla de Productos -->
     <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
       <p class="text-center w-full col-span-full py-10 text-textoGris"><i class="fa-solid fa-spinner fa-spin text-cobre text-2xl mb-2"></i><br>Cargando delicias...</p>
     </div>
@@ -116,9 +100,7 @@
   </footer>
 
   <!-- Modal -->
-  <div id="modal-producto" class="fixed inset-0 bg-black bg-opacity-95 hidden flex-col items-center justify-center p-4 z-50 transition-opacity backdrop-blur-sm">
-    <!-- Se llena desde JS -->
-  </div>
+  <div id="modal-producto" class="fixed inset-0 bg-black bg-opacity-95 hidden flex-col items-center justify-center p-4 z-50 transition-opacity backdrop-blur-sm"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -138,8 +120,11 @@
 
     let productos = [];
     let categorias = [];
+    
+    // Variables globales para el carrusel del modal
+    window.fotosModal = [];
+    window.indiceModalActual = 0;
 
-    // Contador de visitas
     async function registrarVisita() {
       if (!sessionStorage.getItem("visitaContada")) {
         try {
@@ -178,7 +163,6 @@
       });
     }
 
-    // NUEVO: Función para obtener SOLO los productos de las categorías que NO están ocultas
     function obtenerProductosVisibles() {
       const nombresCategoriasVisibles = categorias.filter(c => !c.oculta).map(c => c.nombre.toLowerCase());
       return productos.filter(p => nombresCategoriasVisibles.includes(p.categoria.toLowerCase()));
@@ -197,7 +181,6 @@
         document.getElementById("titulo-categoria").innerText = "Resultados de búsqueda";
       }
 
-      // Buscar solo entre los productos visibles (evita mostrar ocultos en los resultados)
       const productosPermitidos = obtenerProductosVisibles();
 
       const filtrados = productosPermitidos.filter(p => 
@@ -222,7 +205,6 @@
 
       document.getElementById("titulo-categoria").innerText = catNombre === "todos" ? "Todas nuestras delicias" : catNombre;
       
-      // Filtramos usando solo los productos que están en categorías visibles
       const productosPermitidos = obtenerProductosVisibles();
       const filtrados = catNombre === "todos" 
         ? productosPermitidos 
@@ -242,11 +224,15 @@
 
       items.forEach(prod => {
         const tarjeta = document.createElement('div');
-        tarjeta.className = "fade-in-up bg-fondoTarjeta p-5 rounded-sm shadow-xl hover:-translate-y-2 transition transform duration-300 cursor-pointer group flex flex-col items-center border border-gray-800";
+        tarjeta.className = "fade-in-up bg-fondoTarjeta p-5 rounded-sm shadow-xl hover:-translate-y-2 transition transform duration-300 cursor-pointer group flex flex-col items-center border border-gray-800 relative";
         tarjeta.onclick = () => window.abrirModal(prod.id);
         
+        // Iconito para avisar que tiene más fotos
+        const iconoGaleria = (prod.galeria && prod.galeria.length > 0) ? `<div class="absolute top-7 right-7 bg-black/60 text-white rounded-full p-2 text-xs backdrop-blur-sm z-10"><i class="fa-solid fa-images"></i></div>` : '';
+
         tarjeta.innerHTML = `
-          <div class="w-full aspect-[3/4] overflow-hidden rounded-sm mb-6 bg-fondoOscuro flex items-center justify-center">
+          ${iconoGaleria}
+          <div class="w-full aspect-[3/4] overflow-hidden rounded-sm mb-6 bg-fondoOscuro flex items-center justify-center relative">
             <img src="${prod.imagen}" loading="lazy" alt="${prod.nombre}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
           </div>
           <h3 class="font-titulo font-bold text-center text-textoClaro text-xl mb-2 leading-tight group-hover:text-cobre transition">${prod.nombre}</h3>
@@ -259,22 +245,52 @@
       });
     }
 
+    // Funciones del Carrusel
+    window.cambiarFotoModal = function(direccion, evento) {
+      if(evento) evento.stopPropagation(); // Evita que el click cierre el modal
+      window.indiceModalActual += direccion;
+      
+      if (window.indiceModalActual < 0) window.indiceModalActual = window.fotosModal.length - 1;
+      if (window.indiceModalActual >= window.fotosModal.length) window.indiceModalActual = 0;
+      
+      document.getElementById('imagen-modal-principal').src = window.fotosModal[window.indiceModalActual];
+      document.getElementById('indicador-fotos').innerText = (window.indiceModalActual + 1) + " / " + window.fotosModal.length;
+    }
+
     window.abrirModal = function(id) {
       const prod = productos.find(p => p.id === id);
       if (!prod) return;
+
+      // Juntamos la foto principal y la galería (si existe)
+      window.fotosModal = [prod.imagen, ...(prod.galeria || [])];
+      window.indiceModalActual = 0;
+
+      let controlesCarrusel = '';
+      if (window.fotosModal.length > 1) {
+        controlesCarrusel = `
+          <button onclick="cambiarFotoModal(-1, event)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black text-white rounded-full w-10 h-10 flex items-center justify-center transition border border-gray-600 z-20"><i class="fa-solid fa-chevron-left"></i></button>
+          <button onclick="cambiarFotoModal(1, event)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black text-white rounded-full w-10 h-10 flex items-center justify-center transition border border-gray-600 z-20"><i class="fa-solid fa-chevron-right"></i></button>
+          <div id="indicador-fotos" class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 px-3 py-1 rounded-full text-white text-[10px] tracking-widest z-20 border border-gray-600">
+            1 / ${window.fotosModal.length}
+          </div>
+        `;
+      }
 
       const modal = document.getElementById("modal-producto");
       modal.classList.remove("hidden");
       modal.classList.add("flex");
 
       modal.innerHTML = `
-        <div class="bg-fondoTarjeta w-full max-w-md mx-auto rounded-md overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh] animate-fade-in-up border border-gray-700">
-          <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/90 text-white rounded-full w-8 h-8 flex items-center justify-center z-10 transition border border-gray-600">
+        <div class="bg-fondoTarjeta w-full max-w-md mx-auto rounded-md overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh] animate-fade-in-up border border-gray-700" onclick="event.stopPropagation()">
+          <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/90 text-white rounded-full w-8 h-8 flex items-center justify-center z-30 transition border border-gray-600">
             <i class="fa-solid fa-xmark"></i>
           </button>
-          <div class="w-full aspect-[3/4] max-h-[45vh] overflow-hidden bg-fondoOscuro relative">
-            <img src="${prod.imagen}" class="w-full h-full object-cover object-center" alt="${prod.nombre}">
+          
+          <div class="w-full aspect-[3/4] max-h-[45vh] overflow-hidden bg-fondoOscuro relative group">
+            <img id="imagen-modal-principal" src="${window.fotosModal[0]}" class="w-full h-full object-cover object-center transition-opacity duration-300">
+            ${controlesCarrusel}
           </div>
+          
           <div class="p-6 flex flex-col items-center text-center overflow-y-auto">
             <p class="text-cobre text-[10px] uppercase font-bold tracking-widest mb-1">${prod.categoria}</p>
             <h3 class="font-titulo text-3xl text-textoClaro mb-3">${prod.nombre}</h3>
