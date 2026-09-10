@@ -157,7 +157,6 @@
       menu.innerHTML = `<button onclick="filtrar('todos')" class="menu-btn menu-activo text-textoGris hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
       
       const categoriasVisibles = categorias.filter(cat => !cat.oculta);
-      
       categoriasVisibles.forEach(cat => {
         menu.innerHTML += `<button onclick="filtrar('${cat.nombre}')" class="menu-btn text-textoGris hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">${cat.nombre}</button>`;
       });
@@ -227,8 +226,9 @@
         tarjeta.className = "fade-in-up bg-fondoTarjeta p-5 rounded-sm shadow-xl hover:-translate-y-2 transition transform duration-300 cursor-pointer group flex flex-col items-center border border-gray-800 relative";
         tarjeta.onclick = () => window.abrirModal(prod.id);
         
-        // Iconito para avisar que tiene más fotos
-        const iconoGaleria = (prod.galeria && prod.galeria.length > 0) ? `<div class="absolute top-7 right-7 bg-black/60 text-white rounded-full p-2 text-xs backdrop-blur-sm z-10"><i class="fa-solid fa-images"></i></div>` : '';
+        // Saneamiento rápido para saber si realmente hay fotos en la galería que no sean la portada repetida
+        const galeriaReal = (prod.galeria || []).filter(url => url !== prod.imagen);
+        const iconoGaleria = (galeriaReal.length > 0) ? `<div class="absolute top-7 right-7 bg-black/60 text-white rounded-full p-2 text-xs backdrop-blur-sm z-10 shadow-lg"><i class="fa-solid fa-images"></i></div>` : '';
 
         tarjeta.innerHTML = `
           ${iconoGaleria}
@@ -253,24 +253,35 @@
       if (window.indiceModalActual < 0) window.indiceModalActual = window.fotosModal.length - 1;
       if (window.indiceModalActual >= window.fotosModal.length) window.indiceModalActual = 0;
       
-      document.getElementById('imagen-modal-principal').src = window.fotosModal[window.indiceModalActual];
-      document.getElementById('indicador-fotos').innerText = (window.indiceModalActual + 1) + " / " + window.fotosModal.length;
+      const imgContenedor = document.getElementById('imagen-modal-principal');
+      
+      // Efecto suave de transición al cambiar de foto
+      imgContenedor.style.opacity = '0.3';
+      
+      setTimeout(() => {
+        imgContenedor.src = window.fotosModal[window.indiceModalActual];
+        imgContenedor.style.opacity = '1';
+        document.getElementById('indicador-fotos').innerText = (window.indiceModalActual + 1) + " / " + window.fotosModal.length;
+      }, 150); // espera 150ms a que se "apague" antes de mostrar la nueva
     }
 
     window.abrirModal = function(id) {
       const prod = productos.find(p => p.id === id);
       if (!prod) return;
 
-      // Juntamos la foto principal y la galería (si existe)
-      window.fotosModal = [prod.imagen, ...(prod.galeria || [])];
+      // Unimos portada y galería, y ELIMINAMOS URLS DUPLICADAS automáticamente con Set()
+      const todasLasFotos = [prod.imagen, ...(prod.galeria || [])];
+      window.fotosModal = [...new Set(todasLasFotos)]; // Magia anti-clones
+      
       window.indiceModalActual = 0;
 
       let controlesCarrusel = '';
+      // Si después de limpiar los duplicados queda más de 1 foto, mostramos los controles
       if (window.fotosModal.length > 1) {
         controlesCarrusel = `
-          <button onclick="cambiarFotoModal(-1, event)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black text-white rounded-full w-10 h-10 flex items-center justify-center transition border border-gray-600 z-20"><i class="fa-solid fa-chevron-left"></i></button>
-          <button onclick="cambiarFotoModal(1, event)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black text-white rounded-full w-10 h-10 flex items-center justify-center transition border border-gray-600 z-20"><i class="fa-solid fa-chevron-right"></i></button>
-          <div id="indicador-fotos" class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 px-3 py-1 rounded-full text-white text-[10px] tracking-widest z-20 border border-gray-600">
+          <button onclick="cambiarFotoModal(-1, event)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black text-white rounded-full w-10 h-10 flex items-center justify-center transition shadow-lg border border-gray-600 z-20"><i class="fa-solid fa-chevron-left"></i></button>
+          <button onclick="cambiarFotoModal(1, event)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black text-white rounded-full w-10 h-10 flex items-center justify-center transition shadow-lg border border-gray-600 z-20"><i class="fa-solid fa-chevron-right"></i></button>
+          <div id="indicador-fotos" class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/80 px-3 py-1 rounded-full text-white text-[10px] tracking-widest z-20 border border-gray-600 shadow-md">
             1 / ${window.fotosModal.length}
           </div>
         `;
@@ -282,7 +293,7 @@
 
       modal.innerHTML = `
         <div class="bg-fondoTarjeta w-full max-w-md mx-auto rounded-md overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh] animate-fade-in-up border border-gray-700" onclick="event.stopPropagation()">
-          <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/90 text-white rounded-full w-8 h-8 flex items-center justify-center z-30 transition border border-gray-600">
+          <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/90 text-white rounded-full w-8 h-8 flex items-center justify-center z-30 transition border border-gray-600 shadow-lg">
             <i class="fa-solid fa-xmark"></i>
           </button>
           
@@ -295,7 +306,7 @@
             <p class="text-cobre text-[10px] uppercase font-bold tracking-widest mb-1">${prod.categoria}</p>
             <h3 class="font-titulo text-3xl text-textoClaro mb-3">${prod.nombre}</h3>
             <p class="text-textoGris text-sm mb-6 leading-relaxed">${prod.descripcion}</p>
-            <a href="https://wa.me/543755641575?text=Hola!%20Me%20gustar%C3%ADa%20consultar%20por%20el/la%20${encodeURIComponent(prod.nombre)}" target="_blank" class="w-full bg-cobre hover:bg-cobreOscuro text-white font-bold py-3 rounded transition uppercase tracking-widest text-sm flex justify-center items-center gap-2 mt-auto">
+            <a href="https://wa.me/543755641575?text=Hola!%20Me%20gustar%C3%ADa%20consultar%20por%20el/la%20${encodeURIComponent(prod.nombre)}" target="_blank" class="w-full bg-cobre hover:bg-cobreOscuro text-white font-bold py-3 rounded transition uppercase tracking-widest text-sm flex justify-center items-center gap-2 mt-auto shadow-lg">
               Consultar <i class="fa-brands fa-whatsapp text-lg"></i>
             </a>
           </div>
