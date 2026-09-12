@@ -49,7 +49,7 @@
     </div>
   </div>
 
-  <!-- PANTALLA PRINCIPAL (Oculta hasta iniciar sesión) -->
+  <!-- PANTALLA PRINCIPAL -->
   <div id="admin-screen" class="hidden flex-col min-h-screen">
     
     <nav class="bg-fondoOscuro py-4 px-6 md:px-12 flex flex-wrap justify-between items-center border-b border-gray-800 shadow-xl sticky top-0 z-40 gap-4">
@@ -58,6 +58,11 @@
       </div>
       
       <div class="flex flex-wrap gap-2 md:gap-3">
+        <!-- BOTÓN MIGRAR FOTOS -->
+        <button onclick="abrirModalMigrador()" class="bg-emerald-900 hover:bg-emerald-800 text-white text-[10px] sm:text-xs font-bold py-2 px-3 rounded transition shadow flex items-center gap-2 uppercase tracking-wider border border-emerald-700">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> <span class="hidden sm:inline">Migrar Fotos</span>
+        </button>
+
         <button onclick="abrirModalAnuncio()" class="bg-indigo-900 hover:bg-indigo-800 text-white text-[10px] sm:text-xs font-bold py-2 px-3 rounded transition shadow flex items-center gap-2 uppercase tracking-wider border border-indigo-700">
           <i class="fa-solid fa-bullhorn"></i> <span class="hidden sm:inline">Anuncio</span>
         </button>
@@ -200,12 +205,30 @@
     </div>
   </div>
 
-  <script type="module">
+  <!-- MODAL DE MIGRACIÓN WEBP -->
+  <div id="modal-migrador" class="fixed inset-0 bg-black bg-opacity-95 hidden flex items-center justify-center p-4 z-[60] transition-opacity overflow-y-auto">
+    <div class="bg-fondoTarjeta rounded-md max-w-lg w-full p-8 border border-emerald-900 shadow-2xl relative my-auto">
+      <button onclick="cerrarModalMigrador()" class="absolute top-4 right-4 text-textoGris hover:text-textoClaro transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+      
+      <h3 class="font-titulo text-2xl text-emerald-500 mb-2"><i class="fa-solid fa-wand-magic-sparkles"></i> Optimización WebP</h3>
+      <p class="text-sm text-textoGris mb-6 border-b border-gray-700 pb-4">Esta herramienta detecta todos los productos de tu catálogo, descarga sus fotos, las encuadra (3:4), las convierte al formato de máxima velocidad (WebP) conservando la calidad, y las resube sin mezclar productos.</p>
+
+      <button onclick="iniciarMigracionMobile()" id="btn-migrar" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded shadow-md transition uppercase tracking-widest text-sm flex items-center justify-center gap-2">
+        <i class="fa-solid fa-play"></i> Iniciar Proceso
+      </button>
+
+      <!-- Consola visual del Migrador -->
+      <div id="consola-migrador" class="mt-6 bg-black border border-gray-700 text-emerald-400 font-mono text-xs p-4 rounded h-48 overflow-y-auto hidden flex-col gap-1.5 break-words">
+        <!-- Textos de progreso aquí -->
+      </div>
+    </div>
+  </div>
+    <script type="module">
+    // USAMOS DIRECTAMENTE TU KEY DE IMGBB
     const IMGBB_API_KEY = "ce0938ece2bee753e1fdb8725e95e854";
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    // IMPORTACIÓN NUEVA: SEGURIDAD
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -219,7 +242,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app); // INICIALIZAR SEGURIDAD
+    const auth = getAuth(app); 
 
     let productos = [];
     let categorias = [];
@@ -227,16 +250,14 @@
     let galeriaActual = []; 
     let urlAnuncioActual = "";
 
-    // --- SISTEMA DE LOGIN (SEGURIDAD) ---
+    // --- SISTEMA DE LOGIN ---
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Logueado: Oculta login, muestra admin y carga datos
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('admin-screen').classList.remove('hidden');
         document.getElementById('admin-screen').classList.add('flex');
         iniciarAppAdmin();
       } else {
-        // Deslogueado: Muestra login, oculta admin
         document.getElementById('login-screen').classList.remove('hidden');
         document.getElementById('admin-screen').classList.add('hidden');
         document.getElementById('admin-screen').classList.remove('flex');
@@ -262,13 +283,11 @@
       signOut(auth).then(() => { window.location.reload(); });
     }
 
-    // --- FUNCIONES DEL ADMIN (Solo corren si está logueado) ---
     function iniciarAppAdmin() {
       cargarVisitas();
       inicializarCategorias().then(() => cargarProductos());
     }
 
-    // (El resto de las funciones de visitas, categorías y productos siguen igual)
     async function cargarVisitas() {
       try {
         const docSnap = await getDoc(doc(db, "estadisticas", "visitas"));
@@ -501,10 +520,9 @@
       } catch (error) { alert("Error: " + error.message); } finally { boton.innerHTML = originalText; boton.disabled = false; }
     });
 
-    // --- LOGICA DE ANUNCIOS ---
+    // --- LÓGICA DE ANUNCIOS ---
     window.abrirModalAnuncio = async function() {
       document.getElementById("modal-anuncio").classList.remove("hidden");
-      // Cargar datos actuales
       try {
         const docSnap = await getDoc(doc(db, "configuracion", "anuncio"));
         if (docSnap.exists()) {
@@ -558,6 +576,174 @@
         alert("Anuncio actualizado con éxito.");
       } catch (error) { alert("Error al guardar anuncio"); } finally { boton.innerHTML = originalText; boton.disabled = false; }
     });
+
+    // --- HERRAMIENTA DE MIGRACIÓN WEBP AUTOMÁTICA ---
+    window.abrirModalMigrador = function() {
+      document.getElementById('modal-migrador').classList.remove('hidden');
+    }
+
+    window.cerrarModalMigrador = function() {
+      document.getElementById('modal-migrador').classList.add('hidden');
+    }
+
+    function logMigrador(texto) {
+      const consola = document.getElementById('consola-migrador');
+      const span = document.createElement('span');
+      span.innerText = `> ${texto}`;
+      consola.appendChild(span);
+      consola.scrollTop = consola.scrollHeight;
+    }
+
+    async function procesarYSubirFoto(urlOriginal) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        // Usamos allorigins para saltarnos el bloqueo CORS del navegador (truco vital para ImgBB)
+        img.src = `https://api.allorigins.win/raw?url=${encodeURIComponent(urlOriginal)}`;
+        
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          // Resolución y Relación de Aspecto estricta (3:4)
+          const anchoObjetivo = 600;
+          const altoObjetivo = 800;
+          canvas.width = anchoObjetivo;
+          canvas.height = altoObjetivo;
+
+          const ratioObjetivo = anchoObjetivo / altoObjetivo;
+          const ratioImagen = img.width / img.height;
+          let sx, sy, sWidth, sHeight;
+
+          // Lógica cover (Recorta lo que sobra para no deformar)
+                    // Lógica cover (Recorta lo que sobra para no deformar)
+          if (ratioImagen > ratioObjetivo) {
+            sHeight = img.height;
+            sWidth = sHeight * ratioObjetivo;
+            sx = (img.width - sWidth) / 2;
+            sy = 0;
+          } else {
+            sWidth = img.width;
+            sHeight = sWidth / ratioObjetivo;
+            sx = 0;
+            sy = (img.height - sHeight) / 2;
+          }
+
+          ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, anchoObjetivo, altoObjetivo);
+
+          // Pasamos a WebP al 95% para conservar calidad de ImgBB sin compresión destructiva extra
+          const base64DataUrl = canvas.toDataURL('image/webp', 0.95);
+          const base64Puro = base64DataUrl.split(',')[1];
+
+          // Enviamos la foto a ImgBB con un nombre genérico para que termine en formato url
+          const formData = new FormData();
+          formData.append('key', IMGBB_API_KEY);
+          formData.append('image', base64Puro);
+          formData.append('name', `mandalas_optimizada_${Date.now()}`);
+
+          fetch('https://api.imgbb.com/1/upload', {
+            method: 'POST',
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) { resolve(data.data.url); } else { reject('ImgBB rechazó la foto'); }
+          })
+          .catch(err => reject('Error de conexión a ImgBB'));
+        };
+
+        img.onerror = () => reject('Error al descargar foto vieja');
+      });
+    }
+
+    window.iniciarMigracionMobile = async function() {
+      const btn = document.getElementById('btn-migrar');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando... (No bloquees el celu)';
+      
+      const consola = document.getElementById('consola-migrador');
+      consola.innerHTML = ''; // Limpiamos log anterior
+      consola.classList.remove('hidden');
+      consola.classList.add('flex');
+      
+      logMigrador("Conectando a base de datos de Mandalas...");
+
+      try {
+        const snapshot = await getDocs(collection(db, "productos"));
+        let contador = 0;
+
+        for (const documento of snapshot.docs) {
+          const id = documento.id;
+          const data = documento.data();
+          let necesitaActualizar = false;
+          let datosNuevos = {};
+
+          logMigrador(`Analizando producto: ${data.nombre}`);
+
+          // A. Optimizamos portada (Solo si no fue optimizada previamente)
+          if (data.imagen && !data.imagen.includes('mandalas_optimizada')) {
+            logMigrador(`  - Descargando foto portada...`);
+            try {
+              const nuevaUrl = await procesarYSubirFoto(data.imagen);
+              datosNuevos.imagen = nuevaUrl;
+              necesitaActualizar = true;
+              logMigrador(`  - Portada resubida con éxito`);
+            } catch (e) {
+              logMigrador(`  - Falló foto principal. Omitida.`);
+            }
+          }
+
+          // B. Optimizamos galería si existe
+          if (data.galeria && Array.isArray(data.galeria)) {
+            let nuevaGaleria = [];
+            let galeriaCambiada = false;
+
+            for (let i = 0; i < data.galeria.length; i++) {
+              const foto = data.galeria[i];
+              if (!foto.includes('mandalas_optimizada')) {
+                logMigrador(`  - Galería (${i+1}/${data.galeria.length})...`);
+                try {
+                  const nuevaUrl = await procesarYSubirFoto(foto);
+                  nuevaGaleria.push(nuevaUrl);
+                  galeriaCambiada = true;
+                } catch (e) {
+                  logMigrador(`  - Falló foto ${i+1}. Conservada.`);
+                  nuevaGaleria.push(foto);
+                }
+              } else {
+                nuevaGaleria.push(foto);
+              }
+            }
+
+            if (galeriaCambiada) {
+              datosNuevos.galeria = nuevaGaleria;
+              necesitaActualizar = true;
+            }
+          }
+
+          // C. Reemplazar link exacto del producto
+          if (necesitaActualizar) {
+            logMigrador(`  - Guardando enlaces actualizados...`);
+            await updateDoc(doc(db, "productos", id), datosNuevos);
+            contador++;
+            logMigrador(`  ✅ Actualizado con éxito.`);
+          } else {
+            logMigrador(`  ⏭️ Ya estaba en formato WebP. Saltando.`);
+          }
+        }
+
+        logMigrador(`🎉 ¡MIGRACIÓN COMPLETADA! ${contador} productos arreglados.`);
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Proceso Terminado';
+        
+        // Refrescamos visualmente para que se vean los cambios
+        cargarProductos();
+        
+      } catch (error) {
+        logMigrador(`❌ ERROR: ${error.message}`);
+        btn.innerHTML = "Error. Tocar para Reintentar";
+        btn.disabled = false;
+      }
+    }
 
   </script>
 </body>
