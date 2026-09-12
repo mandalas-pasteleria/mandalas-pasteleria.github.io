@@ -593,66 +593,64 @@
       consola.appendChild(span);
       consola.scrollTop = consola.scrollHeight;
     }
-
     async function procesarYSubirFoto(urlOriginal) {
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
-        // Usamos allorigins para saltarnos el bloqueo CORS del navegador (truco vital para ImgBB)
-        img.src = `https://api.allorigins.win/raw?url=${encodeURIComponent(urlOriginal)}`;
+        // Cambiamos el puente proxy a uno más estable para celulares
+        img.src = `https://api.codetabs.com/v1/proxy?quest=${urlOriginal}`;
         
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          
-          // Resolución y Relación de Aspecto estricta (3:4)
-          const anchoObjetivo = 600;
-          const altoObjetivo = 800;
-          canvas.width = anchoObjetivo;
-          canvas.height = altoObjetivo;
+          try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const anchoObjetivo = 600;
+            const altoObjetivo = 800;
+            canvas.width = anchoObjetivo;
+            canvas.height = altoObjetivo;
 
-          const ratioObjetivo = anchoObjetivo / altoObjetivo;
-          const ratioImagen = img.width / img.height;
-          let sx, sy, sWidth, sHeight;
+            const ratioObjetivo = anchoObjetivo / altoObjetivo;
+            const ratioImagen = img.width / img.height;
+            let sx, sy, sWidth, sHeight;
 
-          // Lógica cover (Recorta lo que sobra para no deformar)
-                    // Lógica cover (Recorta lo que sobra para no deformar)
-          if (ratioImagen > ratioObjetivo) {
-            sHeight = img.height;
-            sWidth = sHeight * ratioObjetivo;
-            sx = (img.width - sWidth) / 2;
-            sy = 0;
-          } else {
-            sWidth = img.width;
-            sHeight = sWidth / ratioObjetivo;
-            sx = 0;
-            sy = (img.height - sHeight) / 2;
+            if (ratioImagen > ratioObjetivo) {
+              sHeight = img.height;
+              sWidth = sHeight * ratioObjetivo;
+              sx = (img.width - sWidth) / 2;
+              sy = 0;
+            } else {
+              sWidth = img.width;
+              sHeight = sWidth / ratioObjetivo;
+              sx = 0;
+              sy = (img.height - sHeight) / 2;
+            }
+
+            ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, anchoObjetivo, altoObjetivo);
+
+            const base64DataUrl = canvas.toDataURL('image/webp', 0.95);
+            const base64Puro = base64DataUrl.split(',')[1];
+
+            const formData = new FormData();
+            formData.append('key', IMGBB_API_KEY);
+            formData.append('image', base64Puro);
+            formData.append('name', `mandalas_optimizada_${Date.now()}`);
+
+            fetch('https://api.imgbb.com/1/upload', {
+              method: 'POST',
+              body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) { resolve(data.data.url); } else { reject('ImgBB rechazó la foto'); }
+            })
+            .catch(err => reject('Error subiendo a ImgBB'));
+          } catch(err) {
+            reject('Fallo al comprimir (Canvas)');
           }
-
-          ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, anchoObjetivo, altoObjetivo);
-
-          // Pasamos a WebP al 95% para conservar calidad de ImgBB sin compresión destructiva extra
-          const base64DataUrl = canvas.toDataURL('image/webp', 0.95);
-          const base64Puro = base64DataUrl.split(',')[1];
-
-          // Enviamos la foto a ImgBB con un nombre genérico para que termine en formato url
-          const formData = new FormData();
-          formData.append('key', IMGBB_API_KEY);
-          formData.append('image', base64Puro);
-          formData.append('name', `mandalas_optimizada_${Date.now()}`);
-
-          fetch('https://api.imgbb.com/1/upload', {
-            method: 'POST',
-            body: formData
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) { resolve(data.data.url); } else { reject('ImgBB rechazó la foto'); }
-          })
-          .catch(err => reject('Error de conexión a ImgBB'));
         };
 
-        img.onerror = () => reject('Error al descargar foto vieja');
+        img.onerror = () => reject('El proxy bloqueó la descarga');
       });
     }
 
@@ -662,11 +660,11 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando... (No bloquees el celu)';
       
       const consola = document.getElementById('consola-migrador');
-      consola.innerHTML = ''; // Limpiamos log anterior
+      consola.innerHTML = '';
       consola.classList.remove('hidden');
       consola.classList.add('flex');
       
-      logMigrador("Conectando a base de datos de Mandalas...");
+      logMigrador("Conectando a base de datos...");
 
       try {
         const snapshot = await getDocs(collection(db, "productos"));
@@ -680,20 +678,18 @@
 
           logMigrador(`Analizando producto: ${data.nombre}`);
 
-          // A. Optimizamos portada (Solo si no fue optimizada previamente)
           if (data.imagen && !data.imagen.includes('mandalas_optimizada')) {
-            logMigrador(`  - Descargando foto portada...`);
+            logMigrador(`  - Descargando portada...`);
             try {
               const nuevaUrl = await procesarYSubirFoto(data.imagen);
               datosNuevos.imagen = nuevaUrl;
               necesitaActualizar = true;
-              logMigrador(`  - Portada resubida con éxito`);
+              logMigrador(`  - Portada resubida con éxito!`);
             } catch (e) {
-              logMigrador(`  - Falló foto principal. Omitida.`);
+              logMigrador(`  - Falló: ${e}`); // AHORA NOS DIRÁ QUÉ FALLÓ EXACTAMENTE
             }
           }
 
-          // B. Optimizamos galería si existe
           if (data.galeria && Array.isArray(data.galeria)) {
             let nuevaGaleria = [];
             let galeriaCambiada = false;
@@ -707,7 +703,7 @@
                   nuevaGaleria.push(nuevaUrl);
                   galeriaCambiada = true;
                 } catch (e) {
-                  logMigrador(`  - Falló foto ${i+1}. Conservada.`);
+                  logMigrador(`  - Falló foto ${i+1}: ${e}`);
                   nuevaGaleria.push(foto);
                 }
               } else {
@@ -721,9 +717,8 @@
             }
           }
 
-          // C. Reemplazar link exacto del producto
           if (necesitaActualizar) {
-            logMigrador(`  - Guardando enlaces actualizados...`);
+            logMigrador(`  - Guardando foto nueva en base de datos...`);
             await updateDoc(doc(db, "productos", id), datosNuevos);
             contador++;
             logMigrador(`  ✅ Actualizado con éxito.`);
@@ -734,8 +729,6 @@
 
         logMigrador(`🎉 ¡MIGRACIÓN COMPLETADA! ${contador} productos arreglados.`);
         btn.innerHTML = '<i class="fa-solid fa-check"></i> Proceso Terminado';
-        
-        // Refrescamos visualmente para que se vean los cambios
         cargarProductos();
         
       } catch (error) {
