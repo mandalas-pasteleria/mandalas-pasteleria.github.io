@@ -58,6 +58,11 @@
       </div>
       
       <div class="flex flex-wrap gap-2 md:gap-3">
+        <!-- BOTÓN NUEVO: GUÍA DE FOTOS -->
+        <button onclick="descargarRespaldoFotos()" class="bg-blue-900 hover:bg-blue-800 text-white text-[10px] sm:text-xs font-bold py-2 px-3 rounded transition shadow flex items-center gap-2 uppercase tracking-wider border border-blue-700">
+          <i class="fa-solid fa-list-check"></i> <span class="hidden sm:inline">Guía Fotos</span>
+        </button>
+
         <!-- BOTÓN MIGRAR FOTOS -->
         <button onclick="abrirModalMigrador()" class="bg-emerald-900 hover:bg-emerald-800 text-white text-[10px] sm:text-xs font-bold py-2 px-3 rounded transition shadow flex items-center gap-2 uppercase tracking-wider border border-emerald-700">
           <i class="fa-solid fa-wand-magic-sparkles"></i> <span class="hidden sm:inline">Migrar Fotos</span>
@@ -417,7 +422,41 @@
       enlace.click(); URL.revokeObjectURL(url);
     }
 
-const comprimirImagen = (archivo) => {
+    // --- EXTRAER GUÍA DE FOTOS (TXT) ---
+    window.descargarRespaldoFotos = function() {
+      if (productos.length === 0) return alert("No hay productos cargados.");
+      
+      let texto = "📋 GUÍA DE FOTOS PARA RESUBIR - MANDALAS COSAS RICAS\n";
+      texto += "====================================================\n\n";
+
+      productos.forEach(prod => {
+        texto += `🎂 PRODUCTO: ${prod.nombre.toUpperCase()} (${prod.categoria})\n`;
+        
+        if (prod.imagen) {
+          texto += `   - Link Portada vieja: ${prod.imagen}\n`;
+        } else {
+          texto += `   - Portada: (Sin foto cargada)\n`;
+        }
+
+        if (prod.galeria && prod.galeria.length > 0) {
+          prod.galeria.forEach((img, i) => {
+            texto += `   - Link Galería ${i+1} vieja: ${img}\n`;
+          });
+        }
+        texto += `--------------------------------------------------\n`;
+      });
+
+      // Descargar como archivo de texto (.txt)
+      const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement('a'); 
+      enlace.href = url;
+      enlace.download = `Guia_Resubir_Fotos_Mandalas.txt`;
+      enlace.click(); 
+      URL.revokeObjectURL(url);
+    }
+
+    const comprimirImagen = (archivo) => {
       return new Promise((resolve) => {
         const reader = new FileReader(); 
         reader.readAsDataURL(archivo);
@@ -453,11 +492,11 @@ const comprimirImagen = (archivo) => {
 
             ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, anchoObjetivo, altoObjetivo);
             
-            // Conversión nativa a WEBP con 90% de calidad
+            // CAMBIADO A JPG AL 85% PARA QUE IMGBB NO ROMPA LA IMAGEN
             canvas.toBlob((blob) => { 
-              const nuevoNombre = archivo.name.replace(/\.[^/.]+$/, "") + ".webp";
-              resolve(new File([blob], nuevoNombre, { type: 'image/webp' })); 
-            }, 'image/webp', 0.90); 
+              const nuevoNombre = archivo.name.replace(/\.[^/.]+$/, "") + ".jpg";
+              resolve(new File([blob], nuevoNombre, { type: 'image/jpeg' })); 
+            }, 'image/jpeg', 0.85); 
           };
         };
       });
@@ -606,7 +645,7 @@ const comprimirImagen = (archivo) => {
       } catch (error) { alert("Error al guardar anuncio"); } finally { boton.innerHTML = originalText; boton.disabled = false; }
     });
 
-    // --- HERRAMIENTA DE MIGRACIÓN WEBP AUTOMÁTICA ---
+    // --- HERRAMIENTA DE MIGRACIÓN AUTOMÁTICA ---
     window.abrirModalMigrador = function() {
       document.getElementById('modal-migrador').classList.remove('hidden');
     }
@@ -626,7 +665,6 @@ const comprimirImagen = (archivo) => {
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
-        // Cambiamos el puente proxy a uno más estable para celulares
         img.src = `https://api.codetabs.com/v1/proxy?quest=${urlOriginal}`;
         
         img.onload = () => {
@@ -657,7 +695,8 @@ const comprimirImagen = (archivo) => {
 
             ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, anchoObjetivo, altoObjetivo);
 
-            const base64DataUrl = canvas.toDataURL('image/webp', 0.95);
+            // TAMBIÉN CAMBIADO A JPG PARA QUE NO ROMPA SI LO USAS
+            const base64DataUrl = canvas.toDataURL('image/jpeg', 0.85);
             const base64Puro = base64DataUrl.split(',')[1];
 
             const formData = new FormData();
@@ -715,7 +754,7 @@ const comprimirImagen = (archivo) => {
               necesitaActualizar = true;
               logMigrador(`  - Portada resubida con éxito!`);
             } catch (e) {
-              logMigrador(`  - Falló: ${e}`); // AHORA NOS DIRÁ QUÉ FALLÓ EXACTAMENTE
+              logMigrador(`  - Falló: ${e}`);
             }
           }
 
@@ -752,7 +791,7 @@ const comprimirImagen = (archivo) => {
             contador++;
             logMigrador(`  ✅ Actualizado con éxito.`);
           } else {
-            logMigrador(`  ⏭️ Ya estaba en formato WebP. Saltando.`);
+            logMigrador(`  ⏭️ Ya estaba optimizada. Saltando.`);
           }
         }
 
