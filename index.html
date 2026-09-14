@@ -152,8 +152,7 @@
     let categorias = [];
     let telefonoWhatsapp = "5493764123456"; 
     let hayAnuncioParaMostrar = false;
-    let datosAnuncio = null;
-    let categoriaActual = 'todos'; // Variable para recordar en qué pestaña estamos
+    let categoriaActual = 'todos'; 
 
     sumarVisita();
     inicializarCatalogo();
@@ -177,7 +176,6 @@
           const anuncio = anuncioSnap.data();
           if (anuncio.activo) {
             hayAnuncioParaMostrar = true;
-            datosAnuncio = anuncio;
             prepararAnuncioFlotante(anuncio);
           }
         }
@@ -207,13 +205,12 @@
       setTimeout(() => {
         splash.style.display = 'none';
         
-        if(mostrarAnuncio && datosAnuncio && datosAnuncio.imagen) {
+        if(mostrarAnuncio) {
+            // Carga la foto directamente desde tu Github antes de lanzar el cartel
             const img = new Image();
-            img.src = datosAnuncio.imagen;
+            img.src = 'fondo_anuncio.jpg';
             img.onload = () => setTimeout(() => mostrarAnuncioFlotante(), 100);
             img.onerror = () => setTimeout(() => mostrarAnuncioFlotante(), 100);
-        } else if (mostrarAnuncio) {
-            setTimeout(() => mostrarAnuncioFlotante(), 200); 
         }
       }, 500); 
     }
@@ -223,13 +220,10 @@
       document.getElementById('anuncio-flotante-texto').innerText = anuncio.texto;
       
       const fondo = document.getElementById('anuncio-bg');
-      if (anuncio.imagen) {
-        fondo.style.backgroundImage = `url('${anuncio.imagen}')`;
-        fondo.style.backgroundSize = 'cover';
-        fondo.style.backgroundPosition = 'center';
-      } else {
-        fondo.style.backgroundImage = 'none';
-      }
+      // Ahora usamos SIEMPRE la foto que subiste a Github (fondo_anuncio.jpg)
+      fondo.style.backgroundImage = `url('fondo_anuncio.jpg')`;
+      fondo.style.backgroundSize = 'cover';
+      fondo.style.backgroundPosition = 'center';
     }
 
     function mostrarAnuncioFlotante() {
@@ -260,9 +254,8 @@
     }
 
     window.filtrarProductos = function(cat) {
-      categoriaActual = cat; // Guardamos la categoría actual
+      categoriaActual = cat; 
       
-      // Estilos de los botones
       const botones = document.querySelectorAll(".menu-btn");
       botones.forEach(btn => {
         btn.classList.remove("menu-activo");
@@ -272,12 +265,11 @@
       });
 
       document.getElementById("titulo-categoria").innerText = cat === "todos" ? "Catálogo Completo" : cat;
-      document.getElementById("buscador").value = ""; // Limpiamos el buscador al cambiar de pestaña
+      document.getElementById("buscador").value = ""; 
 
       aplicarFiltrosYRenderizar();
     }
 
-    // EL BUSCADOR EN TIEMPO REAL
     window.buscarEnTiempoReal = function() {
       const termino = document.getElementById('buscador').value.trim();
       
@@ -290,16 +282,13 @@
       aplicarFiltrosYRenderizar();
     }
 
-    // EL MOTOR UNIFICADO QUE DIBUJA LA GRILLA
     function aplicarFiltrosYRenderizar() {
       const terminoBusqueda = document.getElementById('buscador').value.toLowerCase().trim();
       
-      // 1. Primero filtramos por la pestaña/categoría seleccionada
       let filtrados = categoriaActual === "todos" 
         ? productos 
         : productos.filter(p => p.categoria.toLowerCase() === categoriaActual.toLowerCase());
 
-      // 2. Luego filtramos por lo que haya escrito el cliente (busca en nombre y descripción)
       if (terminoBusqueda !== "") {
         filtrados = filtrados.filter(p => 
           p.nombre.toLowerCase().includes(terminoBusqueda) || 
