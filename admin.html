@@ -450,10 +450,11 @@
 
             ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, anchoObjetivo, altoObjetivo);
 
+            // COMPRESIÓN DE ALTA VELOCIDAD A WEBP (Cloudinary compatible)
             canvas.toBlob((blob) => { 
-              const nuevoNombre = archivo.name.replace(/\.[^/.]+$/, "") + ".jpg";
-              resolve(new File([blob], nuevoNombre, { type: 'image/jpeg' })); 
-            }, 'image/jpeg', 0.85);
+              const nuevoNombre = archivo.name.replace(/\.[^/.]+$/, "") + ".webp";
+              resolve(new File([blob], nuevoNombre, { type: 'image/webp' })); 
+            }, 'image/webp', 0.90);
           };
         };
       });
