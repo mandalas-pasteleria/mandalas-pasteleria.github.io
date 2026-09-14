@@ -41,8 +41,7 @@
 
 <body class="bg-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
 
-  <!-- PANTALLA DE CARGA (SPLASH SCREEN) INTELIGENTE -->
-  <!-- Estará por encima de todo tapando la web hasta que las fotos descarguen -->
+  <!-- PANTALLA DE CARGA (SPLASH SCREEN) -->
   <div id="splash-screen" class="fixed inset-0 bg-fondoOscuro z-[9999] flex flex-col items-center justify-center transition-opacity duration-700">
     <img src="logo_mandalas_cobre.png" alt="Mandalas Cosas Ricas" class="w-48 md:w-64 animacion-latido mb-4 drop-shadow-2xl">
   </div>
@@ -59,30 +58,42 @@
     </div>
   </nav>
 
-  <!-- SECCIÓN DE ANUNCIO (Se inyecta por JS si está activo) -->
-  <div id="contenedor-anuncio"></div>
-
   <!-- MAIN / CATÁLOGO -->
   <main class="py-10 px-6 md:px-12 max-w-7xl mx-auto w-full flex-grow">
     
     <!-- Filtros de Categorías -->
-    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-12">
-      <!-- Se llenan desde Firestore -->
-    </div>
+    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-12"></div>
     
     <h2 id="titulo-categoria" class="font-titulo text-3xl text-textoClaro capitalize mb-8 text-center border-b border-gray-700 pb-2 inline-block mx-auto">Todo</h2>
     
     <!-- Grilla de Tortas -->
-    <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      <!-- Los productos se inyectan acá -->
-    </div>
+    <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
 
   </main>
 
   <footer class="bg-fondoOscuro py-6 text-center border-t border-gray-800 mt-auto">
     <p class="text-textoGris text-xs uppercase tracking-widest font-semibold mb-1">Mandalas Cosas Ricas &copy; 2026</p>
-    <p class="text-[10px] text-gray-600">Posadas, Misiones</p>
+    <p class="text-[10px] text-gray-600">San Vicente, Misiones</p>
   </footer>
+
+  <!-- Modal Anuncio Cliente (Flotante) -->
+  <div id="modal-anuncio-flotante" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-[60] transition-opacity opacity-0 backdrop-blur-sm">
+    <div class="bg-fondoTarjeta rounded-md max-w-lg w-full overflow-hidden border border-cobre/50 shadow-2xl relative">
+      <button onclick="cerrarAnuncioFlotante()" class="absolute top-3 right-3 z-20 bg-black/60 hover:bg-cobre text-white w-8 h-8 rounded-full flex items-center justify-center transition border border-gray-600"><i class="fa-solid fa-xmark"></i></button>
+      
+      <div id="anuncio-bg" class="w-full min-h-[180px] relative p-8 flex flex-col items-center justify-center text-center bg-fondoOscuro">
+         <div class="absolute inset-0 bg-gradient-to-b from-black/80 to-fondoTarjeta z-0"></div> 
+         <div class="relative z-10">
+            <i class="fa-solid fa-bullhorn text-3xl text-cobre mb-3"></i>
+            <h3 id="anuncio-flotante-titulo" class="font-titulo text-2xl md:text-3xl text-cobre mb-2 drop-shadow-lg"></h3>
+            <p id="anuncio-flotante-texto" class="text-textoClaro text-sm md:text-base leading-relaxed whitespace-pre-wrap max-w-md mx-auto"></p>
+         </div>
+      </div>
+      <div class="p-5 bg-fondoTarjeta text-center border-t border-gray-800">
+          <button onclick="cerrarAnuncioFlotante()" class="bg-cobre hover:bg-cobreOscuro text-white text-xs font-bold py-3 px-8 rounded uppercase tracking-widest transition shadow-lg">¡Entendido!</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal Detalle de Producto -->
   <div id="modal-producto" class="fixed inset-0 bg-black/95 hidden items-center justify-center p-4 z-50 transition-opacity opacity-0 backdrop-blur-sm">
@@ -94,9 +105,7 @@
         <div class="w-full aspect-[3/4] relative">
           <img id="modal-img-principal" src="" class="w-full h-full object-cover">
         </div>
-        <div id="modal-miniaturas" class="flex gap-2 p-3 overflow-x-auto bg-[#0a0908] border-t border-gray-800">
-          <!-- Miniaturas -->
-        </div>
+        <div id="modal-miniaturas" class="flex gap-2 p-3 overflow-x-auto bg-[#0a0908] border-t border-gray-800"></div>
       </div>
       
       <!-- Lado Derecho: Info -->
@@ -130,9 +139,9 @@
 
     let productos = [];
     let categorias = [];
-    let telefonoWhatsapp = "5493764123456"; // Cambialo por tu número real de pedidos
+    let telefonoWhatsapp = "5493764123456"; 
+    let hayAnuncioParaMostrar = false;
 
-    // Al arrancar la web, sumamos una visita y arrancamos la carga pesada
     sumarVisita();
     inicializarCatalogo();
 
@@ -143,10 +152,8 @@
       } catch (e) { console.log("Visita no contada"); }
     }
 
-    // --- CARGA INTELIGENTE (PROMESA) + SPLASH SCREEN ---
     async function inicializarCatalogo() {
       try {
-        // Pedimos los datos a Firestore en paralelo
         const [anuncioSnap, categoriasSnap, productosSnap] = await Promise.all([
           getDoc(doc(db, "configuracion", "anuncio")),
           getDocs(collection(db, "categorias")),
@@ -155,12 +162,12 @@
 
         const promesasDeImagenes = [];
 
-        // 1. Procesar Anuncio
+        // 1. Procesar Anuncio Flotante
         if (anuncioSnap.exists()) {
           const anuncio = anuncioSnap.data();
           if (anuncio.activo) {
-            renderizarAnuncio(anuncio);
-            // Si el anuncio tiene imagen de fondo, exigimos que se descargue antes de sacar el logo
+            hayAnuncioParaMostrar = true;
+            prepararAnuncioFlotante(anuncio);
             if (anuncio.imagen) {
               promesasDeImagenes.push(esperarImagen(anuncio.imagen));
             }
@@ -179,72 +186,80 @@
           const prod = { id: doc.id, ...doc.data() };
           productos.push(prod);
           
-          // Exigimos que las primeras 6 fotos se descarguen antes de sacar el logo
           if (prod.imagen && fotosProductoEncontradas < 6) {
             promesasDeImagenes.push(esperarImagen(prod.imagen));
             fotosProductoEncontradas++;
           }
         });
 
-        // Armamos la parte visual (botones y HTML) en segundo plano
         renderizarFiltros();
         filtrarProductos('todos');
 
-        // LA MAGIA: Esperamos que Firebase termine de mandar los "pesos pesados" (las fotos)
         await Promise.all(promesasDeImagenes);
 
       } catch (error) {
         console.error("Error al cargar base de datos:", error);
       } finally {
-        // Haya cargado bien o haya fallado algo, destapamos la página (quitamos Splash)
-        quitarSplashScreen();
+        quitarSplashScreen(hayAnuncioParaMostrar);
       }
     }
 
-    // Herramienta para rastrear que una foto bajó de internet
     function esperarImagen(url) {
       return new Promise((resolve) => {
         const img = new Image();
         img.src = url;
-        img.onload = resolve;  // Termina cuando carga bien
-        img.onerror = resolve; // Termina aunque falle (para no trabar la página)
+        img.onload = resolve;  
+        img.onerror = resolve; 
       });
     }
 
-    // Efecto elegante de desvanecimiento
-    function quitarSplashScreen() {
+    // La Coreografía: Saca el Splash, espera un pelito y abre el Anuncio
+    function quitarSplashScreen(mostrarAnuncio) {
       const splash = document.getElementById('splash-screen');
       splash.classList.add('opacity-0');
       setTimeout(() => {
         splash.style.display = 'none';
-      }, 700); // 700ms es el tiempo que configuramos en el HTML (duration-700)
+        
+        if(mostrarAnuncio) {
+          setTimeout(() => { mostrarAnuncioFlotante(); }, 200); 
+        }
+      }, 700); 
     }
 
-    // --- FUNCIONES VISUALES (Las que ya tenías optimizadas) ---
-    function renderizarAnuncio(anuncio) {
-      const contenedor = document.getElementById('contenedor-anuncio');
-      let fondoStyle = "background-color: #1a1816;";
+    // --- LÓGICA ANUNCIO FLOTANTE ---
+    function prepararAnuncioFlotante(anuncio) {
+      document.getElementById('anuncio-flotante-titulo').innerText = anuncio.titulo;
+      document.getElementById('anuncio-flotante-texto').innerText = anuncio.texto;
       
+      const fondo = document.getElementById('anuncio-bg');
       if (anuncio.imagen) {
-        // Le ponemos un degradado negro arriba para que el texto se lea perfecto siempre
-        fondoStyle = `background-image: linear-gradient(to right, rgba(22, 20, 18, 0.95), rgba(22, 20, 18, 0.8)), url('${anuncio.imagen}'); background-size: cover; background-position: center;`;
+        fondo.style.backgroundImage = `url('${anuncio.imagen}')`;
+        fondo.style.backgroundSize = 'cover';
+        fondo.style.backgroundPosition = 'center';
+      } else {
+        fondo.style.backgroundImage = 'none';
       }
-
-      contenedor.innerHTML = `
-        <div class="w-full border-b border-cobre/30 relative overflow-hidden" style="${fondoStyle}">
-          <div class="max-w-7xl mx-auto py-8 px-6 md:px-12 flex flex-col md:flex-row items-center gap-6">
-            <div class="bg-cobre/20 text-cobre p-4 rounded-full flex-shrink-0 border border-cobre/30 shadow-[0_0_15px_rgba(184,115,82,0.3)]">
-              <i class="fa-solid fa-bullhorn text-2xl"></i>
-            </div>
-            <div>
-              <h3 class="font-titulo text-2xl text-cobre mb-2 drop-shadow-md">${anuncio.titulo}</h3>
-              <p class="text-textoClaro text-sm leading-relaxed max-w-3xl">${anuncio.texto}</p>
-            </div>
-          </div>
-        </div>
-      `;
     }
 
+    function mostrarAnuncioFlotante() {
+      const modal = document.getElementById('modal-anuncio-flotante');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
+      document.body.style.overflow = 'hidden'; 
+    }
+
+    window.cerrarAnuncioFlotante = function() {
+      const modal = document.getElementById('modal-anuncio-flotante');
+      modal.classList.add('opacity-0');
+      setTimeout(() => { 
+        modal.classList.add('hidden'); 
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto'; 
+      }, 300);
+    }
+
+    // --- FUNCIONES VISUALES DE LA GRILLA ---
     function renderizarFiltros() {
       const menu = document.getElementById("menu-categorias");
       menu.innerHTML = `<button onclick="filtrarProductos('todos')" class="menu-btn menu-activo text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
@@ -305,11 +320,9 @@
       document.getElementById('modal-nombre').innerText = prod.nombre;
       document.getElementById('modal-descripcion').innerText = prod.descripcion;
       
-      // Armamos el link de WhatsApp con mensaje prearmado
       const msj = encodeURIComponent(`¡Hola Mandalas! Quisiera consultar la disponibilidad de: *${prod.nombre}*.`);
       document.getElementById('btn-pedir-whatsapp').href = `https://wa.me/${telefonoWhatsapp}?text=${msj}`;
 
-      // Miniaturas de Galería
       const contenedorMiniaturas = document.getElementById('modal-miniaturas');
       contenedorMiniaturas.innerHTML = "";
       
@@ -328,9 +341,8 @@
       const modal = document.getElementById('modal-producto');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-      // Timeout chiquito para que Tailwind tome la animación de opacidad
       setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
-      document.body.style.overflow = 'hidden'; // Evita scrollear el fondo
+      document.body.style.overflow = 'hidden'; 
     }
 
     window.cambiarFotoPrincipal = function(url) {
