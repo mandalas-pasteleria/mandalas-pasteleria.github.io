@@ -5,18 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mandalas - Cosas Ricas</title>
   
-  <!-- OPTIMIZACIÓN: Pre-conectar a los servidores más pesados -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://res.cloudinary.com">
   <link rel="preconnect" href="https://firestore.googleapis.com">
 
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  
-  <!-- OPTIMIZACIÓN: Cargar íconos en segundo plano para no bloquear el renderizado -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   
-  <!-- Tailwind CDN (Mantenido por simplicidad de desarrollo) -->
   <script src="https://cdn.tailwindcss.com"></script>
   
   <script>
@@ -67,8 +63,20 @@
 
   <!-- MAIN / CATÁLOGO -->
   <main class="py-10 px-6 md:px-12 max-w-7xl mx-auto w-full flex-grow">
-    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-12"></div>
+    
+    <!-- Filtros de Categorías -->
+    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-6"></div>
+    
+    <!-- Buscador en tiempo real -->
+    <div class="flex justify-center mb-10">
+      <div class="relative w-full max-w-md">
+        <input type="text" id="buscador" oninput="buscarEnTiempoReal()" placeholder="Buscar tortas, postres, ingredientes..." class="w-full bg-fondoOscuro border border-gray-700 text-textoClaro px-5 py-3 rounded-full focus:border-cobre outline-none transition pl-12 shadow-lg">
+        <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 transform -translate-y-1/2 text-textoGris"></i>
+      </div>
+    </div>
+
     <h2 id="titulo-categoria" class="font-titulo text-3xl text-textoClaro capitalize mb-8 text-center border-b border-gray-700 pb-2 inline-block mx-auto">Todo</h2>
+    
     <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
   </main>
 
@@ -145,6 +153,7 @@
     let telefonoWhatsapp = "5493764123456"; 
     let hayAnuncioParaMostrar = false;
     let datosAnuncio = null;
+    let categoriaActual = 'todos'; // Variable para recordar en qué pestaña estamos
 
     sumarVisita();
     inicializarCatalogo();
@@ -185,10 +194,6 @@
         renderizarFiltros();
         filtrarProductos('todos');
 
-        // OPTIMIZACIÓN PAGESPEED: Ya no esperamos a que descarguen las imágenes.
-        // Apenas la base de datos entregó los textos (que tarda milisegundos), sacamos el logo.
-        // El navegador se encargará de ir descargando las fotos usando el 'loading="lazy"'.
-
       } catch (error) {
         console.error("Error al cargar base de datos:", error);
       } finally {
@@ -203,7 +208,6 @@
         splash.style.display = 'none';
         
         if(mostrarAnuncio && datosAnuncio && datosAnuncio.imagen) {
-            // Si hay anuncio, precargamos su foto oculta antes de lanzarlo para que no parpadee
             const img = new Image();
             img.src = datosAnuncio.imagen;
             img.onload = () => setTimeout(() => mostrarAnuncioFlotante(), 100);
@@ -256,6 +260,9 @@
     }
 
     window.filtrarProductos = function(cat) {
+      categoriaActual = cat; // Guardamos la categoría actual
+      
+      // Estilos de los botones
       const botones = document.querySelectorAll(".menu-btn");
       botones.forEach(btn => {
         btn.classList.remove("menu-activo");
@@ -265,20 +272,56 @@
       });
 
       document.getElementById("titulo-categoria").innerText = cat === "todos" ? "Catálogo Completo" : cat;
+      document.getElementById("buscador").value = ""; // Limpiamos el buscador al cambiar de pestaña
 
-      const filtrados = cat === "todos" ? productos : productos.filter(p => p.categoria.toLowerCase() === cat.toLowerCase());
+      aplicarFiltrosYRenderizar();
+    }
+
+    // EL BUSCADOR EN TIEMPO REAL
+    window.buscarEnTiempoReal = function() {
+      const termino = document.getElementById('buscador').value.trim();
+      
+      if (termino !== "") {
+          document.getElementById("titulo-categoria").innerText = "Resultados de Búsqueda";
+      } else {
+          document.getElementById("titulo-categoria").innerText = categoriaActual === "todos" ? "Catálogo Completo" : categoriaActual;
+      }
+      
+      aplicarFiltrosYRenderizar();
+    }
+
+    // EL MOTOR UNIFICADO QUE DIBUJA LA GRILLA
+    function aplicarFiltrosYRenderizar() {
+      const terminoBusqueda = document.getElementById('buscador').value.toLowerCase().trim();
+      
+      // 1. Primero filtramos por la pestaña/categoría seleccionada
+      let filtrados = categoriaActual === "todos" 
+        ? productos 
+        : productos.filter(p => p.categoria.toLowerCase() === categoriaActual.toLowerCase());
+
+      // 2. Luego filtramos por lo que haya escrito el cliente (busca en nombre y descripción)
+      if (terminoBusqueda !== "") {
+        filtrados = filtrados.filter(p => 
+          p.nombre.toLowerCase().includes(terminoBusqueda) || 
+          p.descripcion.toLowerCase().includes(terminoBusqueda)
+        );
+      }
+
       const grilla = document.getElementById("grilla-productos");
       grilla.innerHTML = "";
 
       if(filtrados.length === 0) {
-        grilla.innerHTML = `<div class="col-span-full text-center py-10 text-textoGris"><i class="fa-solid fa-cookie-bite text-4xl mb-4 opacity-50"></i><p>Próximamente más delicias en esta categoría.</p></div>`;
+        grilla.innerHTML = `
+          <div class="col-span-full text-center py-12 text-textoGris">
+            <i class="fa-solid fa-search text-4xl mb-4 opacity-30"></i>
+            <p class="text-lg">No encontramos ninguna delicia con esa búsqueda.</p>
+          </div>`;
         return;
       }
 
       filtrados.forEach(prod => {
         const tieneGaleria = (prod.galeria && prod.galeria.length > 0) ? `<div class="absolute top-3 right-3 bg-black/80 text-white text-[10px] px-2 py-1 rounded shadow border border-gray-700"><i class="fa-solid fa-images"></i> +${prod.galeria.length}</div>` : '';
         
-        // OPTIMIZACIÓN PAGESPEED: Agregado loading="lazy" a las imágenes de la grilla
         grilla.innerHTML += `
           <div onclick="abrirModalProducto('${prod.id}')" class="bg-fondoTarjeta rounded-md border border-gray-800 flex flex-col shadow-lg cursor-pointer group hover:border-cobre transition duration-300">
             <div class="w-full aspect-[3/4] overflow-hidden bg-fondoOscuro rounded-t-md relative">
@@ -321,7 +364,6 @@
 
       if (todasLasFotos.length > 1) {
         todasLasFotos.forEach(url => {
-          // OPTIMIZACIÓN PAGESPEED: Agregado loading="lazy" a las miniaturas
           contenedorMiniaturas.innerHTML += `
             <img src="${url}" alt="Miniatura" loading="lazy" onclick="cambiarFotoPrincipal('${url}')" class="w-16 h-16 object-cover rounded cursor-pointer border border-transparent hover:border-cobre transition opacity-70 hover:opacity-100 flex-shrink-0" onerror="this.style.display='none'">
           `;
