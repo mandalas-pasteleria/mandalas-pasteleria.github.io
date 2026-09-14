@@ -5,12 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mandalas - Cosas Ricas</title>
   
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- OPTIMIZACIÓN: Pre-conectar a los servidores más pesados -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://res.cloudinary.com">
+  <link rel="preconnect" href="https://firestore.googleapis.com">
 
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- OPTIMIZACIÓN: Cargar íconos en segundo plano para no bloquear el renderizado -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+  
+  <!-- Tailwind CDN (Mantenido por simplicidad de desarrollo) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
   <script>
     tailwind.config = {
       theme: {
@@ -30,7 +38,6 @@
   <style>
     .menu-activo { color: #b87352 !important; border-bottom: 2px solid #b87352; padding-bottom: 2px; }
     
-    /* Animación de latido para el logo del Splash Screen */
     @keyframes pulsoSuave {
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.05); opacity: 0.8; }
@@ -42,7 +49,7 @@
 <body class="bg-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
 
   <!-- PANTALLA DE CARGA (SPLASH SCREEN) -->
-  <div id="splash-screen" class="fixed inset-0 bg-fondoOscuro z-[9999] flex flex-col items-center justify-center transition-opacity duration-700">
+  <div id="splash-screen" class="fixed inset-0 bg-fondoOscuro z-[9999] flex flex-col items-center justify-center transition-opacity duration-500">
     <img src="logo_mandalas_cobre.png" alt="Mandalas Cosas Ricas" class="w-48 md:w-64 animacion-latido mb-4 drop-shadow-2xl">
   </div>
 
@@ -53,22 +60,16 @@
       Mandalas <span class="text-textoClaro italic font-normal text-lg">Cosas Ricas</span>
     </div>
     <div class="flex gap-4 mt-2 md:mt-0">
-      <a href="https://instagram.com/mandalas.cosasricas" target="_blank" class="text-textoGris hover:text-cobre transition text-xl"><i class="fa-brands fa-instagram"></i></a>
-      <a href="https://wa.me/5493764123456" target="_blank" class="text-textoGris hover:text-green-500 transition text-xl"><i class="fa-brands fa-whatsapp"></i></a>
+      <a href="https://instagram.com/mandalas.cosasricas" target="_blank" class="text-textoGris hover:text-cobre transition text-xl" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://wa.me/5493764123456" target="_blank" class="text-textoGris hover:text-green-500 transition text-xl" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
     </div>
   </nav>
 
   <!-- MAIN / CATÁLOGO -->
   <main class="py-10 px-6 md:px-12 max-w-7xl mx-auto w-full flex-grow">
-    
-    <!-- Filtros de Categorías -->
     <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-12"></div>
-    
     <h2 id="titulo-categoria" class="font-titulo text-3xl text-textoClaro capitalize mb-8 text-center border-b border-gray-700 pb-2 inline-block mx-auto">Todo</h2>
-    
-    <!-- Grilla de Tortas -->
     <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
-
   </main>
 
   <footer class="bg-fondoOscuro py-6 text-center border-t border-gray-800 mt-auto">
@@ -79,7 +80,7 @@
   <!-- Modal Anuncio Cliente (Flotante) -->
   <div id="modal-anuncio-flotante" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-[60] transition-opacity opacity-0 backdrop-blur-sm">
     <div class="bg-fondoTarjeta rounded-md max-w-lg w-full overflow-hidden border border-cobre/50 shadow-2xl relative">
-      <button onclick="cerrarAnuncioFlotante()" class="absolute top-3 right-3 z-20 bg-black/60 hover:bg-cobre text-white w-8 h-8 rounded-full flex items-center justify-center transition border border-gray-600"><i class="fa-solid fa-xmark"></i></button>
+      <button onclick="cerrarAnuncioFlotante()" class="absolute top-3 right-3 z-20 bg-black/60 hover:bg-cobre text-white w-8 h-8 rounded-full flex items-center justify-center transition border border-gray-600" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
       
       <div id="anuncio-bg" class="w-full min-h-[180px] relative p-8 flex flex-col items-center justify-center text-center bg-fondoOscuro">
          <div class="absolute inset-0 bg-gradient-to-b from-black/80 to-fondoTarjeta z-0"></div> 
@@ -98,17 +99,13 @@
   <!-- Modal Detalle de Producto -->
   <div id="modal-producto" class="fixed inset-0 bg-black/95 hidden items-center justify-center p-4 z-50 transition-opacity opacity-0 backdrop-blur-sm">
     <div class="bg-fondoTarjeta rounded-md max-w-4xl w-full overflow-hidden border border-gray-700 shadow-2xl relative max-h-[90vh] flex flex-col">
+      <button onclick="cerrarModalProducto()" class="absolute top-4 right-4 z-20 bg-black/50 hover:bg-cobre text-white w-8 h-8 rounded-full flex items-center justify-center transition border border-gray-600" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
       
-      <!-- Botón Cerrar (Fijo arriba a la derecha, por encima del scroll) -->
-      <button onclick="cerrarModalProducto()" class="absolute top-4 right-4 z-20 bg-black/50 hover:bg-cobre text-white w-8 h-8 rounded-full flex items-center justify-center transition border border-gray-600"><i class="fa-solid fa-xmark"></i></button>
-      
-      <!-- Contenedor general SCROLLABLE (mueve foto y texto juntos) -->
       <div class="w-full overflow-y-auto flex flex-col md:flex-row">
-        
         <!-- Lado Izquierdo: Galería -->
         <div class="md:w-1/2 bg-fondoOscuro relative flex flex-col">
           <div class="w-full aspect-[3/4] relative">
-            <img id="modal-img-principal" src="" class="w-full h-full object-cover transition-opacity duration-300">
+            <img id="modal-img-principal" src="" alt="Producto" class="w-full h-full object-cover transition-opacity duration-300">
           </div>
           <div id="modal-miniaturas" class="flex gap-2 p-3 overflow-x-auto bg-[#0a0908] border-t border-gray-800"></div>
         </div>
@@ -119,11 +116,10 @@
           <h3 id="modal-nombre" class="font-titulo text-3xl md:text-4xl text-textoClaro mb-4 leading-tight"></h3>
           <p id="modal-descripcion" class="text-textoGris text-sm leading-relaxed mb-8 whitespace-pre-wrap"></p>
           
-          <a id="btn-pedir-whatsapp" href="#" target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded shadow-lg transition uppercase tracking-widest text-sm flex items-center justify-center gap-2 mt-auto">
+          <a id="btn-pedir-whatsapp" href="#" target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded shadow-lg transition uppercase tracking-widest text-sm flex items-center justify-center gap-2 mt-auto flex-shrink-0">
             <i class="fa-brands fa-whatsapp text-lg"></i> Consultar Disponibilidad
           </a>
         </div>
-
       </div>
     </div>
   </div>
@@ -148,6 +144,7 @@
     let categorias = [];
     let telefonoWhatsapp = "5493764123456"; 
     let hayAnuncioParaMostrar = false;
+    let datosAnuncio = null;
 
     sumarVisita();
     inicializarCatalogo();
@@ -167,16 +164,12 @@
           getDocs(collection(db, "productos"))
         ]);
 
-        const promesasDeImagenes = [];
-
         if (anuncioSnap.exists()) {
           const anuncio = anuncioSnap.data();
           if (anuncio.activo) {
             hayAnuncioParaMostrar = true;
+            datosAnuncio = anuncio;
             prepararAnuncioFlotante(anuncio);
-            if (anuncio.imagen) {
-              promesasDeImagenes.push(esperarImagen(anuncio.imagen));
-            }
           }
         }
 
@@ -185,21 +178,16 @@
         });
         categorias.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-        let fotosProductoEncontradas = 0;
         productosSnap.forEach(doc => {
-          const prod = { id: doc.id, ...doc.data() };
-          productos.push(prod);
-          
-          if (prod.imagen && fotosProductoEncontradas < 6) {
-            promesasDeImagenes.push(esperarImagen(prod.imagen));
-            fotosProductoEncontradas++;
-          }
+          productos.push({ id: doc.id, ...doc.data() });
         });
 
         renderizarFiltros();
         filtrarProductos('todos');
 
-        await Promise.all(promesasDeImagenes);
+        // OPTIMIZACIÓN PAGESPEED: Ya no esperamos a que descarguen las imágenes.
+        // Apenas la base de datos entregó los textos (que tarda milisegundos), sacamos el logo.
+        // El navegador se encargará de ir descargando las fotos usando el 'loading="lazy"'.
 
       } catch (error) {
         console.error("Error al cargar base de datos:", error);
@@ -208,24 +196,22 @@
       }
     }
 
-    function esperarImagen(url) {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.src = url;
-        img.onload = resolve;  
-        img.onerror = resolve; 
-      });
-    }
-
     function quitarSplashScreen(mostrarAnuncio) {
       const splash = document.getElementById('splash-screen');
       splash.classList.add('opacity-0');
       setTimeout(() => {
         splash.style.display = 'none';
-        if(mostrarAnuncio) {
-          setTimeout(() => { mostrarAnuncioFlotante(); }, 200); 
+        
+        if(mostrarAnuncio && datosAnuncio && datosAnuncio.imagen) {
+            // Si hay anuncio, precargamos su foto oculta antes de lanzarlo para que no parpadee
+            const img = new Image();
+            img.src = datosAnuncio.imagen;
+            img.onload = () => setTimeout(() => mostrarAnuncioFlotante(), 100);
+            img.onerror = () => setTimeout(() => mostrarAnuncioFlotante(), 100);
+        } else if (mostrarAnuncio) {
+            setTimeout(() => mostrarAnuncioFlotante(), 200); 
         }
-      }, 700); 
+      }, 500); 
     }
 
     function prepararAnuncioFlotante(anuncio) {
@@ -292,10 +278,11 @@
       filtrados.forEach(prod => {
         const tieneGaleria = (prod.galeria && prod.galeria.length > 0) ? `<div class="absolute top-3 right-3 bg-black/80 text-white text-[10px] px-2 py-1 rounded shadow border border-gray-700"><i class="fa-solid fa-images"></i> +${prod.galeria.length}</div>` : '';
         
+        // OPTIMIZACIÓN PAGESPEED: Agregado loading="lazy" a las imágenes de la grilla
         grilla.innerHTML += `
           <div onclick="abrirModalProducto('${prod.id}')" class="bg-fondoTarjeta rounded-md border border-gray-800 flex flex-col shadow-lg cursor-pointer group hover:border-cobre transition duration-300">
             <div class="w-full aspect-[3/4] overflow-hidden bg-fondoOscuro rounded-t-md relative">
-              <img src="${prod.imagen}" class="w-full h-full object-cover opacity-90 group-hover:scale-105 group-hover:opacity-100 transition duration-500" onerror="this.style.display='none'">
+              <img src="${prod.imagen}" alt="${prod.nombre}" loading="lazy" class="w-full h-full object-cover opacity-90 group-hover:scale-105 group-hover:opacity-100 transition duration-500" onerror="this.style.display='none'">
               ${tieneGaleria}
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end justify-center pb-6">
                  <span class="bg-cobre text-white text-xs font-bold px-4 py-2 rounded-full shadow uppercase tracking-wider">Ver Detalles</span>
@@ -334,8 +321,9 @@
 
       if (todasLasFotos.length > 1) {
         todasLasFotos.forEach(url => {
+          // OPTIMIZACIÓN PAGESPEED: Agregado loading="lazy" a las miniaturas
           contenedorMiniaturas.innerHTML += `
-            <img src="${url}" onclick="cambiarFotoPrincipal('${url}')" class="w-16 h-16 object-cover rounded cursor-pointer border border-transparent hover:border-cobre transition opacity-70 hover:opacity-100 flex-shrink-0" onerror="this.style.display='none'">
+            <img src="${url}" alt="Miniatura" loading="lazy" onclick="cambiarFotoPrincipal('${url}')" class="w-16 h-16 object-cover rounded cursor-pointer border border-transparent hover:border-cobre transition opacity-70 hover:opacity-100 flex-shrink-0" onerror="this.style.display='none'">
           `;
         });
       }
@@ -344,7 +332,6 @@
       modal.classList.remove('hidden');
       modal.classList.add('flex');
       
-      // Reseteamos el scroll de la ventana interior al abrir un postre nuevo
       modal.querySelector('.overflow-y-auto').scrollTop = 0;
 
       setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
