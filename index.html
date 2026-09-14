@@ -103,7 +103,8 @@
       <!-- Lado Izquierdo: Galería -->
       <div class="md:w-1/2 bg-fondoOscuro relative flex flex-col">
         <div class="w-full aspect-[3/4] relative">
-          <img id="modal-img-principal" src="" class="w-full h-full object-cover">
+          <!-- Agregado: transition-opacity duration-300 para el fundido -->
+          <img id="modal-img-principal" src="" class="w-full h-full object-cover transition-opacity duration-300">
         </div>
         <div id="modal-miniaturas" class="flex gap-2 p-3 overflow-x-auto bg-[#0a0908] border-t border-gray-800"></div>
       </div>
@@ -213,13 +214,11 @@
       });
     }
 
-    // La Coreografía: Saca el Splash, espera un pelito y abre el Anuncio
     function quitarSplashScreen(mostrarAnuncio) {
       const splash = document.getElementById('splash-screen');
       splash.classList.add('opacity-0');
       setTimeout(() => {
         splash.style.display = 'none';
-        
         if(mostrarAnuncio) {
           setTimeout(() => { mostrarAnuncioFlotante(); }, 200); 
         }
@@ -313,8 +312,10 @@
     window.abrirModalProducto = function(id) {
       const prod = productos.find(p => p.id === id);
       
-      document.getElementById('modal-img-principal').src = prod.imagen || '';
-      document.getElementById('modal-img-principal').style.display = prod.imagen ? 'block' : 'none';
+      const imgPrincipal = document.getElementById('modal-img-principal');
+      imgPrincipal.classList.remove('opacity-0'); // Asegurarnos de que inicie visible
+      imgPrincipal.src = prod.imagen || '';
+      imgPrincipal.style.display = prod.imagen ? 'block' : 'none';
       
       document.getElementById('modal-categoria').innerText = prod.categoria;
       document.getElementById('modal-nombre').innerText = prod.nombre;
@@ -345,8 +346,31 @@
       document.body.style.overflow = 'hidden'; 
     }
 
+    // --- MAGIA DEL CAMBIO DE FOTOS ---
     window.cambiarFotoPrincipal = function(url) {
-      document.getElementById('modal-img-principal').src = url;
+      const imgPrincipal = document.getElementById('modal-img-principal');
+      
+      // Si el cliente toca la miniatura de la foto que ya está viendo, ignoramos para no hacer el efecto en vano
+      if (imgPrincipal.src === url) return;
+
+      // 1. Ocultamos suavemente la foto actual
+      imgPrincipal.classList.add('opacity-0');
+      
+      // 2. Esperamos un instante a que se termine de ocultar (300ms por el duration-300 de Tailwind)
+      setTimeout(() => {
+        // Le cambiamos el origen estando "invisible"
+        imgPrincipal.src = url;
+        
+        // 3. Cuando el navegador avisa que la nueva foto descargó completa, la mostramos
+        imgPrincipal.onload = () => {
+          imgPrincipal.classList.remove('opacity-0');
+        };
+        
+        // Prevención: por si llega a fallar la conexión justo en ese milisegundo
+        imgPrincipal.onerror = () => {
+          imgPrincipal.classList.remove('opacity-0');
+        }
+      }, 300);
     }
 
     window.cerrarModalProducto = function() {
