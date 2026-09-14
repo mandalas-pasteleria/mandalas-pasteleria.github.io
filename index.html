@@ -97,26 +97,33 @@
 
   <!-- Modal Detalle de Producto -->
   <div id="modal-producto" class="fixed inset-0 bg-black/95 hidden items-center justify-center p-4 z-50 transition-opacity opacity-0 backdrop-blur-sm">
-    <div class="bg-fondoTarjeta rounded-md max-w-4xl w-full flex flex-col md:flex-row overflow-hidden border border-gray-700 shadow-2xl relative max-h-[90vh]">
-      <button onclick="cerrarModalProducto()" class="absolute top-4 right-4 z-10 bg-black/50 hover:bg-cobre text-white w-8 h-8 rounded-full flex items-center justify-center transition border border-gray-600"><i class="fa-solid fa-xmark"></i></button>
+    <div class="bg-fondoTarjeta rounded-md max-w-4xl w-full overflow-hidden border border-gray-700 shadow-2xl relative max-h-[90vh] flex flex-col">
       
-      <!-- Lado Izquierdo: Galería -->
-      <div class="md:w-1/2 bg-fondoOscuro relative flex flex-col">
-        <div class="w-full aspect-[3/4] relative">
-          <img id="modal-img-principal" src="" class="w-full h-full object-cover transition-opacity duration-300">
-        </div>
-        <div id="modal-miniaturas" class="flex gap-2 p-3 overflow-x-auto bg-[#0a0908] border-t border-gray-800"></div>
-      </div>
+      <!-- Botón Cerrar (Fijo arriba a la derecha, por encima del scroll) -->
+      <button onclick="cerrarModalProducto()" class="absolute top-4 right-4 z-20 bg-black/50 hover:bg-cobre text-white w-8 h-8 rounded-full flex items-center justify-center transition border border-gray-600"><i class="fa-solid fa-xmark"></i></button>
       
-      <!-- Lado Derecho: Info (Ahora con barra de desplazamiento) -->
-      <div class="md:w-1/2 p-6 md:p-10 flex flex-col bg-fondoTarjeta overflow-y-auto">
-        <p id="modal-categoria" class="text-cobre text-[10px] uppercase font-bold tracking-widest mb-2"></p>
-        <h3 id="modal-nombre" class="font-titulo text-3xl md:text-4xl text-textoClaro mb-4 leading-tight"></h3>
-        <p id="modal-descripcion" class="text-textoGris text-sm leading-relaxed mb-8 whitespace-pre-wrap"></p>
+      <!-- Contenedor general SCROLLABLE (mueve foto y texto juntos) -->
+      <div class="w-full overflow-y-auto flex flex-col md:flex-row">
         
-        <a id="btn-pedir-whatsapp" href="#" target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded shadow-lg transition uppercase tracking-widest text-sm flex items-center justify-center gap-2 mt-auto flex-shrink-0">
-          <i class="fa-brands fa-whatsapp text-lg"></i> Consultar Disponibilidad
-        </a>
+        <!-- Lado Izquierdo: Galería -->
+        <div class="md:w-1/2 bg-fondoOscuro relative flex flex-col">
+          <div class="w-full aspect-[3/4] relative">
+            <img id="modal-img-principal" src="" class="w-full h-full object-cover transition-opacity duration-300">
+          </div>
+          <div id="modal-miniaturas" class="flex gap-2 p-3 overflow-x-auto bg-[#0a0908] border-t border-gray-800"></div>
+        </div>
+        
+        <!-- Lado Derecho: Info -->
+        <div class="md:w-1/2 p-6 md:p-10 flex flex-col justify-center bg-fondoTarjeta">
+          <p id="modal-categoria" class="text-cobre text-[10px] uppercase font-bold tracking-widest mb-2"></p>
+          <h3 id="modal-nombre" class="font-titulo text-3xl md:text-4xl text-textoClaro mb-4 leading-tight"></h3>
+          <p id="modal-descripcion" class="text-textoGris text-sm leading-relaxed mb-8 whitespace-pre-wrap"></p>
+          
+          <a id="btn-pedir-whatsapp" href="#" target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded shadow-lg transition uppercase tracking-widest text-sm flex items-center justify-center gap-2 mt-auto">
+            <i class="fa-brands fa-whatsapp text-lg"></i> Consultar Disponibilidad
+          </a>
+        </div>
+
       </div>
     </div>
   </div>
@@ -336,6 +343,10 @@
       const modal = document.getElementById('modal-producto');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
+      
+      // Reseteamos el scroll de la ventana interior al abrir un postre nuevo
+      modal.querySelector('.overflow-y-auto').scrollTop = 0;
+
       setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
       document.body.style.overflow = 'hidden'; 
     }
