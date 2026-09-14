@@ -103,19 +103,18 @@
       <!-- Lado Izquierdo: Galería -->
       <div class="md:w-1/2 bg-fondoOscuro relative flex flex-col">
         <div class="w-full aspect-[3/4] relative">
-          <!-- Agregado: transition-opacity duration-300 para el fundido -->
           <img id="modal-img-principal" src="" class="w-full h-full object-cover transition-opacity duration-300">
         </div>
         <div id="modal-miniaturas" class="flex gap-2 p-3 overflow-x-auto bg-[#0a0908] border-t border-gray-800"></div>
       </div>
       
-      <!-- Lado Derecho: Info -->
-      <div class="md:w-1/2 p-6 md:p-10 flex flex-col justify-center bg-fondoTarjeta">
+      <!-- Lado Derecho: Info (Ahora con barra de desplazamiento) -->
+      <div class="md:w-1/2 p-6 md:p-10 flex flex-col bg-fondoTarjeta overflow-y-auto">
         <p id="modal-categoria" class="text-cobre text-[10px] uppercase font-bold tracking-widest mb-2"></p>
         <h3 id="modal-nombre" class="font-titulo text-3xl md:text-4xl text-textoClaro mb-4 leading-tight"></h3>
         <p id="modal-descripcion" class="text-textoGris text-sm leading-relaxed mb-8 whitespace-pre-wrap"></p>
         
-        <a id="btn-pedir-whatsapp" href="#" target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded shadow-lg transition uppercase tracking-widest text-sm flex items-center justify-center gap-2 mt-auto">
+        <a id="btn-pedir-whatsapp" href="#" target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded shadow-lg transition uppercase tracking-widest text-sm flex items-center justify-center gap-2 mt-auto flex-shrink-0">
           <i class="fa-brands fa-whatsapp text-lg"></i> Consultar Disponibilidad
         </a>
       </div>
@@ -163,7 +162,6 @@
 
         const promesasDeImagenes = [];
 
-        // 1. Procesar Anuncio Flotante
         if (anuncioSnap.exists()) {
           const anuncio = anuncioSnap.data();
           if (anuncio.activo) {
@@ -175,13 +173,11 @@
           }
         }
 
-        // 2. Procesar Categorías
         categoriasSnap.forEach(doc => {
           if (!doc.data().oculta) categorias.push({ id: doc.id, ...doc.data() });
         });
         categorias.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-        // 3. Procesar Productos
         let fotosProductoEncontradas = 0;
         productosSnap.forEach(doc => {
           const prod = { id: doc.id, ...doc.data() };
@@ -225,7 +221,6 @@
       }, 700); 
     }
 
-    // --- LÓGICA ANUNCIO FLOTANTE ---
     function prepararAnuncioFlotante(anuncio) {
       document.getElementById('anuncio-flotante-titulo').innerText = anuncio.titulo;
       document.getElementById('anuncio-flotante-texto').innerText = anuncio.texto;
@@ -258,7 +253,6 @@
       }, 300);
     }
 
-    // --- FUNCIONES VISUALES DE LA GRILLA ---
     function renderizarFiltros() {
       const menu = document.getElementById("menu-categorias");
       menu.innerHTML = `<button onclick="filtrarProductos('todos')" class="menu-btn menu-activo text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
@@ -313,7 +307,7 @@
       const prod = productos.find(p => p.id === id);
       
       const imgPrincipal = document.getElementById('modal-img-principal');
-      imgPrincipal.classList.remove('opacity-0'); // Asegurarnos de que inicie visible
+      imgPrincipal.classList.remove('opacity-0'); 
       imgPrincipal.src = prod.imagen || '';
       imgPrincipal.style.display = prod.imagen ? 'block' : 'none';
       
@@ -346,27 +340,20 @@
       document.body.style.overflow = 'hidden'; 
     }
 
-    // --- MAGIA DEL CAMBIO DE FOTOS ---
     window.cambiarFotoPrincipal = function(url) {
       const imgPrincipal = document.getElementById('modal-img-principal');
       
-      // Si el cliente toca la miniatura de la foto que ya está viendo, ignoramos para no hacer el efecto en vano
       if (imgPrincipal.src === url) return;
 
-      // 1. Ocultamos suavemente la foto actual
       imgPrincipal.classList.add('opacity-0');
       
-      // 2. Esperamos un instante a que se termine de ocultar (300ms por el duration-300 de Tailwind)
       setTimeout(() => {
-        // Le cambiamos el origen estando "invisible"
         imgPrincipal.src = url;
         
-        // 3. Cuando el navegador avisa que la nueva foto descargó completa, la mostramos
         imgPrincipal.onload = () => {
           imgPrincipal.classList.remove('opacity-0');
         };
         
-        // Prevención: por si llega a fallar la conexión justo en ese milisegundo
         imgPrincipal.onerror = () => {
           imgPrincipal.classList.remove('opacity-0');
         }
