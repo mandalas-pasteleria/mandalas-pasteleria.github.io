@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mandalas Cosas Ricas</title>
+  <title>Mandalas - Cosas Ricas</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,100 +29,92 @@
   </script>
   <style>
     .menu-activo { color: #b87352 !important; border-bottom: 2px solid #b87352; padding-bottom: 2px; }
-    html { scroll-behavior: smooth; }
-    .fade-in-up { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
-    .fade-in-up.visible { opacity: 1; transform: translateY(0); }
-    .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* Animación de latido para el logo del Splash Screen */
+    @keyframes pulsoSuave {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+    }
+    .animacion-latido { animation: pulsoSuave 2s infinite ease-in-out; }
   </style>
 </head>
 
-<body class="bg-gradient-to-b from-fondoOscuro via-fondoOscuro to-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
-  <div class="fixed top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-cobre opacity-[0.04] blur-[120px] rounded-full pointer-events-none z-0"></div>
-  <div class="fixed bottom-[-10%] right-[-5%] w-[30rem] h-[30rem] bg-cobre opacity-[0.05] blur-[100px] rounded-full pointer-events-none z-0"></div>
+<body class="bg-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
 
-  <nav class="bg-fondoOscuro py-4 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center sticky top-0 z-40 border-b border-gray-800 shadow-xl">
-    <div class="font-titulo text-2xl font-bold tracking-wider text-textoClaro mb-4 md:mb-0 cursor-pointer" onclick="window.scrollTo(0,0)">
-      Mandalas Cosas Ricas
+  <!-- PANTALLA DE CARGA (SPLASH SCREEN) INTELIGENTE -->
+  <!-- Estará por encima de todo tapando la web hasta que las fotos descarguen -->
+  <div id="splash-screen" class="fixed inset-0 bg-fondoOscuro z-[9999] flex flex-col items-center justify-center transition-opacity duration-700">
+    <img src="logo_mandalas_cobre.png" alt="Mandalas Cosas Ricas" class="w-48 md:w-64 animacion-latido mb-4 drop-shadow-2xl">
+  </div>
+
+  <!-- NAVEGACIÓN -->
+  <nav class="bg-fondoOscuro py-4 px-6 md:px-12 flex flex-wrap justify-between items-center border-b border-gray-800 shadow-xl sticky top-0 z-40">
+    <div class="font-titulo text-2xl font-bold text-cobre tracking-wide flex items-center gap-2">
+      <img src="logo_mandalas_cobre.png" class="w-8 h-8 opacity-80" alt="Icono">
+      Mandalas <span class="text-textoClaro italic font-normal text-lg">Cosas Ricas</span>
     </div>
-    <div class="flex gap-5">
-      <a href="https://www.instagram.com/mandalascosasricas" target="_blank" class="text-textoClaro hover:text-cobre text-xl transition transform hover:scale-110">
-        <i class="fa-brands fa-instagram"></i>
-      </a>
-      <a href="https://wa.me/543755641575" target="_blank" class="text-textoClaro hover:text-cobre text-xl transition transform hover:scale-110">
-        <i class="fa-brands fa-whatsapp"></i>
-      </a>
+    <div class="flex gap-4 mt-2 md:mt-0">
+      <a href="https://instagram.com/mandalas.cosasricas" target="_blank" class="text-textoGris hover:text-cobre transition text-xl"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://wa.me/5493764123456" target="_blank" class="text-textoGris hover:text-green-500 transition text-xl"><i class="fa-brands fa-whatsapp"></i></a>
     </div>
   </nav>
 
-  <header class="flex flex-col md:flex-row min-h-[60vh] md:min-h-[70vh]">
-    <div class="md:w-1/2 flex flex-col justify-center p-10 md:p-20 order-2 md:order-1 relative z-10">
-      <h1 class="font-titulo text-5xl md:text-7xl font-bold leading-tight mb-6">
-        Repostería<br><span class="text-cobre italic font-normal">Artesanal</span>
-      </h1>
-      <p class="text-textoGris font-light leading-relaxed max-w-md text-sm md:text-base">
-        Repostería 100% artesanal hecha con amor y dedicación. Tortas personalizadas, mesas dulces y muchas delicias caseras para tus momentos especiales o la merienda de todos los días.<br><br>
-        <span class="font-semibold text-textoClaro">Pedidos con al menos 24 hs de anticipacion.</span>
-      </p>
+  <!-- SECCIÓN DE ANUNCIO (Se inyecta por JS si está activo) -->
+  <div id="contenedor-anuncio"></div>
+
+  <!-- MAIN / CATÁLOGO -->
+  <main class="py-10 px-6 md:px-12 max-w-7xl mx-auto w-full flex-grow">
+    
+    <!-- Filtros de Categorías -->
+    <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 mb-12">
+      <!-- Se llenan desde Firestore -->
     </div>
     
-    <div class="md:w-1/2 order-1 md:order-2 h-64 md:h-auto relative flex items-center justify-center overflow-hidden">
-      <div class="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-fondoOscuro to-transparent z-10"></div>
-      <img src="97569.png" alt="Mandala Portada" class="w-full h-full object-cover opacity-90 transition duration-700" 
-           style="-webkit-mask-image: radial-gradient(circle at center, black 35%, transparent 85%); mask-image: radial-gradient(circle at center, black 35%, transparent 85%);">
-    </div>
-  </header>
-
-  <main id="seccion-productos" class="py-20 px-6 md:px-12">
+    <h2 id="titulo-categoria" class="font-titulo text-3xl text-textoClaro capitalize mb-8 text-center border-b border-gray-700 pb-2 inline-block mx-auto">Todo</h2>
     
-    <div class="text-center mb-10">
-      <h2 id="titulo-categoria" class="font-titulo text-4xl md:text-5xl text-textoClaro capitalize mb-4">
-        Todas nuestras delicias
-      </h2>
-      <div class="w-24 h-1 bg-cobre mx-auto mb-10"></div>
-
-      <div class="max-w-md mx-auto mb-12 relative">
-        <input type="text" id="buscador" onkeyup="buscarProducto()" placeholder="Buscar tortas, budines, postres..." class="w-full bg-fondoTarjeta text-textoClaro border border-gray-700 rounded-sm py-3 px-4 pl-12 focus:outline-none focus:border-cobre transition shadow-lg font-light text-sm placeholder-gray-500">
-        <i class="fa-solid fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-textoGris"></i>
-      </div>
-
-      <div id="menu-categorias" class="flex flex-wrap justify-center gap-4 md:gap-8 border-b border-gray-800 pb-4"></div>
-    </div>
-
-    <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
-      <p class="text-center w-full col-span-full py-10 text-textoGris"><i class="fa-solid fa-spinner fa-spin text-cobre text-2xl mb-2"></i><br>Cargando delicias...</p>
+    <!-- Grilla de Tortas -->
+    <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      <!-- Los productos se inyectan acá -->
     </div>
 
   </main>
 
-  <footer class="bg-fondoOscuro py-8 text-center border-t border-gray-800 mt-auto">
-    <p class="text-textoGris text-xs uppercase tracking-widest">&copy; Mandalas Cosas Ricas</p>
+  <footer class="bg-fondoOscuro py-6 text-center border-t border-gray-800 mt-auto">
+    <p class="text-textoGris text-xs uppercase tracking-widest font-semibold mb-1">Mandalas Cosas Ricas &copy; 2026</p>
+    <p class="text-[10px] text-gray-600">Posadas, Misiones</p>
   </footer>
 
-  <!-- Modal Producto (Ajustado el aspecto visual a 3:4 real sin deformar) -->
-  <div id="modal-producto" class="fixed inset-0 bg-black bg-opacity-95 hidden flex-col items-center justify-center p-4 z-50 transition-opacity backdrop-blur-sm overflow-y-auto"></div>
-
-  <!-- NUEVO: Modal de Anuncio -->
-  <div id="modal-anuncio" class="fixed inset-0 bg-black/90 hidden items-center justify-center p-4 z-[60] transition-opacity backdrop-blur-md">
-    <div class="bg-fondoTarjeta w-full max-w-lg mx-auto rounded-md overflow-hidden shadow-2xl relative flex flex-col min-h-[300px] border border-cobre/30 animate-fade-in-up">
+  <!-- Modal Detalle de Producto -->
+  <div id="modal-producto" class="fixed inset-0 bg-black/95 hidden items-center justify-center p-4 z-50 transition-opacity opacity-0 backdrop-blur-sm">
+    <div class="bg-fondoTarjeta rounded-md max-w-4xl w-full flex flex-col md:flex-row overflow-hidden border border-gray-700 shadow-2xl relative max-h-[90vh]">
+      <button onclick="cerrarModalProducto()" class="absolute top-4 right-4 z-10 bg-black/50 hover:bg-cobre text-white w-8 h-8 rounded-full flex items-center justify-center transition border border-gray-600"><i class="fa-solid fa-xmark"></i></button>
       
-      <!-- Fondo texturado con opacidad baja -->
-      <div id="anuncio-bg" class="absolute inset-0 z-0 opacity-20 bg-cover bg-center"></div>
+      <!-- Lado Izquierdo: Galería -->
+      <div class="md:w-1/2 bg-fondoOscuro relative flex flex-col">
+        <div class="w-full aspect-[3/4] relative">
+          <img id="modal-img-principal" src="" class="w-full h-full object-cover">
+        </div>
+        <div id="modal-miniaturas" class="flex gap-2 p-3 overflow-x-auto bg-[#0a0908] border-t border-gray-800">
+          <!-- Miniaturas -->
+        </div>
+      </div>
       
-      <!-- Contenido del anuncio por encima de la textura -->
-      <div class="relative z-10 p-8 flex flex-col items-center text-center h-full justify-center">
-        <button onclick="cerrarAnuncio()" class="absolute top-3 right-3 text-textoGris hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
-        <h3 id="anuncio-titulo" class="font-titulo text-3xl md:text-4xl text-cobre mb-4 font-bold tracking-wide leading-tight"></h3>
-        <p id="anuncio-texto" class="text-textoClaro text-base md:text-lg leading-relaxed whitespace-pre-wrap mb-2"></p>
+      <!-- Lado Derecho: Info -->
+      <div class="md:w-1/2 p-6 md:p-10 flex flex-col justify-center bg-fondoTarjeta">
+        <p id="modal-categoria" class="text-cobre text-[10px] uppercase font-bold tracking-widest mb-2"></p>
+        <h3 id="modal-nombre" class="font-titulo text-3xl md:text-4xl text-textoClaro mb-4 leading-tight"></h3>
+        <p id="modal-descripcion" class="text-textoGris text-sm leading-relaxed mb-8 whitespace-pre-wrap"></p>
         
-        <button onclick="cerrarAnuncio()" class="mt-8 bg-cobre hover:bg-cobreOscuro text-white font-bold py-3 px-8 rounded transition uppercase tracking-widest text-xs shadow-lg">Entendido</button>
+        <a id="btn-pedir-whatsapp" href="#" target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded shadow-lg transition uppercase tracking-widest text-sm flex items-center justify-center gap-2 mt-auto">
+          <i class="fa-brands fa-whatsapp text-lg"></i> Consultar Disponibilidad
+        </a>
       </div>
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, setDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBw3U23D7b8nPhZa4z5sSNkqHPx1jVdIIg",
@@ -138,228 +130,222 @@
 
     let productos = [];
     let categorias = [];
-    window.fotosModal = [];
-    window.indiceModalActual = 0;
+    let telefonoWhatsapp = "5493764123456"; // Cambialo por tu número real de pedidos
 
-    async function registrarVisita() {
-      if (!sessionStorage.getItem("visitaContada")) {
-        try {
-          await setDoc(doc(db, "estadisticas", "visitas"), { total: increment(1) }, { merge: true });
-          sessionStorage.setItem("visitaContada", "true");
-        } catch (error) { console.log(error); }
-      }
-    }
-    registrarVisita();
+    // Al arrancar la web, sumamos una visita y arrancamos la carga pesada
+    sumarVisita();
+    inicializarCatalogo();
 
-    const observador = new IntersectionObserver((entradas) => {
-      entradas.forEach(entrada => {
-        if (entrada.isIntersecting) { entrada.target.classList.add('visible'); }
-      });
-    }, { threshold: 0.1 });
-
-    async function cargarDatos() {
-      const catSnap = await getDocs(collection(db, "categorias"));
-      catSnap.forEach((doc) => { categorias.push({ id: doc.id, ...doc.data() }); });
-      
-      const prodSnap = await getDocs(collection(db, "productos"));
-      prodSnap.forEach((doc) => { productos.push({ id: doc.id, ...doc.data() }); });
-      
-      renderizarMenu();
-      filtrar('todos');
-
-      // CARGAR ANUNCIO AL ENTRAR
-      cargarAnuncio();
-    }
-
-    // --- LOGICA DEL ANUNCIO EMERGENTE ---
-    async function cargarAnuncio() {
-      // Si ya lo vio en esta pestaña/sesión, no lo molestamos más.
-      if (sessionStorage.getItem("anuncioVisto")) return;
-      
+    async function sumarVisita() {
       try {
-        const docSnap = await getDoc(doc(db, "configuracion", "anuncio"));
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (data.activo) {
-            document.getElementById('anuncio-titulo').innerText = data.titulo;
-            document.getElementById('anuncio-texto').innerText = data.texto;
-            if (data.imagen) {
-              document.getElementById('anuncio-bg').style.backgroundImage = `url('${data.imagen}')`;
+        const refVisitas = doc(db, "estadisticas", "visitas");
+        await updateDoc(refVisitas, { total: increment(1) });
+      } catch (e) { console.log("Visita no contada"); }
+    }
+
+    // --- CARGA INTELIGENTE (PROMESA) + SPLASH SCREEN ---
+    async function inicializarCatalogo() {
+      try {
+        // Pedimos los datos a Firestore en paralelo
+        const [anuncioSnap, categoriasSnap, productosSnap] = await Promise.all([
+          getDoc(doc(db, "configuracion", "anuncio")),
+          getDocs(collection(db, "categorias")),
+          getDocs(collection(db, "productos"))
+        ]);
+
+        const promesasDeImagenes = [];
+
+        // 1. Procesar Anuncio
+        if (anuncioSnap.exists()) {
+          const anuncio = anuncioSnap.data();
+          if (anuncio.activo) {
+            renderizarAnuncio(anuncio);
+            // Si el anuncio tiene imagen de fondo, exigimos que se descargue antes de sacar el logo
+            if (anuncio.imagen) {
+              promesasDeImagenes.push(esperarImagen(anuncio.imagen));
             }
-            const modal = document.getElementById('modal-anuncio');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
           }
         }
-      } catch (e) { console.log("No hay anuncios activos"); }
-    }
 
-    window.cerrarAnuncio = function() {
-      const modal = document.getElementById('modal-anuncio');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      // Lo marcamos como visto para que no vuelva a saltar si navega o recarga
-      sessionStorage.setItem("anuncioVisto", "true");
-    }
-    // ------------------------------------
+        // 2. Procesar Categorías
+        categoriasSnap.forEach(doc => {
+          if (!doc.data().oculta) categorias.push({ id: doc.id, ...doc.data() });
+        });
+        categorias.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-    function renderizarMenu() {
-      const menu = document.getElementById("menu-categorias");
-      menu.innerHTML = `<button onclick="filtrar('todos')" class="menu-btn menu-activo text-textoGris hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
-      const categoriasVisibles = categorias.filter(cat => !cat.oculta);
-      categoriasVisibles.forEach(cat => {
-        menu.innerHTML += `<button onclick="filtrar('${cat.nombre}')" class="menu-btn text-textoGris hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">${cat.nombre}</button>`;
-      });
-    }
+        // 3. Procesar Productos
+        let fotosProductoEncontradas = 0;
+        productosSnap.forEach(doc => {
+          const prod = { id: doc.id, ...doc.data() };
+          productos.push(prod);
+          
+          // Exigimos que las primeras 6 fotos se descarguen antes de sacar el logo
+          if (prod.imagen && fotosProductoEncontradas < 6) {
+            promesasDeImagenes.push(esperarImagen(prod.imagen));
+            fotosProductoEncontradas++;
+          }
+        });
 
-    function obtenerProductosVisibles() {
-      const nombresCategoriasVisibles = categorias.filter(c => !c.oculta).map(c => c.nombre.toLowerCase());
-      return productos.filter(p => nombresCategoriasVisibles.includes(p.categoria.toLowerCase()));
-    }
+        // Armamos la parte visual (botones y HTML) en segundo plano
+        renderizarFiltros();
+        filtrarProductos('todos');
 
-    window.buscarProducto = function() {
-      const texto = document.getElementById("buscador").value.toLowerCase();
-      const botones = document.querySelectorAll(".menu-btn");
-      botones.forEach(btn => btn.classList.remove("menu-activo"));
-      
-      if(texto === "") {
-        document.getElementById("titulo-categoria").innerText = "Todas nuestras delicias";
-        if(botones.length > 0) botones[0].classList.add("menu-activo");
-      } else {
-        document.getElementById("titulo-categoria").innerText = "Resultados de búsqueda";
+        // LA MAGIA: Esperamos que Firebase termine de mandar los "pesos pesados" (las fotos)
+        await Promise.all(promesasDeImagenes);
+
+      } catch (error) {
+        console.error("Error al cargar base de datos:", error);
+      } finally {
+        // Haya cargado bien o haya fallado algo, destapamos la página (quitamos Splash)
+        quitarSplashScreen();
       }
-
-      const productosPermitidos = obtenerProductosVisibles();
-      const filtrados = productosPermitidos.filter(p => 
-        p.nombre.toLowerCase().includes(texto) || 
-        p.descripcion.toLowerCase().includes(texto) ||
-        p.categoria.toLowerCase().includes(texto)
-      );
-      renderizarProductos(filtrados);
     }
 
-    window.filtrar = function(catNombre) {
-      document.getElementById("buscador").value = ""; 
-      const botones = document.querySelectorAll(".menu-btn");
-      botones.forEach(btn => {
-        btn.classList.remove("menu-activo");
-        const textoBoton = btn.innerText.toLowerCase();
-        if (catNombre === "todos" && textoBoton === "todo") btn.classList.add("menu-activo");
-        else if (textoBoton === catNombre.toLowerCase()) btn.classList.add("menu-activo");
-      });
-
-      document.getElementById("titulo-categoria").innerText = catNombre === "todos" ? "Todas nuestras delicias" : catNombre;
-      const productosPermitidos = obtenerProductosVisibles();
-      const filtrados = catNombre === "todos" ? productosPermitidos : productosPermitidos.filter(p => p.categoria.toLowerCase() === catNombre.toLowerCase());
-      renderizarProductos(filtrados);
-    }
-
-    function renderizarProductos(items) {
-      const grilla = document.getElementById("grilla-productos");
-      grilla.innerHTML = "";
-
-      if (items.length === 0) {
-        grilla.innerHTML = `<p class="text-textoGris text-center col-span-full py-10">No se encontraron delicias para mostrar.</p>`;
-        return;
-      }
-
-      items.forEach(prod => {
-        const tarjeta = document.createElement('div');
-        tarjeta.className = "fade-in-up bg-fondoTarjeta p-5 rounded-sm shadow-xl hover:-translate-y-2 transition transform duration-300 cursor-pointer group flex flex-col items-center border border-gray-800 relative";
-        tarjeta.onclick = () => window.abrirModal(prod.id);
-        
-        const galeriaReal = (prod.galeria || []).filter(url => url !== prod.imagen);
-        const iconoGaleria = (galeriaReal.length > 0) ? `<div class="absolute top-7 right-7 bg-black/60 text-white rounded-full p-2 text-xs backdrop-blur-sm z-10 shadow-lg"><i class="fa-solid fa-images"></i></div>` : '';
-
-        tarjeta.innerHTML = `
-          ${iconoGaleria}
-          <div class="w-full aspect-[3/4] overflow-hidden rounded-sm mb-6 bg-fondoOscuro flex items-center justify-center relative">
-            <img src="${prod.imagen}" loading="lazy" alt="${prod.nombre}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
-          </div>
-          <h3 class="font-titulo font-bold text-center text-textoClaro text-xl mb-2 leading-tight group-hover:text-cobre transition">${prod.nombre}</h3>
-          <div class="h-[1px] w-12 bg-cobre opacity-50 mt-2 mb-4"></div>
-          <p class="text-textoGris text-xs uppercase tracking-widest">Ver Detalles</p>
-        `;
-        grilla.appendChild(tarjeta); observador.observe(tarjeta);
+    // Herramienta para rastrear que una foto bajó de internet
+    function esperarImagen(url) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = resolve;  // Termina cuando carga bien
+        img.onerror = resolve; // Termina aunque falle (para no trabar la página)
       });
     }
 
-    window.cambiarFotoModal = function(direccion, evento) {
-      if(evento) evento.stopPropagation();
-      window.indiceModalActual += direccion;
-      
-      if (window.indiceModalActual < 0) window.indiceModalActual = window.fotosModal.length - 1;
-      if (window.indiceModalActual >= window.fotosModal.length) window.indiceModalActual = 0;
-      
-      const imgContenedor = document.getElementById('imagen-modal-principal');
-      imgContenedor.style.opacity = '0.3';
-      
+    // Efecto elegante de desvanecimiento
+    function quitarSplashScreen() {
+      const splash = document.getElementById('splash-screen');
+      splash.classList.add('opacity-0');
       setTimeout(() => {
-        imgContenedor.src = window.fotosModal[window.indiceModalActual];
-        imgContenedor.style.opacity = '1';
-        document.getElementById('indicador-fotos').innerText = (window.indiceModalActual + 1) + " / " + window.fotosModal.length;
-      }, 150);
+        splash.style.display = 'none';
+      }, 700); // 700ms es el tiempo que configuramos en el HTML (duration-700)
     }
 
-    window.abrirModal = function(id) {
-      const prod = productos.find(p => p.id === id);
-      if (!prod) return;
-
-      const todasLasFotos = [prod.imagen, ...(prod.galeria || [])];
-      window.fotosModal = [...new Set(todasLasFotos)]; 
-      window.indiceModalActual = 0;
-
-      let controlesCarrusel = '';
-      if (window.fotosModal.length > 1) {
-        controlesCarrusel = `
-          <button onclick="cambiarFotoModal(-1, event)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black text-white rounded-full w-10 h-10 flex items-center justify-center transition shadow-lg border border-gray-600 z-20"><i class="fa-solid fa-chevron-left"></i></button>
-          <button onclick="cambiarFotoModal(1, event)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black text-white rounded-full w-10 h-10 flex items-center justify-center transition shadow-lg border border-gray-600 z-20"><i class="fa-solid fa-chevron-right"></i></button>
-          <div id="indicador-fotos" class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/80 px-3 py-1 rounded-full text-white text-[10px] tracking-widest z-20 border border-gray-600 shadow-md">
-            1 / ${window.fotosModal.length}
-          </div>
-        `;
+    // --- FUNCIONES VISUALES (Las que ya tenías optimizadas) ---
+    function renderizarAnuncio(anuncio) {
+      const contenedor = document.getElementById('contenedor-anuncio');
+      let fondoStyle = "background-color: #1a1816;";
+      
+      if (anuncio.imagen) {
+        // Le ponemos un degradado negro arriba para que el texto se lea perfecto siempre
+        fondoStyle = `background-image: linear-gradient(to right, rgba(22, 20, 18, 0.95), rgba(22, 20, 18, 0.8)), url('${anuncio.imagen}'); background-size: cover; background-position: center;`;
       }
 
-      const modal = document.getElementById("modal-producto");
-      modal.classList.remove("hidden");
-      modal.classList.add("flex");
-
-      // EL CAMBIO DE ASPECT RATIO: 
-      // Reemplazado el "max-h-[45vh]" por "w-full sm:w-3/4 mx-auto aspect-[3/4]"
-      modal.innerHTML = `
-        <div class="bg-fondoTarjeta w-full max-w-md mx-auto rounded-md overflow-hidden shadow-2xl relative flex flex-col my-auto animate-fade-in-up border border-gray-700" onclick="event.stopPropagation()">
-          <button onclick="cerrarModal()" class="absolute top-3 right-3 bg-black/60 hover:bg-black/90 text-white rounded-full w-8 h-8 flex items-center justify-center z-30 transition border border-gray-600 shadow-lg">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-          
-          <div class="w-full mx-auto aspect-[3/4] overflow-hidden bg-fondoOscuro relative group shrink-0">
-            <img id="imagen-modal-principal" src="${window.fotosModal[0]}" class="w-full h-full object-cover object-center transition-opacity duration-300">
-            ${controlesCarrusel}
-          </div>
-          
-          <div class="p-6 flex flex-col items-center text-center">
-            <p class="text-cobre text-[10px] uppercase font-bold tracking-widest mb-1">${prod.categoria}</p>
-            <h3 class="font-titulo text-3xl text-textoClaro mb-3">${prod.nombre}</h3>
-            <p class="text-textoGris text-sm mb-6 leading-relaxed">${prod.descripcion}</p>
-            <a href="https://wa.me/543755641575?text=Hola!%20Me%20gustar%C3%ADa%20consultar%20por%20el/la%20${encodeURIComponent(prod.nombre)}" target="_blank" class="w-full bg-cobre hover:bg-cobreOscuro text-white font-bold py-3 rounded transition uppercase tracking-widest text-sm flex justify-center items-center gap-2 mt-auto shadow-lg">
-              Consultar <i class="fa-brands fa-whatsapp text-lg"></i>
-            </a>
+      contenedor.innerHTML = `
+        <div class="w-full border-b border-cobre/30 relative overflow-hidden" style="${fondoStyle}">
+          <div class="max-w-7xl mx-auto py-8 px-6 md:px-12 flex flex-col md:flex-row items-center gap-6">
+            <div class="bg-cobre/20 text-cobre p-4 rounded-full flex-shrink-0 border border-cobre/30 shadow-[0_0_15px_rgba(184,115,82,0.3)]">
+              <i class="fa-solid fa-bullhorn text-2xl"></i>
+            </div>
+            <div>
+              <h3 class="font-titulo text-2xl text-cobre mb-2 drop-shadow-md">${anuncio.titulo}</h3>
+              <p class="text-textoClaro text-sm leading-relaxed max-w-3xl">${anuncio.texto}</p>
+            </div>
           </div>
         </div>
       `;
     }
 
-    window.cerrarModal = function() {
-      const modal = document.getElementById("modal-producto");
-      modal.classList.add("hidden");
-      modal.classList.remove("flex");
+    function renderizarFiltros() {
+      const menu = document.getElementById("menu-categorias");
+      menu.innerHTML = `<button onclick="filtrarProductos('todos')" class="menu-btn menu-activo text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">Todo</button>`;
+      
+      categorias.forEach(cat => {
+        menu.innerHTML += `<button onclick="filtrarProductos('${cat.nombre}')" class="menu-btn text-textoClaro hover:text-cobre transition text-xs font-semibold tracking-widest uppercase">${cat.nombre}</button>`;
+      });
     }
 
-    document.getElementById("modal-producto").addEventListener('click', function(e) {
-      if(e.target === this) { window.cerrarModal(); }
-    });
+    window.filtrarProductos = function(cat) {
+      const botones = document.querySelectorAll(".menu-btn");
+      botones.forEach(btn => {
+        btn.classList.remove("menu-activo");
+        const textoBoton = btn.innerText.replace(" ", "").toLowerCase();
+        if (cat === "todos" && textoBoton.includes("todo")) btn.classList.add("menu-activo");
+        else if (textoBoton.includes(cat.replace(" ", "").toLowerCase())) btn.classList.add("menu-activo");
+      });
 
-    cargarDatos();
+      document.getElementById("titulo-categoria").innerText = cat === "todos" ? "Catálogo Completo" : cat;
+
+      const filtrados = cat === "todos" ? productos : productos.filter(p => p.categoria.toLowerCase() === cat.toLowerCase());
+      const grilla = document.getElementById("grilla-productos");
+      grilla.innerHTML = "";
+
+      if(filtrados.length === 0) {
+        grilla.innerHTML = `<div class="col-span-full text-center py-10 text-textoGris"><i class="fa-solid fa-cookie-bite text-4xl mb-4 opacity-50"></i><p>Próximamente más delicias en esta categoría.</p></div>`;
+        return;
+      }
+
+      filtrados.forEach(prod => {
+        const tieneGaleria = (prod.galeria && prod.galeria.length > 0) ? `<div class="absolute top-3 right-3 bg-black/80 text-white text-[10px] px-2 py-1 rounded shadow border border-gray-700"><i class="fa-solid fa-images"></i> +${prod.galeria.length}</div>` : '';
+        
+        grilla.innerHTML += `
+          <div onclick="abrirModalProducto('${prod.id}')" class="bg-fondoTarjeta rounded-md border border-gray-800 flex flex-col shadow-lg cursor-pointer group hover:border-cobre transition duration-300">
+            <div class="w-full aspect-[3/4] overflow-hidden bg-fondoOscuro rounded-t-md relative">
+              <img src="${prod.imagen}" class="w-full h-full object-cover opacity-90 group-hover:scale-105 group-hover:opacity-100 transition duration-500" onerror="this.style.display='none'">
+              ${tieneGaleria}
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end justify-center pb-6">
+                 <span class="bg-cobre text-white text-xs font-bold px-4 py-2 rounded-full shadow uppercase tracking-wider">Ver Detalles</span>
+              </div>
+            </div>
+            <div class="p-5 flex flex-col flex-grow">
+              <p class="text-cobre text-[10px] uppercase font-bold tracking-widest mb-1">${prod.categoria}</p>
+              <h3 class="font-titulo text-lg text-textoClaro mb-2 leading-tight">${prod.nombre}</h3>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    window.abrirModalProducto = function(id) {
+      const prod = productos.find(p => p.id === id);
+      
+      document.getElementById('modal-img-principal').src = prod.imagen || '';
+      document.getElementById('modal-img-principal').style.display = prod.imagen ? 'block' : 'none';
+      
+      document.getElementById('modal-categoria').innerText = prod.categoria;
+      document.getElementById('modal-nombre').innerText = prod.nombre;
+      document.getElementById('modal-descripcion').innerText = prod.descripcion;
+      
+      // Armamos el link de WhatsApp con mensaje prearmado
+      const msj = encodeURIComponent(`¡Hola Mandalas! Quisiera consultar la disponibilidad de: *${prod.nombre}*.`);
+      document.getElementById('btn-pedir-whatsapp').href = `https://wa.me/${telefonoWhatsapp}?text=${msj}`;
+
+      // Miniaturas de Galería
+      const contenedorMiniaturas = document.getElementById('modal-miniaturas');
+      contenedorMiniaturas.innerHTML = "";
+      
+      let todasLasFotos = [];
+      if(prod.imagen) todasLasFotos.push(prod.imagen);
+      if(prod.galeria) todasLasFotos = [...todasLasFotos, ...prod.galeria];
+
+      if (todasLasFotos.length > 1) {
+        todasLasFotos.forEach(url => {
+          contenedorMiniaturas.innerHTML += `
+            <img src="${url}" onclick="cambiarFotoPrincipal('${url}')" class="w-16 h-16 object-cover rounded cursor-pointer border border-transparent hover:border-cobre transition opacity-70 hover:opacity-100 flex-shrink-0" onerror="this.style.display='none'">
+          `;
+        });
+      }
+
+      const modal = document.getElementById('modal-producto');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      // Timeout chiquito para que Tailwind tome la animación de opacidad
+      setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
+      document.body.style.overflow = 'hidden'; // Evita scrollear el fondo
+    }
+
+    window.cambiarFotoPrincipal = function(url) {
+      document.getElementById('modal-img-principal').src = url;
+    }
+
+    window.cerrarModalProducto = function() {
+      const modal = document.getElementById('modal-producto');
+      modal.classList.add('opacity-0');
+      setTimeout(() => { 
+        modal.classList.add('hidden'); 
+        modal.classList.remove('flex');
+        document.body.style.overflow = 'auto';
+      }, 300);
+    }
   </script>
 </body>
 </html>
