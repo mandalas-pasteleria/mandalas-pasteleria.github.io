@@ -446,11 +446,12 @@
 
             ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, anchoObjetivo, altoObjetivo);
             
-            // CONVERSIÓN A WEBP DEFINITIVA
+
+// CONVERSIÓN A WEBP (MÁXIMA VELOCIDAD - 75%)
             canvas.toBlob((blob) => { 
               const nuevoNombre = archivo.name.replace(/\.[^/.]+$/, "") + ".webp";
               resolve(new File([blob], nuevoNombre, { type: 'image/webp' })); 
-            }, 'image/webp', 0.90); 
+            }, 'image/webp', 0.75);
           };
         };
       });
