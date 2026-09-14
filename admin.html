@@ -449,11 +449,11 @@
             }
 
             ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, anchoObjetivo, altoObjetivo);
-            
+
             canvas.toBlob((blob) => { 
               const nuevoNombre = archivo.name.replace(/\.[^/.]+$/, "") + ".jpg";
               resolve(new File([blob], nuevoNombre, { type: 'image/jpeg' })); 
-            }, 'image/jpeg', 0.85); 
+            }, 'image/jpeg', 0.85);
           };
         };
       });
