@@ -34,7 +34,7 @@
 
 <body class="bg-fondoMedio text-textoClaro font-texto min-h-screen flex flex-col antialiased">
 
-  <!-- PANTALLA DE LOGIN (SEGURIDAD) -->
+  <!-- PANTALLA DE LOGIN -->
   <div id="login-screen" class="min-h-screen flex items-center justify-center bg-fondoOscuro p-4 z-50">
     <div class="bg-fondoTarjeta p-8 rounded-md shadow-2xl border border-gray-700 w-full max-w-sm text-center">
       <h2 class="font-titulo text-3xl text-cobre mb-6">Mandalas Admin</h2>
@@ -58,14 +58,8 @@
       </div>
       
       <div class="flex flex-wrap gap-2 md:gap-3">
-        <!-- BOTÓN NUEVO: GUÍA DE FOTOS -->
         <button onclick="descargarRespaldoFotos()" class="bg-blue-900 hover:bg-blue-800 text-white text-[10px] sm:text-xs font-bold py-2 px-3 rounded transition shadow flex items-center gap-2 uppercase tracking-wider border border-blue-700">
           <i class="fa-solid fa-list-check"></i> <span class="hidden sm:inline">Guía Fotos</span>
-        </button>
-
-        <!-- BOTÓN MIGRAR FOTOS -->
-        <button onclick="abrirModalMigrador()" class="bg-emerald-900 hover:bg-emerald-800 text-white text-[10px] sm:text-xs font-bold py-2 px-3 rounded transition shadow flex items-center gap-2 uppercase tracking-wider border border-emerald-700">
-          <i class="fa-solid fa-wand-magic-sparkles"></i> <span class="hidden sm:inline">Migrar Fotos</span>
         </button>
 
         <button onclick="abrirModalAnuncio()" class="bg-indigo-900 hover:bg-indigo-800 text-white text-[10px] sm:text-xs font-bold py-2 px-3 rounded transition shadow flex items-center gap-2 uppercase tracking-wider border border-indigo-700">
@@ -73,7 +67,7 @@
         </button>
 
         <button onclick="descargarRespaldo()" class="bg-gray-800 hover:bg-gray-700 text-white text-[10px] sm:text-xs font-bold py-2 px-3 rounded transition shadow flex items-center gap-2 uppercase tracking-wider border border-gray-600">
-          <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Respaldo</span>
+          <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Respaldo BD</span>
         </button>
 
         <button onclick="abrirModalCategorias()" class="bg-gray-700 hover:bg-gray-600 text-white text-[10px] sm:text-xs font-bold py-2 px-3 rounded transition shadow flex items-center gap-2 uppercase tracking-wider">
@@ -139,7 +133,7 @@
           <div id="preview-portada" class="mt-3 hidden">
             <p class="text-[10px] text-textoGris mb-1 uppercase tracking-wider">Portada Actual:</p>
             <div class="w-24 h-24 rounded-md overflow-hidden border-2 border-gray-600 shadow-md">
-              <img id="img-portada-actual" src="" class="w-full h-full object-cover">
+              <img id="img-portada-actual" src="" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/600x800/161412/b87352?text=Error'">
             </div>
           </div>
         </div>
@@ -195,7 +189,6 @@
 
         <div class="bg-fondoOscuro p-4 rounded border border-gray-700">
           <label class="block text-sm font-bold text-indigo-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-image"></i> Imagen de Fondo (Textura)</label>
-          <p class="text-xs text-gray-400 mb-2">Se mostrará oscurecida por detrás del texto.</p>
           <input type="file" id="anuncio-imagen" accept="image/*" class="w-full text-sm text-textoGris file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-indigo-900 file:text-white hover:file:bg-indigo-800 transition">
           <div id="preview-anuncio-bg" class="mt-3 hidden">
             <p class="text-[10px] text-textoGris mb-1 uppercase tracking-wider">Fondo Actual:</p>
@@ -210,28 +203,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE MIGRACIÓN WEBP -->
-  <div id="modal-migrador" class="fixed inset-0 bg-black bg-opacity-95 hidden flex items-center justify-center p-4 z-[60] transition-opacity overflow-y-auto">
-    <div class="bg-fondoTarjeta rounded-md max-w-lg w-full p-8 border border-emerald-900 shadow-2xl relative my-auto">
-      <button onclick="cerrarModalMigrador()" class="absolute top-4 right-4 text-textoGris hover:text-textoClaro transition"><i class="fa-solid fa-xmark text-xl"></i></button>
-      
-      <h3 class="font-titulo text-2xl text-emerald-500 mb-2"><i class="fa-solid fa-wand-magic-sparkles"></i> Optimización WebP</h3>
-      <p class="text-sm text-textoGris mb-6 border-b border-gray-700 pb-4">Esta herramienta detecta todos los productos de tu catálogo, descarga sus fotos, las encuadra (3:4), las convierte al formato de máxima velocidad (WebP) conservando la calidad, y las resube sin mezclar productos.</p>
-
-      <button onclick="iniciarMigracionMobile()" id="btn-migrar" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded shadow-md transition uppercase tracking-widest text-sm flex items-center justify-center gap-2">
-        <i class="fa-solid fa-play"></i> Iniciar Proceso
-      </button>
-
-      <!-- Consola visual del Migrador -->
-      <div id="consola-migrador" class="mt-6 bg-black border border-gray-700 text-emerald-400 font-mono text-xs p-4 rounded h-48 overflow-y-auto hidden flex-col gap-1.5 break-words">
-        <!-- Textos de progreso aquí -->
-      </div>
-    </div>
-  </div>
-    <script type="module">
-    // USAMOS DIRECTAMENTE TU KEY DE IMGBB
-    const IMGBB_API_KEY = "ce0938ece2bee753e1fdb8725e95e854";
-
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -284,9 +256,7 @@
         });
     });
 
-    window.cerrarSesion = function() {
-      signOut(auth).then(() => { window.location.reload(); });
-    }
+    window.cerrarSesion = function() { signOut(auth).then(() => { window.location.reload(); }); }
 
     function iniciarAppAdmin() {
       cargarVisitas();
@@ -398,7 +368,7 @@
         grilla.innerHTML += `
           <div class="bg-fondoTarjeta p-4 rounded border border-gray-700 flex flex-col shadow-lg">
             <div class="w-full aspect-[3/4] overflow-hidden mb-3 bg-fondoOscuro rounded relative">
-              <img src="${prod.imagen}" class="w-full h-full object-cover opacity-90">
+              <img src="${prod.imagen}" class="w-full h-full object-cover opacity-90" onerror="this.src='https://via.placeholder.com/600x800/161412/b87352?text=Error'">
               ${badgeGaleria}
             </div>
             <p class="text-cobre text-[10px] uppercase font-bold tracking-widest">${prod.categoria}</p>
@@ -431,31 +401,21 @@
 
       productos.forEach(prod => {
         texto += `🎂 PRODUCTO: ${prod.nombre.toUpperCase()} (${prod.categoria})\n`;
-        
-        if (prod.imagen) {
-          texto += `   - Link Portada vieja: ${prod.imagen}\n`;
-        } else {
-          texto += `   - Portada: (Sin foto cargada)\n`;
-        }
-
+        if (prod.imagen) { texto += `   - Link Portada vieja: ${prod.imagen}\n`; } else { texto += `   - Portada: (Sin foto cargada)\n`; }
         if (prod.galeria && prod.galeria.length > 0) {
-          prod.galeria.forEach((img, i) => {
-            texto += `   - Link Galería ${i+1} vieja: ${img}\n`;
-          });
+          prod.galeria.forEach((img, i) => { texto += `   - Link Galería ${i+1} vieja: ${img}\n`; });
         }
         texto += `--------------------------------------------------\n`;
       });
 
-      // Descargar como archivo de texto (.txt)
       const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
-      const enlace = document.createElement('a'); 
-      enlace.href = url;
+      const enlace = document.createElement('a'); enlace.href = url;
       enlace.download = `Guia_Resubir_Fotos_Mandalas.txt`;
-      enlace.click(); 
-      URL.revokeObjectURL(url);
+      enlace.click(); URL.revokeObjectURL(url);
     }
 
+    // --- PROCESADOR DE IMÁGENES (600x800, JPG) ---
     const comprimirImagen = (archivo) => {
       return new Promise((resolve) => {
         const reader = new FileReader(); 
@@ -467,7 +427,6 @@
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            // Resolución y relación de aspecto estricta (3:4)
             const anchoObjetivo = 600;
             const altoObjetivo = 800;
             canvas.width = anchoObjetivo;
@@ -477,7 +436,6 @@
             const ratioImagen = img.width / img.height;
             let sx, sy, sWidth, sHeight;
 
-            // Recorte exacto para no deformar (Cover)
             if (ratioImagen > ratioObjetivo) {
               sHeight = img.height;
               sWidth = sHeight * ratioObjetivo;
@@ -492,7 +450,6 @@
 
             ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, anchoObjetivo, altoObjetivo);
             
-            // CAMBIADO A JPG AL 85% PARA QUE IMGBB NO ROMPA LA IMAGEN
             canvas.toBlob((blob) => { 
               const nuevoNombre = archivo.name.replace(/\.[^/.]+$/, "") + ".jpg";
               resolve(new File([blob], nuevoNombre, { type: 'image/jpeg' })); 
@@ -501,6 +458,25 @@
         };
       });
     };
+
+    // --- NUEVO MOTOR: SUBIDA A CLOUDINARY ---
+    async function subirACloudinary(archivo) {
+      const formData = new FormData();
+      formData.append('file', archivo);
+      formData.append('upload_preset', 'mandalas-cosas-ricas');
+
+      const response = await fetch('https://api.cloudinary.com/v1_1/difaxp0o/image/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.secure_url) {
+        return data.secure_url;
+      } else {
+        throw new Error('Cloudinary rechazó la imagen. Revisá la configuración del preset.');
+      }
+    }
 
     window.abrirModalNuevo = function() {
       document.getElementById('form-producto').reset();
@@ -546,14 +522,17 @@
 
     window.eliminarFotoGaleria = function(index) { galeriaActual.splice(index, 1); renderizarGaleriaActual(); }
     window.cerrarModal = function() { document.getElementById("modal-form").classList.add("hidden"); }
-
     window.borrarProducto = async function(id) {
       if(confirm("¿Borrar producto?")) { await deleteDoc(doc(db, "productos", id)); cargarProductos(); }
     }
 
+    // --- GUARDAR PRODUCTO EN FIREBASE Y FOTOS EN CLOUDINARY ---
     document.getElementById('form-producto').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const boton = document.getElementById('btn-guardar'); const originalText = boton.innerHTML; boton.disabled = true;
+      const boton = document.getElementById('btn-guardar'); 
+      const originalText = boton.innerHTML; 
+      boton.disabled = true;
+      
       try {
         const id = document.getElementById('prod-id').value;
         const archivoFoto = document.getElementById('imagen-file').files[0];
@@ -561,34 +540,48 @@
         let urlFinal = urlImagenActual; 
 
         if (archivoFoto) {
-          boton.innerHTML = 'Procesando portada...';
-          const fotoComprimida = await comprimirImagen(archivoFoto); const formData = new FormData(); formData.append("image", fotoComprimida);
-          const respuestaImgBB = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-          const datosImgBB = await respuestaImgBB.json();
-          if (datosImgBB.success) { urlFinal = datosImgBB.data.url; } else { throw new Error("Fallo al subir portada"); }
+          boton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo portada...';
+          const fotoComprimida = await comprimirImagen(archivoFoto); 
+          urlFinal = await subirACloudinary(fotoComprimida);
         }
 
         let nuevasUrlsGaleria = [];
         if (archivosGaleria.length > 0) {
           for (let i = 0; i < archivosGaleria.length; i++) {
-            boton.innerHTML = `Subiendo galería (${i+1}/${archivosGaleria.length})...`;
-            const fotoCom = await comprimirImagen(archivosGaleria[i]); const formGal = new FormData(); formGal.append("image", fotoCom);
-            const respGal = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formGal });
-            const dataGal = await respGal.json();
-            if (dataGal.success) { nuevasUrlsGaleria.push(dataGal.data.url); }
+            boton.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Galería (${i+1}/${archivosGaleria.length})...`;
+            const fotoCom = await comprimirImagen(archivosGaleria[i]); 
+            const urlGaleria = await subirACloudinary(fotoCom);
+            nuevasUrlsGaleria.push(urlGaleria);
           }
         }
         
         const galeriaFinal = [...galeriaActual, ...nuevasUrlsGaleria];
-        const datosProducto = { nombre: document.getElementById('nombre').value, categoria: document.getElementById('categoria-select').value, descripcion: document.getElementById('descripcion').value, imagen: urlFinal, galeria: galeriaFinal };
+        const datosProducto = { 
+          nombre: document.getElementById('nombre').value, 
+          categoria: document.getElementById('categoria-select').value, 
+          descripcion: document.getElementById('descripcion').value, 
+          imagen: urlFinal, 
+          galeria: galeriaFinal 
+        };
 
-        boton.innerHTML = 'Guardando...';
-        if (id) { await updateDoc(doc(db, "productos", id), datosProducto); } else { await addDoc(collection(db, "productos"), datosProducto); }
-        cerrarModal(); cargarProductos(); 
-      } catch (error) { alert("Error: " + error.message); } finally { boton.innerHTML = originalText; boton.disabled = false; }
+        boton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando datos...';
+        if (id) { 
+          await updateDoc(doc(db, "productos", id), datosProducto); 
+        } else { 
+          await addDoc(collection(db, "productos"), datosProducto); 
+        }
+        
+        cerrarModal(); 
+        cargarProductos(); 
+      } catch (error) { 
+        alert("Error: " + error.message); 
+      } finally { 
+        boton.innerHTML = originalText; 
+        boton.disabled = false; 
+      }
     });
 
-    // --- LÓGICA DE ANUNCIOS ---
+    // --- LÓGICA DE ANUNCIOS CON CLOUDINARY ---
     window.abrirModalAnuncio = async function() {
       document.getElementById("modal-anuncio").classList.remove("hidden");
       try {
@@ -623,12 +616,9 @@
         let urlFinal = urlAnuncioActual; 
 
         if (archivoFoto) {
-          boton.innerHTML = 'Subiendo fondo...';
+          boton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo fondo...';
           const fotoComprimida = await comprimirImagen(archivoFoto); 
-          const formData = new FormData(); formData.append("image", fotoComprimida);
-          const respuestaImgBB = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-          const datosImgBB = await respuestaImgBB.json();
-          if (datosImgBB.success) { urlFinal = datosImgBB.data.url; }
+          urlFinal = await subirACloudinary(fotoComprimida);
         }
 
         const datosAnuncio = {
@@ -638,174 +628,17 @@
           imagen: urlFinal
         };
 
-        boton.innerHTML = 'Guardando...';
+        boton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
         await setDoc(doc(db, "configuracion", "anuncio"), datosAnuncio);
         cerrarModalAnuncio();
         alert("Anuncio actualizado con éxito.");
-      } catch (error) { alert("Error al guardar anuncio"); } finally { boton.innerHTML = originalText; boton.disabled = false; }
-    });
-
-    // --- HERRAMIENTA DE MIGRACIÓN AUTOMÁTICA ---
-    window.abrirModalMigrador = function() {
-      document.getElementById('modal-migrador').classList.remove('hidden');
-    }
-
-    window.cerrarModalMigrador = function() {
-      document.getElementById('modal-migrador').classList.add('hidden');
-    }
-
-    function logMigrador(texto) {
-      const consola = document.getElementById('consola-migrador');
-      const span = document.createElement('span');
-      span.innerText = `> ${texto}`;
-      consola.appendChild(span);
-      consola.scrollTop = consola.scrollHeight;
-    }
-    async function procesarYSubirFoto(urlOriginal) {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.src = `https://api.codetabs.com/v1/proxy?quest=${urlOriginal}`;
-        
-        img.onload = () => {
-          try {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            const anchoObjetivo = 600;
-            const altoObjetivo = 800;
-            canvas.width = anchoObjetivo;
-            canvas.height = altoObjetivo;
-
-            const ratioObjetivo = anchoObjetivo / altoObjetivo;
-            const ratioImagen = img.width / img.height;
-            let sx, sy, sWidth, sHeight;
-
-            if (ratioImagen > ratioObjetivo) {
-              sHeight = img.height;
-              sWidth = sHeight * ratioObjetivo;
-              sx = (img.width - sWidth) / 2;
-              sy = 0;
-            } else {
-              sWidth = img.width;
-              sHeight = sWidth / ratioObjetivo;
-              sx = 0;
-              sy = (img.height - sHeight) / 2;
-            }
-
-            ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, anchoObjetivo, altoObjetivo);
-
-            // TAMBIÉN CAMBIADO A JPG PARA QUE NO ROMPA SI LO USAS
-            const base64DataUrl = canvas.toDataURL('image/jpeg', 0.85);
-            const base64Puro = base64DataUrl.split(',')[1];
-
-            const formData = new FormData();
-            formData.append('key', IMGBB_API_KEY);
-            formData.append('image', base64Puro);
-            formData.append('name', `mandalas_optimizada_${Date.now()}`);
-
-            fetch('https://api.imgbb.com/1/upload', {
-              method: 'POST',
-              body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-              if (data.success) { resolve(data.data.url); } else { reject('ImgBB rechazó la foto'); }
-            })
-            .catch(err => reject('Error subiendo a ImgBB'));
-          } catch(err) {
-            reject('Fallo al comprimir (Canvas)');
-          }
-        };
-
-        img.onerror = () => reject('El proxy bloqueó la descarga');
-      });
-    }
-
-    window.iniciarMigracionMobile = async function() {
-      const btn = document.getElementById('btn-migrar');
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando... (No bloquees el celu)';
-      
-      const consola = document.getElementById('consola-migrador');
-      consola.innerHTML = '';
-      consola.classList.remove('hidden');
-      consola.classList.add('flex');
-      
-      logMigrador("Conectando a base de datos...");
-
-      try {
-        const snapshot = await getDocs(collection(db, "productos"));
-        let contador = 0;
-
-        for (const documento of snapshot.docs) {
-          const id = documento.id;
-          const data = documento.data();
-          let necesitaActualizar = false;
-          let datosNuevos = {};
-
-          logMigrador(`Analizando producto: ${data.nombre}`);
-
-          if (data.imagen && !data.imagen.includes('mandalas_optimizada')) {
-            logMigrador(`  - Descargando portada...`);
-            try {
-              const nuevaUrl = await procesarYSubirFoto(data.imagen);
-              datosNuevos.imagen = nuevaUrl;
-              necesitaActualizar = true;
-              logMigrador(`  - Portada resubida con éxito!`);
-            } catch (e) {
-              logMigrador(`  - Falló: ${e}`);
-            }
-          }
-
-          if (data.galeria && Array.isArray(data.galeria)) {
-            let nuevaGaleria = [];
-            let galeriaCambiada = false;
-
-            for (let i = 0; i < data.galeria.length; i++) {
-              const foto = data.galeria[i];
-              if (!foto.includes('mandalas_optimizada')) {
-                logMigrador(`  - Galería (${i+1}/${data.galeria.length})...`);
-                try {
-                  const nuevaUrl = await procesarYSubirFoto(foto);
-                  nuevaGaleria.push(nuevaUrl);
-                  galeriaCambiada = true;
-                } catch (e) {
-                  logMigrador(`  - Falló foto ${i+1}: ${e}`);
-                  nuevaGaleria.push(foto);
-                }
-              } else {
-                nuevaGaleria.push(foto);
-              }
-            }
-
-            if (galeriaCambiada) {
-              datosNuevos.galeria = nuevaGaleria;
-              necesitaActualizar = true;
-            }
-          }
-
-          if (necesitaActualizar) {
-            logMigrador(`  - Guardando foto nueva en base de datos...`);
-            await updateDoc(doc(db, "productos", id), datosNuevos);
-            contador++;
-            logMigrador(`  ✅ Actualizado con éxito.`);
-          } else {
-            logMigrador(`  ⏭️ Ya estaba optimizada. Saltando.`);
-          }
-        }
-
-        logMigrador(`🎉 ¡MIGRACIÓN COMPLETADA! ${contador} productos arreglados.`);
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> Proceso Terminado';
-        cargarProductos();
-        
-      } catch (error) {
-        logMigrador(`❌ ERROR: ${error.message}`);
-        btn.innerHTML = "Error. Tocar para Reintentar";
-        btn.disabled = false;
+      } catch (error) { 
+        alert("Error al guardar anuncio"); 
+      } finally { 
+        boton.innerHTML = originalText; 
+        boton.disabled = false; 
       }
-    }
-
+    });
   </script>
 </body>
 </html>
