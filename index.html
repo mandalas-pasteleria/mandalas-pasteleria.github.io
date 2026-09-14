@@ -56,8 +56,8 @@
       Mandalas <span class="text-textoClaro italic font-normal text-lg">Cosas Ricas</span>
     </div>
     <div class="flex gap-4 mt-2 md:mt-0">
-      <a href="https://instagram.com/mandalas.cosasricas" target="_blank" class="text-textoGris hover:text-cobre transition text-xl" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-      <a href="https://wa.me/5493764123456" target="_blank" class="text-textoGris hover:text-green-500 transition text-xl" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+      <a href="https://www.instagram.com/mandalascosasricas?stkn=MTFrcXpzMGZxNXlzcg==" target="_blank" class="text-textoGris hover:text-cobre transition text-xl" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://wa.me/543755641575" target="_blank" class="text-textoGris hover:text-green-500 transition text-xl" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
     </div>
   </nav>
 
@@ -150,7 +150,8 @@
 
     let productos = [];
     let categorias = [];
-    let telefonoWhatsapp = "5493764123456"; 
+    // ACÁ ESTÁ CORREGIDO EL NÚMERO DEFINITIVO PARA LOS PEDIDOS
+    let telefonoWhatsapp = "543755641575"; 
     let hayAnuncioParaMostrar = false;
     let categoriaActual = 'todos'; 
 
@@ -206,7 +207,6 @@
         splash.style.display = 'none';
         
         if(mostrarAnuncio) {
-            // Carga la foto directamente desde tu Github antes de lanzar el cartel
             const img = new Image();
             img.src = 'fondo_anuncio.jpg';
             img.onload = () => setTimeout(() => mostrarAnuncioFlotante(), 100);
@@ -220,7 +220,6 @@
       document.getElementById('anuncio-flotante-texto').innerText = anuncio.texto;
       
       const fondo = document.getElementById('anuncio-bg');
-      // Ahora usamos SIEMPRE la foto que subiste a Github (fondo_anuncio.jpg)
       fondo.style.backgroundImage = `url('fondo_anuncio.jpg')`;
       fondo.style.backgroundSize = 'cover';
       fondo.style.backgroundPosition = 'center';
