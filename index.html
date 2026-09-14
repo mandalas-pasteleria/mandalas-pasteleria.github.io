@@ -80,7 +80,13 @@
     <div id="grilla-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
   </main>
 
-  <footer class="bg-fondoOscuro py-6 text-center border-t border-gray-800 mt-auto">
+  <footer class="bg-fondoOscuro py-6 text-center border-t border-gray-800 mt-auto relative">
+    <!-- Enlace oculto del desarrollador (Posicionado absoluto para no mover el texto central) -->
+    <a href="https://wa.me/543755688896" target="_blank" class="absolute left-4 top-1/2 -translate-y-1/2 text-[9px] text-gray-700 hover:text-textoGris transition opacity-60 hover:opacity-100 flex flex-col sm:flex-row items-center sm:gap-1 text-center sm:text-left">
+      <i class="fa-solid fa-code text-[10px] mb-1 sm:mb-0"></i>
+      <span class="leading-tight">Creá tu<br class="sm:hidden"> página acá</span>
+    </a>
+    
     <p class="text-textoGris text-xs uppercase tracking-widest font-semibold mb-1">Mandalas Cosas Ricas &copy; 2026</p>
     <p class="text-[10px] text-gray-600">San Vicente, Misiones</p>
   </footer>
@@ -150,7 +156,6 @@
 
     let productos = [];
     let categorias = [];
-    // ACÁ ESTÁ CORREGIDO EL NÚMERO DEFINITIVO PARA LOS PEDIDOS
     let telefonoWhatsapp = "543755641575"; 
     let hayAnuncioParaMostrar = false;
     let categoriaActual = 'todos'; 
