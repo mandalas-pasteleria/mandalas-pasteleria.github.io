@@ -24,8 +24,8 @@
   <meta property="og:locale" content="es_AR">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="img/favicon.png">
-  <link rel="apple-touch-icon" href="img/favicon.png">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2248%22%20fill%3D%22%23161412%22/%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2242%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%222%22%20stroke-dasharray%3D%222%202%22/%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2234%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%222%22/%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2222%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%221.8%22/%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%225%22%20fill%3D%22%23b87352%22/%3E%3Cpath%20d%3D%22M50%2012%20C44%2026%2044%2034%2050%2038%20C56%2034%2056%2026%2050%2012%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%221.8%22/%3E%3Cpath%20d%3D%22M50%2088%20C44%2074%2044%2066%2050%2062%20C56%2066%2056%2074%2050%2088%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%221.8%22/%3E%3Cpath%20d%3D%22M12%2050%20C26%2044%2034%2044%2038%2050%20C34%2056%2026%2056%2012%2050%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%221.8%22/%3E%3Cpath%20d%3D%22M88%2050%20C74%2044%2066%2044%2062%2050%20C66%2056%2074%2056%2088%2050%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%221.8%22/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2248%22%20fill%3D%22%23161412%22/%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2242%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%222%22%20stroke-dasharray%3D%222%202%22/%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2234%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%222%22/%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2222%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%221.8%22/%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%225%22%20fill%3D%22%23b87352%22/%3E%3Cpath%20d%3D%22M50%2012%20C44%2026%2044%2034%2050%2038%20C56%2034%2056%2026%2050%2012%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%221.8%22/%3E%3Cpath%20d%3D%22M50%2088%20C44%2074%2044%2066%2050%2062%20C56%2066%2056%2074%2050%2088%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%221.8%22/%3E%3Cpath%20d%3D%22M12%2050%20C26%2044%2034%2044%2038%2050%20C34%2056%2026%2056%2012%2050%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%221.8%22/%3E%3Cpath%20d%3D%22M88%2050%20C74%2044%2066%2044%2062%2050%20C66%2056%2074%2056%2088%2050%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23b87352%22%20stroke-width%3D%221.8%22/%3E%3C/svg%3E">
 
   <!-- Preconnect -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -780,7 +780,9 @@ ul {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: #1c110b;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
+}
+.gallery-item.appear {
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
 }
 
 .gallery-item:hover {
@@ -1320,10 +1322,11 @@ ul {
 /* HIGH-PERFORMANCE HARDWARE-ACCELERATED MOBILE & DESKTOP REVEALS */
 .fade-in {
   opacity: 0;
-  transform: translate3d(0, 50px, 0) scale(0.95);
-  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translate3d(0, 70px, 0) scale(0.92);
+  transition: opacity 0.85s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.85s cubic-bezier(0.2, 0.9, 0.3, 1);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  will-change: opacity, transform;
 }
 
 .fade-in.appear {
@@ -2430,8 +2433,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const unrevealed = document.querySelectorAll('.fade-in:not(.appear), .fade-in-left:not(.appear), .fade-in-right:not(.appear)');
     if (unrevealed.length === 0) return;
     const vh = window.innerHeight || document.documentElement.clientHeight;
-    // Trigger elements when they are at or above 92% of screen height
-    const triggerPoint = vh * 0.92;
+    // Trigger elements as soon as they enter within view (88% of screen height)
+    const triggerPoint = vh * 0.88;
     unrevealed.forEach(el => {
       const rect = el.getBoundingClientRect();
       if (rect.top <= triggerPoint && rect.bottom >= 0) {
