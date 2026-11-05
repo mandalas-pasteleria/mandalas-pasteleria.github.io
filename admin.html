@@ -58,6 +58,10 @@
       </div>
       
       <div class="flex flex-wrap gap-2 md:gap-3">
+        <button onclick="abrirModalVisuales()" class="bg-amber-900 hover:bg-amber-800 text-white text-[10px] sm:text-xs font-bold py-2 px-3 rounded transition shadow flex items-center gap-2 uppercase tracking-wider border border-amber-700">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> <span class="hidden sm:inline">Portada / Galería</span>
+        </button>
+
         <button onclick="descargarRespaldoFotos()" class="bg-blue-900 hover:bg-blue-800 text-white text-[10px] sm:text-xs font-bold py-2 px-3 rounded transition shadow flex items-center gap-2 uppercase tracking-wider border border-blue-700">
           <i class="fa-solid fa-list-check"></i> <span class="hidden sm:inline">Guía Fotos</span>
         </button>
@@ -192,6 +196,57 @@
     </div>
   </div>
 
+  <!-- Modal Gestor de Portada y Galería (Inicio) -->
+  <div id="modal-visuales" class="fixed inset-0 bg-black bg-opacity-90 hidden flex items-center justify-center p-4 z-50 transition-opacity overflow-y-auto py-10">
+    <div class="bg-fondoTarjeta rounded-md max-w-2xl w-full p-8 border border-amber-800 shadow-2xl relative my-auto">
+      <button onclick="cerrarModalVisuales()" class="absolute top-4 right-4 text-textoGris hover:text-textoClaro transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+      <h3 class="font-titulo text-2xl text-amber-500 mb-2 border-b border-gray-700 pb-2"><i class="fa-solid fa-wand-magic-sparkles"></i> Personalizar Fotos de Inicio</h3>
+      <p class="text-xs text-textoGris mb-6 leading-relaxed">Configurá la foto grande de la portada inicial (Hero) y las 6 fotos destacadas de la galería <strong>"Momentos Dulces"</strong>. Podés previsualizar exactamente cómo quedarán antes de guardar.</p>
+      
+      <form id="form-visuales" class="flex flex-col gap-6">
+        
+        <!-- SECCIÓN 1: FOTO DE PORTADA GRANDE (HERO) -->
+        <div class="bg-fondoOscuro p-5 rounded-lg border border-gray-700">
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-sm font-bold text-amber-500 uppercase tracking-wider"><i class="fa-solid fa-panorama"></i> 1. Foto Grande de Portada (Hero Principal)</label>
+            <span class="text-[11px] text-gray-400 bg-black/40 px-2 py-0.5 rounded border border-gray-700">1 foto horizontal/panorámica</span>
+          </div>
+          <p class="text-xs text-textoGris mb-3">Esta es la imagen de fondo de pantalla completa apenas entran los clientes.</p>
+
+          <input type="file" id="portada-file" accept="image/*" class="w-full text-sm text-textoGris file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-amber-700 file:text-white hover:file:bg-amber-600 transition mb-3">
+          
+          <div id="preview-portada-box" class="mt-3">
+            <p class="text-[11px] font-semibold text-textoGris mb-1 uppercase tracking-wider flex items-center justify-between">
+              <span>Vista previa de portada actual:</span>
+              <span id="portada-status-tag" class="text-[10px] text-amber-400"></span>
+            </p>
+            <div class="w-full h-44 rounded-lg overflow-hidden border-2 border-amber-600/60 shadow-lg relative bg-black/50">
+              <img id="img-portada-inicio-actual" src="" class="w-full h-full object-cover">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: FOTOS DE LA GALERÍA MOMENTOS DULCES -->
+        <div class="bg-fondoOscuro p-5 rounded-lg border border-gray-700">
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-sm font-bold text-amber-500 uppercase tracking-wider"><i class="fa-solid fa-images"></i> 2. Fotos de la Galería "Momentos Dulces"</label>
+            <span id="galeria-contador-tag" class="text-[11px] text-amber-400 bg-black/40 px-2.5 py-0.5 rounded border border-gray-700 font-bold">0 de 6 recomendadas</span>
+          </div>
+          <p class="text-xs text-textoGris mb-3">La sección de galería del inicio muestra una cuadrícula de <strong>6 fotos destacadas</strong>. Podés agregar nuevas o eliminar las que no quieras.</p>
+          
+          <input type="file" id="galeria-inicio-files" accept="image/*" multiple class="w-full text-sm text-textoGris file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gray-700 file:text-white hover:file:bg-gray-600 transition mb-4">
+          
+          <p class="text-[11px] font-semibold text-textoGris mb-2 uppercase tracking-wider">Fotos cargadas actualmente en la Galería:</p>
+          <div id="galeria-inicio-container" class="grid grid-cols-3 sm:grid-cols-6 gap-3"></div>
+        </div>
+
+        <button type="submit" id="btn-guardar-visuales" class="bg-amber-700 hover:bg-amber-600 text-white font-bold py-3.5 rounded-lg transition uppercase tracking-widest text-sm shadow-xl flex items-center justify-center gap-2">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Guardar Cambios en Inicio
+        </button>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -214,6 +269,20 @@
     let categorias = [];
     let urlImagenActual = ""; 
     let galeriaActual = []; 
+
+    // Estado para portada y galería de inicio
+    const PORTADA_DEFAULT = 'https://res.cloudinary.com/difaxp0o/image/upload/v1789397112/ddf13vslpxchitpjedie.webp';
+    const GALERIA_DEFAULTS = [
+      'https://res.cloudinary.com/difaxp0o/image/upload/v1789397112/ddf13vslpxchitpjedie.webp',
+      'https://res.cloudinary.com/difaxp0o/image/upload/v1789395476/iwdebhnuitzrv82fzlpq.webp',
+      'https://res.cloudinary.com/difaxp0o/image/upload/v1789395726/fpdzytlzmf2k7mtsjgen.webp',
+      'https://res.cloudinary.com/difaxp0o/image/upload/v1789395629/wtqlxvbshcgd0ph9n0pv.webp',
+      'https://res.cloudinary.com/difaxp0o/image/upload/v1789395411/vnovmetq1mzcipa8btnd.webp',
+      'https://res.cloudinary.com/difaxp0o/image/upload/v1789404067/djmlgtz4bcag8lq5xrka.webp'
+    ];
+
+    let portadaInicioActual = "";
+    let galeriaInicioActual = [];
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -592,6 +661,134 @@
       } finally { 
         boton.innerHTML = originalText; 
         boton.disabled = false; 
+      }
+    });
+
+    // --- LÓGICA DE PORTADA Y GALERÍA DE INICIO ---
+    window.abrirModalVisuales = async function() {
+      document.getElementById("modal-visuales").classList.remove("hidden");
+      try {
+        const docSnap = await getDoc(doc(db, "configuracion", "visuales"));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          portadaInicioActual = data.portada || PORTADA_DEFAULT;
+          galeriaInicioActual = (data.galeria && Array.isArray(data.galeria) && data.galeria.length > 0)
+            ? data.galeria
+            : [...GALERIA_DEFAULTS];
+          
+          document.getElementById("portada-status-tag").innerText = data.portada ? "Foto personalizada" : "Foto por defecto";
+        } else {
+          portadaInicioActual = PORTADA_DEFAULT;
+          galeriaInicioActual = [...GALERIA_DEFAULTS];
+          document.getElementById("portada-status-tag").innerText = "Foto por defecto";
+        }
+
+        document.getElementById("img-portada-inicio-actual").src = portadaInicioActual;
+        document.getElementById("portada-file").value = "";
+        document.getElementById("galeria-inicio-files").value = "";
+        renderizarGaleriaInicio();
+      } catch(e) {
+        console.log("Visuales error:", e);
+        portadaInicioActual = PORTADA_DEFAULT;
+        galeriaInicioActual = [...GALERIA_DEFAULTS];
+        document.getElementById("img-portada-inicio-actual").src = portadaInicioActual;
+        renderizarGaleriaInicio();
+      }
+    };
+
+    // Previsualización instantánea al elegir archivo de portada
+    document.getElementById("portada-file").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          document.getElementById("img-portada-inicio-actual").src = evt.target.result;
+          document.getElementById("portada-status-tag").innerText = "Nueva foto elegida: " + file.name;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    window.cerrarModalVisuales = function() {
+      document.getElementById("modal-visuales").classList.add("hidden");
+    };
+
+    function renderizarGaleriaInicio() {
+      const container = document.getElementById("galeria-inicio-container");
+      const contador = document.getElementById("galeria-contador-tag");
+      container.innerHTML = "";
+      
+      const totalFotos = galeriaInicioActual.length;
+      contador.innerText = `${totalFotos} de 6 recomendadas`;
+
+      if (totalFotos > 0) {
+        galeriaInicioActual.forEach((url, index) => {
+          container.innerHTML += `
+            <div class="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-600 shadow group bg-black/60">
+              <img src="${url}" class="w-full h-full object-cover">
+              <span class="absolute bottom-1 left-1 bg-black/80 text-[10px] text-amber-300 px-1.5 py-0.5 rounded font-bold">#${index + 1}</span>
+              <button type="button" onclick="eliminarFotoGaleriaInicio(${index})" title="Quitar foto" class="absolute top-1 right-1 bg-red-600 hover:bg-red-800 text-white rounded-full w-6 h-6 flex items-center justify-center transition shadow"><i class="fa-solid fa-trash text-xs"></i></button>
+            </div>
+          `;
+        });
+      } else {
+        container.innerHTML = `<div class="col-span-full py-4 text-center text-xs text-textoGris italic bg-black/30 rounded border border-dashed border-gray-700">No hay fotos en la galería. Podés cargar hasta 6 fotos para la sección "Momentos Dulces".</div>`;
+      }
+    }
+
+    window.eliminarFotoGaleriaInicio = function(index) {
+      galeriaInicioActual.splice(index, 1);
+      renderizarGaleriaInicio();
+    };
+
+    document.getElementById("form-visuales").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const boton = document.getElementById("btn-guardar-visuales");
+      const originalText = boton.innerHTML;
+      boton.disabled = true;
+
+      try {
+        const archivoPortada = document.getElementById("portada-file").files[0];
+        const archivosGaleria = document.getElementById("galeria-inicio-files").files;
+        let urlPortadaFinal = portadaInicioActual;
+
+        if (archivoPortada) {
+          boton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo nueva foto de portada...';
+          const fotoCom = await comprimirImagen(archivoPortada);
+          urlPortadaFinal = await subirACloudinary(fotoCom);
+        }
+
+        let nuevasUrls = [];
+        if (archivosGaleria.length > 0) {
+          for (let i = 0; i < archivosGaleria.length; i++) {
+            boton.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Subiendo foto galería (${i+1}/${archivosGaleria.length})...`;
+            const fotoCom = await comprimirImagen(archivosGaleria[i]);
+            const urlGal = await subirACloudinary(fotoCom);
+            nuevasUrls.push(urlGal);
+          }
+        }
+
+        const galeriaFinal = [...galeriaInicioActual, ...nuevasUrls];
+        const datosVisuales = {
+          portada: urlPortadaFinal,
+          galeria: galeriaFinal
+        };
+
+        boton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando cambios...';
+        await setDoc(doc(db, "configuracion", "visuales"), datosVisuales);
+
+        portadaInicioActual = urlPortadaFinal;
+        galeriaInicioActual = galeriaFinal;
+        document.getElementById("portada-file").value = "";
+        document.getElementById("galeria-inicio-files").value = "";
+
+        cerrarModalVisuales();
+        alert("¡Listo! Las fotos de la portada y la galería 'Momentos Dulces' fueron actualizadas con éxito.");
+      } catch (error) {
+        alert("Error al guardar fotos de inicio: " + error.message);
+      } finally {
+        boton.innerHTML = originalText;
+        boton.disabled = false;
       }
     });
   </script>
