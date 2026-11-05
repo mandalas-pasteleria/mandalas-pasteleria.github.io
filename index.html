@@ -1317,57 +1317,55 @@ ul {
 
 /* 13. ANIMATIONS
    ========================================================================== */
+/* HIGH-PERFORMANCE HARDWARE-ACCELERATED MOBILE & DESKTOP REVEALS */
 .fade-in {
   opacity: 0;
-  transform: translateY(60px) scale(0.94);
-  transition: opacity 0.9s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.9s cubic-bezier(0.2, 0.9, 0.3, 1);
-  will-change: opacity, transform;
+  transform: translate3d(0, 50px, 0) scale(0.95);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .fade-in.appear {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translate3d(0, 0, 0) scale(1);
 }
 
 .fade-in-left {
   opacity: 0;
-  transform: translateX(-55px);
-  transition: opacity 0.9s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.9s cubic-bezier(0.2, 0.9, 0.3, 1);
-  will-change: opacity, transform;
+  transform: translate3d(-40px, 0, 0);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .fade-in-left.appear {
   opacity: 1;
-  transform: translateX(0);
+  transform: translate3d(0, 0, 0);
 }
 
 .fade-in-right {
   opacity: 0;
-  transform: translateX(55px);
-  transition: opacity 0.9s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.9s cubic-bezier(0.2, 0.9, 0.3, 1);
-  will-change: opacity, transform;
+  transform: translate3d(40px, 0, 0);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .fade-in-right.appear {
   opacity: 1;
-  transform: translateX(0);
+  transform: translate3d(0, 0, 0);
 }
 
-/* Pronounced Stagger Delays for vivid cascading entry */
-.stagger-1 { transition-delay: 0.1s; }
-.stagger-2 { transition-delay: 0.22s; }
-.stagger-3 { transition-delay: 0.34s; }
-.stagger-4 { transition-delay: 0.46s; }
-.stagger-5 { transition-delay: 0.58s; }
-.stagger-6 { transition-delay: 0.70s; }
+/* Cascading stagger delays */
+.stagger-1 { transition-delay: 0.08s; }
+.stagger-2 { transition-delay: 0.18s; }
+.stagger-3 { transition-delay: 0.28s; }
+.stagger-4 { transition-delay: 0.38s; }
+.stagger-5 { transition-delay: 0.48s; }
+.stagger-6 { transition-delay: 0.58s; }
 
-/* Stagger Delays */
-.stagger-1 { transition-delay: 0.1s; }
-.stagger-2 { transition-delay: 0.2s; }
-.stagger-3 { transition-delay: 0.3s; }
-.stagger-4 { transition-delay: 0.4s; }
-.stagger-5 { transition-delay: 0.5s; }
-.stagger-6 { transition-delay: 0.6s; }
+
 
 /* Ensure solid text visibility across all sections */
 .navbar.nav-dark .nav-links a {
@@ -1400,6 +1398,63 @@ ul {
 
   <style>
     /* Mandala Brand Elements & Typography */
+
+    /* SPLASH SCREEN & PULSO SUAVE */
+    @keyframes pulsoSuave {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.06); opacity: 0.85; filter: drop-shadow(0 0 25px rgba(184, 115, 82, 0.6)); }
+    }
+    .animacion-latido {
+      animation: pulsoSuave 2.2s infinite ease-in-out;
+    }
+    #splash-screen {
+      position: fixed;
+      inset: 0;
+      background-color: #161412;
+      z-index: 999999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #splash-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .splash-mandala-wrap {
+      width: clamp(140px, 35vw, 210px);
+      height: clamp(140px, 35vw, 210px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .splash-mandala-wrap svg {
+      width: 100%;
+      height: 100%;
+      color: #b87352;
+    }
+    .splash-brand-text {
+      font-family: var(--font-heading);
+      font-size: clamp(22px, 5vw, 32px);
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--white);
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .splash-sub-text {
+      font-family: var(--font-body);
+      font-size: clamp(12px, 2.5vw, 14px);
+      color: #b87352;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
 
     /* Mobile Android Optimizations */
     * {
@@ -1923,6 +1978,32 @@ ul {
 
 <body>
 
+  <!-- PANTALLA DE CARGA (SPLASH SCREEN CON ANIMACIÓN DE LATIDO) -->
+  <div id="splash-screen">
+    <div class="splash-mandala-wrap animacion-latido">
+      <svg class="mandala-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="50" cy="50" r="47" opacity="0.9" stroke-dasharray="2 2"/>
+        <circle cx="50" cy="50" r="38" opacity="0.8"/>
+        <circle cx="50" cy="50" r="26" opacity="0.7"/>
+        <circle cx="50" cy="50" r="14" opacity="0.85"/>
+        <circle cx="50" cy="50" r="4" fill="currentColor"/>
+        <path d="M50 12 C44 26, 44 34, 50 38 C56 34, 56 26, 50 12 Z" opacity="0.9"/>
+        <path d="M50 88 C44 74, 44 66, 50 62 C56 66, 56 74, 50 88 Z" opacity="0.9"/>
+        <path d="M12 50 C26 44, 34 44, 38 50 C34 56, 26 56, 12 50 Z" opacity="0.9"/>
+        <path d="M88 50 C74 44, 66 44, 62 50 C66 56, 74 56, 88 50 Z" opacity="0.9"/>
+        <path d="M23 23 C36 29, 41 35, 41 41 C35 41, 29 36, 23 23 Z" opacity="0.8"/>
+        <path d="M77 77 C64 71, 59 65, 59 59 C65 59, 71 64, 77 77 Z" opacity="0.8"/>
+        <path d="M77 23 C71 36, 65 41, 59 41 C59 35, 64 29, 77 23 Z" opacity="0.8"/>
+        <path d="M23 77 C29 64, 35 59, 41 59 C41 65, 36 71, 23 77 Z" opacity="0.8"/>
+        <polygon points="50,30 55,50 50,70 45,50" opacity="0.6"/>
+        <polygon points="30,50 50,55 70,50 50,45" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="splash-brand-text">Mandalas</div>
+    <div class="splash-sub-text">Cosas Ricas</div>
+  </div>
+
+
   <!-- Grain texture overlay -->
   <div class="grain" aria-hidden="true"></div>
 
@@ -2344,59 +2425,61 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 4. INTERSECTION OBSERVER (TRUE SCROLL-TRIGGERED CASCADE FOR MOBILE & PC)
-  const revealOptions = {
-    threshold: 0.12,
-    rootMargin: '0px 0px -60px 0px'
-  };
-
-  const revealObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Trigger appear only when scrolled into view
-        entry.target.classList.add('appear');
-        observer.unobserve(entry.target);
+  // 4. DUAL-ENGINE SCROLL REVEAL (MOBILE ANDROID & DESKTOP ULTRA-RESPONSIVE)
+  function checkRevealElements() {
+    const unrevealed = document.querySelectorAll('.fade-in:not(.appear), .fade-in-left:not(.appear), .fade-in-right:not(.appear)');
+    if (unrevealed.length === 0) return;
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    // Trigger elements when they are at or above 92% of screen height
+    const triggerPoint = vh * 0.92;
+    unrevealed.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= triggerPoint && rect.bottom >= 0) {
+        el.classList.add('appear');
       }
     });
-  }, revealOptions);
+  }
+
+  let nativeObserver = null;
+  if ('IntersectionObserver' in window) {
+    nativeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('appear');
+          nativeObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      rootMargin: '0px 0px -40px 0px',
+      threshold: 0.08
+    });
+  }
 
   window.actualizarObservadorElementos = function() {
-    const revealElements = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
-    revealElements.forEach(el => {
-      // Do not auto-appear if not in viewport
+    const all = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    all.forEach(el => {
       const rect = el.getBoundingClientRect();
-      const inViewAtLoad = (rect.top >= 0 && rect.bottom <= window.innerHeight);
-      if (inViewAtLoad) {
-        // Only elements actually inside the visible first screen (like hero) appear
+      // Only hero/top elements already within the viewport at 0 scroll should appear immediately
+      if (window.scrollY === 0 && rect.top < vh * 0.75) {
         el.classList.add('appear');
-      } else {
-        el.classList.remove('appear');
-        revealObserver.observe(el);
+      } else if (!el.classList.contains('appear')) {
+        if (nativeObserver) {
+          nativeObserver.observe(el);
+        }
       }
     });
+    // Check initial position
+    checkRevealElements();
   };
 
-  // Run on start
-  actualizarObservadorElementos();
+  // Immediate listener on scroll, touchmove & orientation change for Android WebKit/Chrome
+  window.addEventListener('scroll', checkRevealElements, { passive: true });
+  window.addEventListener('touchmove', checkRevealElements, { passive: true });
+  window.addEventListener('resize', checkRevealElements, { passive: true });
 
-  
-  // Extra check during scroll for Android browsers that throttle IntersectionObserver
-  let scrollTimeout;
-  window.addEventListener('scroll', () => {
-    if (!scrollTimeout) {
-      scrollTimeout = setTimeout(() => {
-        scrollTimeout = null;
-        const unrevealed = document.querySelectorAll('.fade-in:not(.appear), .fade-in-left:not(.appear), .fade-in-right:not(.appear)');
-        const triggerBottom = window.innerHeight * 0.92;
-        unrevealed.forEach(el => {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= triggerBottom) {
-            el.classList.add('appear');
-          }
-        });
-      }, 50);
-    }
-  }, { passive: true });
+  // Initial trigger
+  actualizarObservadorElementos();
 
   // 5. SMOOTH SCROLLING (ENHANCEMENT)
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -2449,6 +2532,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let telefonoWhatsapp = "543755641575"; // WhatsApp de Mandalas Cosas Ricas
     let hayAnuncioParaMostrar = false;
     let categoriaActual = 'todos';
+
+    
+    function quitarSplashScreen() {
+      const splash = document.getElementById('splash-screen');
+      if (splash) {
+        splash.classList.add('fade-out');
+        setTimeout(() => {
+          splash.style.display = 'none';
+          window.actualizarObservadorElementos?.();
+        }, 600);
+      }
+    }
+
+    // Safety fallback: dismiss splash screen after 2.5s maximum even if network is slow
+    setTimeout(quitarSplashScreen, 2500);
 
     sumarVisita();
     inicializarCatalogo();
@@ -2516,6 +2614,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       } catch (error) {
         console.error("Error al cargar base de datos:", error);
+      } finally {
+        setTimeout(quitarSplashScreen, 600);
         const grilla = document.getElementById("grilla-productos");
         if (grilla) {
           grilla.innerHTML = `
