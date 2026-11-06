@@ -71,14 +71,16 @@
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Fix: Corregido el '*' que antes estaba como '-' */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Quitamos scroll-behavior: smooth global porque causa temblequeo en Android al scrollear con el dedo */
   width: 100%;
   overflow-x: clip;
 }
@@ -88,7 +90,7 @@ body {
   color: var(--text-dark);
   background-color: var(--bg-light);
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   width: 100%;
   max-width: 100%;
@@ -130,20 +132,37 @@ ul {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.04;
+  opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Desactivamos el filtro SVG en celulares para eliminar tirones de GPU al scrollear */
+@media (max-width: 768px) {
+  .grain {
+    display: none !important;
+  }
 }
 
 /* 3. TYPOGRAPHY
    ========================================================================== */
 .section-label {
-  display: block;
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--secondary);
-  margin-bottom: 16px;
+  letter-spacing: 0.15em;
+  color: var(--primary);
+  margin-bottom: 24px;
+}
+
+.section-label::before {
+  content: '';
+  width: 30px;
+  height: 1px;
+  background-color: var(--primary);
+  opacity: 0.4;
 }
 
 .section-title {
@@ -218,17 +237,19 @@ ul {
   top: 0;
   left: 0;
   width: 100%;
-  height: clamp(60px, 8vh, 80px); /* Dynamic height */
+  height: clamp(60px, 8vh, 80px);
   z-index: 1000;
-  transition: var(--transition);
+  transition: background-color 0.35s ease, height 0.35s ease, box-shadow 0.35s ease;
   display: flex;
   align-items: center;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .navbar.scrolled {
-  background-color: rgba(252, 250, 247, 0.9);
+  background-color: rgba(252, 250, 247, 0.95);
   backdrop-filter: blur(10px);
-  height: 60px; /* Slimmer on scroll */
+  height: 60px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
 }
 
@@ -273,9 +294,9 @@ ul {
 }
 
 .nav-logo img {
-  height: clamp(24px, 4vw, 32px); /* Responsive logo height */
+  height: clamp(24px, 4vw, 32px);
   width: auto;
-  filter: brightness(0) invert(1); /* Default white for dark backgrounds */
+  filter: brightness(0) invert(1);
   transition: var(--transition);
 }
 
@@ -343,12 +364,19 @@ ul {
 
 /* Mobile Menu */
 @media (max-width: 768px) {
+  /* Evitar backdrop-filter pesado durante scroll en navbar móvil */
+  .navbar.scrolled {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
   .nav-links {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 100%; /* Full width to avoid layout issues */
+    width: 100%;
     height: 100vh;
+    height: 100dvh;
     background-color: var(--primary);
     flex-direction: column;
     justify-content: center;
@@ -363,7 +391,7 @@ ul {
 
   .nav-links a {
     color: var(--white) !important;
-    font-size: clamp(24px, 8vw, 32px); /* Responsive mobile font */
+    font-size: clamp(24px, 8vw, 32px);
     font-family: var(--font-body);
     font-weight: 700;
     margin: 15px 0;
@@ -371,7 +399,7 @@ ul {
 
   .hamburger {
     display: block;
-    padding: 5px; /* Smaller padding */
+    padding: 5px;
     margin-right: 0;
   }
 
@@ -394,11 +422,10 @@ ul {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
     z-index: 999;
     opacity: 0;
     pointer-events: none;
-    transition: var(--transition);
+    transition: opacity 0.3s ease;
   }
 
   .nav-overlay.active {
@@ -411,10 +438,11 @@ ul {
    ========================================================================== */
 .hero {
   position: relative;
+  /* 100svh evita que el hero salte cuando la barra de direcciones de Chrome Android se esconde */
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100svh;
   height: 100vh;
-  height: 100dvh;
+  height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -436,7 +464,8 @@ ul {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.1);
+  transform: scale(1.06);
+  will-change: transform;
 }
 
 .hero-overlay {
@@ -480,7 +509,7 @@ ul {
 }
 
 .hero-logo {
-  display: none; /* Hide img logo in hero as per image, use text */
+  display: none;
 }
 
 .hero-divider {
@@ -588,156 +617,6 @@ ul {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes scaleX {
-  from { transform: scaleX(0); }
-  to { opacity: 1; transform: scaleX(1); }
-}
-
-/* 7. ABOUT SECTION
-   ========================================================================== */
-#nosotros {
-  padding: var(--section-padding);
-  background-color: var(--bg-light);
-}
-
-.section-label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--primary);
-  margin-bottom: 24px;
-}
-
-.section-label::before {
-  content: '';
-  width: 30px;
-  height: 1px;
-  background-color: var(--primary);
-  opacity: 0.4;
-}
-
-.about-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(40px, 8vw, 100px);
-  align-items: center;
-}
-
-@media (max-width: 992px) {
-  .about-grid {
-    grid-template-columns: 1fr;
-    gap: 60px;
-    text-align: center;
-  }
-  
-  .section-label {
-    justify-content: center;
-  }
-  
-  .about-text p {
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-.about-text .section-title {
-  font-size: clamp(32px, 6vw, 64px);
-  margin-bottom: clamp(20px, 4vw, 40px);
-  line-height: 1.1;
-}
-
-.about-text p {
-  margin-bottom: 24px;
-  color: var(--text-muted);
-  font-size: clamp(15px, 2vw, 17px);
-  max-width: 520px;
-}
-
-.about-text p:first-of-type::first-letter {
-  font-family: var(--font-body);
-  font-size: clamp(3.5em, 5vw, 4.5em);
-  float: left;
-  line-height: 0.8;
-  margin-right: 12px;
-  color: var(--primary);
-  margin-top: 4px;
-}
-
-.about-images {
-  position: relative;
-  display: flex;
-  justify-content: flex-end;
-  padding-right: clamp(20px, 5vw, 40px);
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.about-img-wrap {
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-}
-
-.about-img-wrap:first-child {
-  width: 45%;
-  aspect-ratio: 3 / 4;
-  z-index: 2;
-  margin-right: -20%;
-  margin-top: 15%;
-}
-
-.about-img-wrap:last-child {
-  width: 55%;
-  aspect-ratio: 3 / 4;
-  z-index: 1;
-}
-
-.about-img-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Circle background element */
-.about-images::after {
-  content: '';
-  position: absolute;
-  top: -20px;
-  right: 0;
-  width: clamp(150px, 30vw, 200px);
-  height: clamp(150px, 30vw, 200px);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 50%;
-  z-index: 0;
-}
-
-@media (max-width: 768px) {
-  .about-images::after {
-    display: none;
-  }
-
-  .about-images {
-    padding-right: 0;
-    overflow: hidden;
-  }
-
-  .about-img-wrap:first-child {
-    margin-right: -10%;
-  }
-}
-
-@media (max-width: 992px) {
-  .about-grid {
-    grid-template-columns: 1fr;
-    gap: 60px;
-  }
-}
-
 /* 8. GALLERY SECTION
    ========================================================================== */
 #galeria {
@@ -780,9 +659,7 @@ ul {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: #1c110b;
-}
-.gallery-item.appear {
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  min-height: 180px; /* Garantiza altura física en móvil antes de que cargue la imagen */
 }
 
 .gallery-item:hover {
@@ -835,7 +712,7 @@ ul {
 @media (max-width: 768px) {
   .gallery-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
+    gap: 14px !important;
   }
   .gallery-item {
     border-radius: 14px;
@@ -843,31 +720,35 @@ ul {
   }
   .gallery-item:nth-child(1) {
     grid-column: span 2 !important;
-    aspect-ratio: 16/10;
+    aspect-ratio: 16 / 10;
+    min-height: 210px;
   }
   .gallery-item:nth-child(2) {
     grid-column: span 1 !important;
-    aspect-ratio: 3/4;
+    aspect-ratio: 3 / 4;
+    min-height: 200px;
   }
   .gallery-item:nth-child(3) {
     grid-column: span 1 !important;
-    aspect-ratio: 3/4;
+    aspect-ratio: 3 / 4;
+    min-height: 200px;
   }
   .gallery-item:nth-child(4) {
     grid-column: span 1 !important;
-    aspect-ratio: 1/1;
+    aspect-ratio: 1 / 1;
+    min-height: 165px;
   }
   .gallery-item:nth-child(5) {
     grid-column: span 1 !important;
-    aspect-ratio: 1/1;
+    aspect-ratio: 1 / 1;
+    min-height: 165px;
   }
   .gallery-item:nth-child(6) {
     grid-column: span 2 !important;
-    aspect-ratio: 16/9;
+    aspect-ratio: 16 / 9;
+    min-height: 195px;
   }
 }
-
-
 
 /* 9. MENU SECTION
    ========================================================================== */
@@ -887,105 +768,6 @@ ul {
   padding: 0 20px;
 }
 
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(16px, 3vw, 32px);
-  margin-bottom: 60px;
-}
-
-.menu-card {
-  padding: clamp(30px, 6vw, 60px) clamp(20px, 4vw, 40px);
-  background-color: var(--white);
-  border-radius: 24px;
-  transition: var(--transition);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-}
-
-@media (max-width: 992px) {
-  .menu-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 576px) {
-  .menu-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.menu-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background-color: var(--primary);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s var(--ease);
-}
-
-.menu-card:hover::after {
-  transform: scaleX(1);
-}
-
-.menu-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
-}
-
-.menu-icon {
-  width: 60px;
-  height: 60px;
-  background-color: var(--bg-light);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  margin-bottom: 32px;
-}
-
-.menu-card h3 {
-  font-family: var(--font-body);
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: var(--primary);
-}
-
-.menu-card p {
-  color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.menu-cta .btn-primary {
-  background-color: var(--primary-dark);
-  border-radius: 50px;
-  padding: 18px 48px;
-  font-size: 13px;
-}
-
-@media (max-width: 992px) {
-  .menu-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .menu-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* 10. CONTACT SECTION
    ========================================================================== */
 #contacto {
@@ -998,20 +780,6 @@ ul {
   color: var(--primary);
   font-size: clamp(32px, 6vw, 64px);
   margin-bottom: clamp(30px, 6vw, 48px);
-}
-
-.contact-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(40px, 10vw, 120px);
-  align-items: center;
-}
-
-@media (max-width: 992px) {
-  .contact-grid {
-    grid-template-columns: 1fr;
-    gap: 60px;
-  }
 }
 
 .contact-item {
@@ -1048,50 +816,6 @@ ul {
   color: var(--text-muted);
 }
 
-.contact-socials {
-  display: flex;
-  gap: 16px;
-  margin-top: 48px;
-}
-
-.social-link {
-  width: 44px;
-  height: 44px;
-  background-color: var(--primary);
-  color: var(--white);
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition);
-}
-
-.social-link:hover {
-  transform: translateY(-5px);
-  opacity: 0.9;
-}
-
-.contact-map {
-  height: clamp(300px, 50vw, 450px);
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-}
-
-.contact-map iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-@media (max-width: 992px) {
-  .contact-grid {
-    grid-template-columns: 1fr;
-    gap: 60px;
-  }
-}
-
 /* 11. FOOTER
    ========================================================================== */
 .footer {
@@ -1108,13 +832,6 @@ ul {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 40px;
   gap: 20px;
-}
-
-.footer-logo img {
-  height: 40px;
-  width: auto;
-  object-fit: contain; /* Prevent distortion */
-  filter: brightness(0) invert(1);
 }
 
 .footer-tagline {
@@ -1174,7 +891,7 @@ ul {
   }
 }
 
-/* 12. SOCIAL FLOATING (GLASSMORPHISM)
+/* 12. SOCIAL FLOATING
    ========================================================================== */
 .social-floating-container {
   position: fixed;
@@ -1184,6 +901,8 @@ ul {
   flex-direction: column;
   gap: 16px;
   z-index: 1000;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .social-float {
@@ -1196,8 +915,6 @@ ul {
   color: var(--white);
   position: relative;
   transition: all 0.4s var(--ease);
-  
-  /* Glassmorphism Effect */
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -1238,29 +955,27 @@ ul {
   transform: translateX(-10px);
 }
 
-/* Mobile: App-like Bottom Bar */
+/* Mobile: App-like Bottom Bar sin backdrop-filter para evitar temblequeo */
 @media (max-width: 768px) {
   .social-floating-container {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    width: auto;
-    max-width: 100%;
+    width: 100%;
     margin: 0;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
     padding: 10px max(10px, env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-right));
     background: var(--primary-dark);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px 16px 0 0;
     gap: 8px;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.35);
     z-index: 9999;
-    overflow: clip;
     box-sizing: border-box;
   }
 
@@ -1273,10 +988,10 @@ ul {
     box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    color: var(--white) !important; /* Force icons to be white for high contrast */
+    color: var(--white) !important;
   }
 
-  .social-float.whatsapp { color: #25d366 !important; } /* Keep original brand colors but ensure visibility */
+  .social-float.whatsapp { color: #25d366 !important; }
   .social-float.instagram { color: #e4405f !important; }
   .social-float.tiktok { color: var(--white) !important; }
   
@@ -1294,36 +1009,14 @@ ul {
   }
 }
 
-@media (max-width: 768px) and (orientation: landscape) and (max-height: 500px) {
-  .social-floating-container {
-    width: auto;
-    left: auto;
-    right: 16px;
-    bottom: 16px;
-    flex-direction: column;
-    border-radius: 14px;
-    padding: 8px;
-    gap: 6px;
-    background: rgba(13, 27, 19, 0.85);
-  }
-
-  .social-float {
-    width: 40px;
-    height: 40px;
-  }
-
-  .footer {
-    padding-bottom: 80px;
-  }
-}
-
-/* 13. ANIMATIONS
+/* 13. ANIMATIONS (TARJETAS Y REVEAL EN ANDROID & PC)
    ========================================================================== */
-/* HIGH-PERFORMANCE HARDWARE-ACCELERATED MOBILE & DESKTOP REVEALS */
 .fade-in {
   opacity: 0;
-  transform: translate3d(0, 70px, 0) scale(0.92);
-  transition: opacity 0.85s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.85s cubic-bezier(0.2, 0.9, 0.3, 1);
+  transform: translate3d(0, 55px, 0) scale(0.94);
+  transition-property: opacity, transform, box-shadow;
+  transition-duration: 0.75s, 0.75s, 0.4s;
+  transition-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   will-change: opacity, transform;
@@ -1360,15 +1053,13 @@ ul {
   transform: translate3d(0, 0, 0);
 }
 
-/* Cascading stagger delays */
-.stagger-1 { transition-delay: 0.08s; }
-.stagger-2 { transition-delay: 0.18s; }
-.stagger-3 { transition-delay: 0.28s; }
-.stagger-4 { transition-delay: 0.38s; }
-.stagger-5 { transition-delay: 0.48s; }
-.stagger-6 { transition-delay: 0.58s; }
-
-
+/* Delays para el efecto cascada sin ser pisados */
+.stagger-1 { transition-delay: 0.04s; }
+.stagger-2 { transition-delay: 0.12s; }
+.stagger-3 { transition-delay: 0.08s; }
+.stagger-4 { transition-delay: 0.14s; }
+.stagger-5 { transition-delay: 0.08s; }
+.stagger-6 { transition-delay: 0.12s; }
 
 /* Ensure solid text visibility across all sections */
 .navbar.nav-dark .nav-links a {
@@ -1393,8 +1084,7 @@ ul {
 .navbar.nav-dark .hamburger span {
   background-color: #ffffff !important;
 }
-
-</style>
+  </style>
 
   <!-- Theme color -->
   <meta name="theme-color" content="#3b2219">
@@ -1458,22 +1148,13 @@ ul {
       font-weight: 400;
     }
 
-
-    /* Mobile Android Optimizations */
-    * {
-      -webkit-tap-highlight-color: transparent;
-    }
     input, textarea, select, button {
-      font-size: 16px; /* Prevents auto-zoom in Android Chrome */
+      font-size: 16px;
     }
     .modal-body-scroll {
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
     }
-    .product-grid {
-      content-visibility: auto; /* High performance rendering on mobile */
-    }
-
 
     /* Mandala SVG Real Icon */
     .mandala-svg {
@@ -1536,14 +1217,6 @@ ul {
       text-decoration: none;
       color: inherit;
     }
-    .brand-logo-text .brand-icon {
-      color: var(--accent);
-      font-size: clamp(20px, 4vw, 26px);
-      transition: transform 0.6s ease;
-    }
-    .brand-logo-text:hover .brand-icon {
-      transform: rotate(90deg);
-    }
     .brand-logo-text .brand-sub {
       font-weight: 400;
       font-size: 0.65em;
@@ -1566,12 +1239,6 @@ ul {
       align-items: center;
       justify-content: center;
       gap: 8px;
-    }
-    .hero-mandala-title .hero-icon-mandala {
-      color: var(--accent);
-      font-size: 0.8em;
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
-      animation: spinMandala 20s linear infinite;
     }
     @keyframes spinMandala {
       from { transform: rotate(0deg); }
@@ -1657,6 +1324,7 @@ ul {
       color: var(--primary);
       font-weight: 700;
     }
+    /* Quitamos content-visibility: auto que provocaba saltos de altura al scrollear en Android */
     .product-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -1669,7 +1337,7 @@ ul {
       border-radius: 12px;
       overflow: hidden;
       cursor: pointer;
-      transition: var(--transition);
+      transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
       display: flex;
       flex-direction: column;
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
@@ -1704,7 +1372,6 @@ ul {
       font-size: 10px;
       padding: 4px 8px;
       border-radius: 20px;
-      backdrop-filter: blur(4px);
       letter-spacing: 0.5px;
     }
     .product-card-info {
@@ -1967,16 +1634,7 @@ ul {
       background: var(--white);
       transform: translateY(-2px);
     }
-  
-    /* Fallback safety: if JS is delayed, content is never permanently hidden */
-    @media (prefers-reduced-motion: reduce) {
-      .fade-in, .fade-in-left, .fade-in-right {
-        opacity: 1 !important;
-        transform: none !important;
-      }
-    }
-
-</style>
+  </style>
 </head>
 
 <body>
@@ -2006,8 +1664,7 @@ ul {
     <div class="splash-sub-text">Cosas Ricas</div>
   </div>
 
-
-  <!-- Grain texture overlay -->
+  <!-- Grain texture overlay (solo en PC) -->
   <div class="grain" aria-hidden="true"></div>
 
   <!-- ==============================
@@ -2017,22 +1674,22 @@ ul {
     <div class="container">
       <a href="#" class="brand-logo-text" aria-label="Mandalas Cosas Ricas – Inicio">
         <svg class="mandala-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="50" cy="50" r="47" opacity="0.9" stroke-dasharray="2 2"/>
-  <circle cx="50" cy="50" r="38" opacity="0.8"/>
-  <circle cx="50" cy="50" r="26" opacity="0.7"/>
-  <circle cx="50" cy="50" r="14" opacity="0.85"/>
-  <circle cx="50" cy="50" r="4" fill="currentColor"/>
-  <path d="M50 12 C44 26, 44 34, 50 38 C56 34, 56 26, 50 12 Z" opacity="0.9"/>
-  <path d="M50 88 C44 74, 44 66, 50 62 C56 66, 56 74, 50 88 Z" opacity="0.9"/>
-  <path d="M12 50 C26 44, 34 44, 38 50 C34 56, 26 56, 12 50 Z" opacity="0.9"/>
-  <path d="M88 50 C74 44, 66 44, 62 50 C66 56, 74 56, 88 50 Z" opacity="0.9"/>
-  <path d="M23 23 C36 29, 41 35, 41 41 C35 41, 29 36, 23 23 Z" opacity="0.8"/>
-  <path d="M77 77 C64 71, 59 65, 59 59 C65 59, 71 64, 77 77 Z" opacity="0.8"/>
-  <path d="M77 23 C71 36, 65 41, 59 41 C59 35, 64 29, 77 23 Z" opacity="0.8"/>
-  <path d="M23 77 C29 64, 35 59, 41 59 C41 65, 36 71, 23 77 Z" opacity="0.8"/>
-  <polygon points="50,30 55,50 50,70 45,50" opacity="0.6"/>
-  <polygon points="30,50 50,55 70,50 50,45" opacity="0.6"/>
-</svg>
+          <circle cx="50" cy="50" r="47" opacity="0.9" stroke-dasharray="2 2"/>
+          <circle cx="50" cy="50" r="38" opacity="0.8"/>
+          <circle cx="50" cy="50" r="26" opacity="0.7"/>
+          <circle cx="50" cy="50" r="14" opacity="0.85"/>
+          <circle cx="50" cy="50" r="4" fill="currentColor"/>
+          <path d="M50 12 C44 26, 44 34, 50 38 C56 34, 56 26, 50 12 Z" opacity="0.9"/>
+          <path d="M50 88 C44 74, 44 66, 50 62 C56 66, 56 74, 50 88 Z" opacity="0.9"/>
+          <path d="M12 50 C26 44, 34 44, 38 50 C34 56, 26 56, 12 50 Z" opacity="0.9"/>
+          <path d="M88 50 C74 44, 66 44, 62 50 C66 56, 74 56, 88 50 Z" opacity="0.9"/>
+          <path d="M23 23 C36 29, 41 35, 41 41 C35 41, 29 36, 23 23 Z" opacity="0.8"/>
+          <path d="M77 77 C64 71, 59 65, 59 59 C65 59, 71 64, 77 77 Z" opacity="0.8"/>
+          <path d="M77 23 C71 36, 65 41, 59 41 C59 35, 64 29, 77 23 Z" opacity="0.8"/>
+          <path d="M23 77 C29 64, 35 59, 41 59 C41 65, 36 71, 23 77 Z" opacity="0.8"/>
+          <polygon points="50,30 55,50 50,70 45,50" opacity="0.6"/>
+          <polygon points="30,50 50,55 70,50 50,45" opacity="0.6"/>
+        </svg>
         <span>Mandalas <span class="brand-sub">Cosas Ricas</span></span>
       </a>
 
@@ -2066,22 +1723,22 @@ ul {
       <div class="hero-divider"></div>
       <h1 class="hero-mandala-title">
         <svg class="mandala-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="50" cy="50" r="47" opacity="0.9" stroke-dasharray="2 2"/>
-  <circle cx="50" cy="50" r="38" opacity="0.8"/>
-  <circle cx="50" cy="50" r="26" opacity="0.7"/>
-  <circle cx="50" cy="50" r="14" opacity="0.85"/>
-  <circle cx="50" cy="50" r="4" fill="currentColor"/>
-  <path d="M50 12 C44 26, 44 34, 50 38 C56 34, 56 26, 50 12 Z" opacity="0.9"/>
-  <path d="M50 88 C44 74, 44 66, 50 62 C56 66, 56 74, 50 88 Z" opacity="0.9"/>
-  <path d="M12 50 C26 44, 34 44, 38 50 C34 56, 26 56, 12 50 Z" opacity="0.9"/>
-  <path d="M88 50 C74 44, 66 44, 62 50 C66 56, 74 56, 88 50 Z" opacity="0.9"/>
-  <path d="M23 23 C36 29, 41 35, 41 41 C35 41, 29 36, 23 23 Z" opacity="0.8"/>
-  <path d="M77 77 C64 71, 59 65, 59 59 C65 59, 71 64, 77 77 Z" opacity="0.8"/>
-  <path d="M77 23 C71 36, 65 41, 59 41 C59 35, 64 29, 77 23 Z" opacity="0.8"/>
-  <path d="M23 77 C29 64, 35 59, 41 59 C41 65, 36 71, 23 77 Z" opacity="0.8"/>
-  <polygon points="50,30 55,50 50,70 45,50" opacity="0.6"/>
-  <polygon points="30,50 50,55 70,50 50,45" opacity="0.6"/>
-</svg>
+          <circle cx="50" cy="50" r="47" opacity="0.9" stroke-dasharray="2 2"/>
+          <circle cx="50" cy="50" r="38" opacity="0.8"/>
+          <circle cx="50" cy="50" r="26" opacity="0.7"/>
+          <circle cx="50" cy="50" r="14" opacity="0.85"/>
+          <circle cx="50" cy="50" r="4" fill="currentColor"/>
+          <path d="M50 12 C44 26, 44 34, 50 38 C56 34, 56 26, 50 12 Z" opacity="0.9"/>
+          <path d="M50 88 C44 74, 44 66, 50 62 C56 66, 56 74, 50 88 Z" opacity="0.9"/>
+          <path d="M12 50 C26 44, 34 44, 38 50 C34 56, 26 56, 12 50 Z" opacity="0.9"/>
+          <path d="M88 50 C74 44, 66 44, 62 50 C66 56, 74 56, 88 50 Z" opacity="0.9"/>
+          <path d="M23 23 C36 29, 41 35, 41 41 C35 41, 29 36, 23 23 Z" opacity="0.8"/>
+          <path d="M77 77 C64 71, 59 65, 59 59 C65 59, 71 64, 77 77 Z" opacity="0.8"/>
+          <path d="M77 23 C71 36, 65 41, 59 41 C59 35, 64 29, 77 23 Z" opacity="0.8"/>
+          <path d="M23 77 C29 64, 35 59, 41 59 C41 65, 36 71, 23 77 Z" opacity="0.8"/>
+          <polygon points="50,30 55,50 50,70 45,50" opacity="0.6"/>
+          <polygon points="30,50 50,55 70,50 50,45" opacity="0.6"/>
+        </svg>
         MANDALAS
         <span class="sub-cosas-ricas">Cosas Ricas</span>
       </h1>
@@ -2099,6 +1756,9 @@ ul {
     </div>
   </section>
 
+  <!-- ==============================
+       GALERIA
+       ============================== -->
   <section id="galeria">
     <div class="container">
       <div class="fade-in">
@@ -2160,8 +1820,6 @@ ul {
           <p>Cargando exquisiteces...</p>
         </div>
       </div>
-
-
     </div>
   </section>
 
@@ -2204,11 +1862,7 @@ ul {
               <a href="https://www.instagram.com/mandalascosasricas?stkn=MTFrcXpzMGZxNXlzcg==" target="_blank" rel="noopener">@mandalascosasricas</a>
             </div>
           </div>
-
-
         </div>
-
-
       </div>
     </div>
   </section>
@@ -2221,22 +1875,22 @@ ul {
       <div class="footer-top">
         <a href="#" class="brand-logo-text" aria-label="Mandalas Cosas Ricas">
           <svg class="mandala-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="50" cy="50" r="47" opacity="0.9" stroke-dasharray="2 2"/>
-  <circle cx="50" cy="50" r="38" opacity="0.8"/>
-  <circle cx="50" cy="50" r="26" opacity="0.7"/>
-  <circle cx="50" cy="50" r="14" opacity="0.85"/>
-  <circle cx="50" cy="50" r="4" fill="currentColor"/>
-  <path d="M50 12 C44 26, 44 34, 50 38 C56 34, 56 26, 50 12 Z" opacity="0.9"/>
-  <path d="M50 88 C44 74, 44 66, 50 62 C56 66, 56 74, 50 88 Z" opacity="0.9"/>
-  <path d="M12 50 C26 44, 34 44, 38 50 C34 56, 26 56, 12 50 Z" opacity="0.9"/>
-  <path d="M88 50 C74 44, 66 44, 62 50 C66 56, 74 56, 88 50 Z" opacity="0.9"/>
-  <path d="M23 23 C36 29, 41 35, 41 41 C35 41, 29 36, 23 23 Z" opacity="0.8"/>
-  <path d="M77 77 C64 71, 59 65, 59 59 C65 59, 71 64, 77 77 Z" opacity="0.8"/>
-  <path d="M77 23 C71 36, 65 41, 59 41 C59 35, 64 29, 77 23 Z" opacity="0.8"/>
-  <path d="M23 77 C29 64, 35 59, 41 59 C41 65, 36 71, 23 77 Z" opacity="0.8"/>
-  <polygon points="50,30 55,50 50,70 45,50" opacity="0.6"/>
-  <polygon points="30,50 50,55 70,50 50,45" opacity="0.6"/>
-</svg>
+            <circle cx="50" cy="50" r="47" opacity="0.9" stroke-dasharray="2 2"/>
+            <circle cx="50" cy="50" r="38" opacity="0.8"/>
+            <circle cx="50" cy="50" r="26" opacity="0.7"/>
+            <circle cx="50" cy="50" r="14" opacity="0.85"/>
+            <circle cx="50" cy="50" r="4" fill="currentColor"/>
+            <path d="M50 12 C44 26, 44 34, 50 38 C56 34, 56 26, 50 12 Z" opacity="0.9"/>
+            <path d="M50 88 C44 74, 44 66, 50 62 C56 66, 56 74, 50 88 Z" opacity="0.9"/>
+            <path d="M12 50 C26 44, 34 44, 38 50 C34 56, 26 56, 12 50 Z" opacity="0.9"/>
+            <path d="M88 50 C74 44, 66 44, 62 50 C66 56, 74 56, 88 50 Z" opacity="0.9"/>
+            <path d="M23 23 C36 29, 41 35, 41 41 C35 41, 29 36, 23 23 Z" opacity="0.8"/>
+            <path d="M77 77 C64 71, 59 65, 59 59 C65 59, 71 64, 77 77 Z" opacity="0.8"/>
+            <path d="M77 23 C71 36, 65 41, 59 41 C59 35, 64 29, 77 23 Z" opacity="0.8"/>
+            <path d="M23 77 C29 64, 35 59, 41 59 C41 65, 36 71, 23 77 Z" opacity="0.8"/>
+            <polygon points="50,30 55,50 50,70 45,50" opacity="0.6"/>
+            <polygon points="30,50 50,55 70,50 50,45" opacity="0.6"/>
+          </svg>
           <span>Mandalas <span class="brand-sub">Cosas Ricas</span></span>
         </a>
         <span class="footer-tagline">Pastelería Artesanal en San Vicente, Misiones, Argentina</span>
@@ -2257,7 +1911,6 @@ ul {
         </div>
       </div>
       <div class="footer-bottom">
-        
         <span>San Vicente · Misiones, Argentina</span>
       </div>
     </div>
@@ -2341,13 +1994,7 @@ ul {
 
   <!-- JS Base de Animaciones e Interacción -->
   <script>
-/**
- * CAFETOS · MAIN JS
- * Premium Interactivity & Animations
- */
-
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. INITIAL SETUP
   const body = document.body;
   const navbar = document.getElementById('navbar');
   const hamburger = document.getElementById('hamburger');
@@ -2355,28 +2002,58 @@ document.addEventListener('DOMContentLoaded', () => {
   const navOverlay = document.getElementById('navOverlay');
   const heroImg = document.querySelector('.hero-bg img');
 
-  // Remove loading state
   setTimeout(() => {
     body.classList.remove('loading');
   }, 500);
 
-  // 2. NAVBAR SCROLL EFFECT
-  const handleScroll = () => {
-    if (window.scrollY > 50) {
+  // 2. NAVBAR & REVEAL EN UN SOLO LOOP DE REQUESTANIMATIONFRAME (CERO TEMBLEQUEO)
+  let isTicking = false;
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+  function checkRevealElements() {
+    const unrevealed = document.querySelectorAll('.fade-in:not(.appear), .fade-in-left:not(.appear), .fade-in-right:not(.appear)');
+    if (unrevealed.length === 0) return;
+
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    // En celular las tarjetas se disparan cuando entran un 15% dentro de la pantalla
+    const triggerPoint = vh * 0.85;
+
+    unrevealed.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.height > 20 && rect.top <= triggerPoint && rect.bottom >= 0) {
+        el.classList.add('appear');
+      }
+    });
+  }
+
+  function onScrollUpdate() {
+    const scrollY = window.scrollY;
+
+    if (scrollY > 50) {
       navbar.classList.add('scrolled');
     } else {
       navbar.classList.remove('scrolled');
     }
 
-    // Hero Parallax
-    if (heroImg) {
-      const scrollValue = window.scrollY;
-      heroImg.style.transform = `scale(1.1) translateY(${scrollValue * 0.3}px)`;
+    // Parallax solo en PC para que en Android no tiemble la pantalla al scrollear
+    if (!isMobile && heroImg && scrollY < window.innerHeight) {
+      heroImg.style.transform = `scale(1.08) translate3d(0, ${scrollY * 0.25}px, 0)`;
     }
-  };
 
-  window.addEventListener('scroll', handleScroll);
-  handleScroll(); // Initial check
+    checkRevealElements();
+    isTicking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!isTicking) {
+      window.requestAnimationFrame(onScrollUpdate);
+      isTicking = true;
+    }
+  }, { passive: true });
+
+  window.addEventListener('resize', () => {
+    window.requestAnimationFrame(checkRevealElements);
+  }, { passive: true });
 
   // 2.1 DYNAMIC NAVBAR COLOR BY SECTION
   const sections = document.querySelectorAll('section, footer');
@@ -2388,22 +2065,19 @@ document.addEventListener('DOMContentLoaded', () => {
     'footer': 'dark'
   };
 
-  const observerOptions = {
-    threshold: 0.2,
-    rootMargin: "-80px 0px 0px 0px"
-  };
-
   const navObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const sectionId = entry.target.id || entry.target.tagName.toLowerCase();
         const theme = navItems[sectionId] || 'light';
-        
         navbar.classList.remove('nav-light', 'nav-dark');
         navbar.classList.add(`nav-${theme}`);
       }
     });
-  }, observerOptions);
+  }, {
+    threshold: 0.15,
+    rootMargin: "-80px 0px 0px 0px"
+  });
 
   sections.forEach(section => navObserver.observe(section));
 
@@ -2418,9 +2092,7 @@ document.addEventListener('DOMContentLoaded', () => {
   hamburger.addEventListener('click', toggleMenu);
   navOverlay.addEventListener('click', toggleMenu);
 
-  // Close menu when clicking a link
-  const links = document.querySelectorAll('.nav-links a');
-  links.forEach(link => {
+  document.querySelectorAll('.nav-links a').forEach(link => {
     link.addEventListener('click', () => {
       if (navLinks.classList.contains('active')) {
         toggleMenu();
@@ -2428,63 +2100,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 4. DUAL-ENGINE SCROLL REVEAL (MOBILE ANDROID & DESKTOP ULTRA-RESPONSIVE)
-  function checkRevealElements() {
-    const unrevealed = document.querySelectorAll('.fade-in:not(.appear), .fade-in-left:not(.appear), .fade-in-right:not(.appear)');
-    if (unrevealed.length === 0) return;
-    const vh = window.innerHeight || document.documentElement.clientHeight;
-    // Trigger elements as soon as they enter within view (88% of screen height)
-    const triggerPoint = vh * 0.88;
-    unrevealed.forEach(el => {
-      const rect = el.getBoundingClientRect();
-      if (rect.top <= triggerPoint && rect.bottom >= 0) {
-        el.classList.add('appear');
-      }
-    });
-  }
-
-  let nativeObserver = null;
-  if ('IntersectionObserver' in window) {
-    nativeObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('appear');
-          nativeObserver.unobserve(entry.target);
-        }
-      });
-    }, {
-      rootMargin: '0px 0px -40px 0px',
-      threshold: 0.08
-    });
-  }
-
+  // 4. EXPONER ACTUALIZADOR PARA FIREBASE
   window.actualizarObservadorElementos = function() {
-    const all = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
-    const vh = window.innerHeight || document.documentElement.clientHeight;
-    all.forEach(el => {
-      const rect = el.getBoundingClientRect();
-      // Only hero/top elements already within the viewport at 0 scroll should appear immediately
-      if (window.scrollY === 0 && rect.top < vh * 0.75) {
-        el.classList.add('appear');
-      } else if (!el.classList.contains('appear')) {
-        if (nativeObserver) {
-          nativeObserver.observe(el);
-        }
-      }
-    });
-    // Check initial position
-    checkRevealElements();
+    window.requestAnimationFrame(checkRevealElements);
   };
 
-  // Immediate listener on scroll, touchmove & orientation change for Android WebKit/Chrome
-  window.addEventListener('scroll', checkRevealElements, { passive: true });
-  window.addEventListener('touchmove', checkRevealElements, { passive: true });
-  window.addEventListener('resize', checkRevealElements, { passive: true });
+  onScrollUpdate();
 
-  // Initial trigger
-  actualizarObservadorElementos();
-
-  // 5. SMOOTH SCROLLING (ENHANCEMENT)
+  // 5. SMOOTH SCROLLING SOLO AL TOCAR BOTONES DEL MENÚ
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       e.preventDefault();
@@ -2493,9 +2116,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const targetElement = document.querySelector(targetId);
       if (targetElement) {
-        const headerOffset = 80;
+        const headerOffset = 70;
         const elementPosition = targetElement.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
         window.scrollTo({
           top: offsetPosition,
@@ -2504,14 +2127,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-
-  // 6. GALLERY HOVER EFFECT (OPTIONAL - CSS handles most, but we can add tilt or extra polish)
-  // Currently CSS is enough for the premium feel.
-
-  console.log('Cafetos Web: Loaded with success. ☕');
 });
-
-</script>
+  </script>
 
   <!-- Lógica Dinámica Firebase & Catálogo de Mandalas -->
   <script type="module">
@@ -2532,11 +2149,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let productos = [];
     let categorias = [];
-    let telefonoWhatsapp = "543755641575"; // WhatsApp de Mandalas Cosas Ricas
+    let telefonoWhatsapp = "543755641575";
     let hayAnuncioParaMostrar = false;
     let categoriaActual = 'todos';
 
-    
     function quitarSplashScreen() {
       const splash = document.getElementById('splash-screen');
       if (splash) {
@@ -2548,7 +2164,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Safety fallback: dismiss splash screen after 2.5s maximum even if network is slow
     setTimeout(quitarSplashScreen, 2500);
 
     sumarVisita();
@@ -2588,7 +2203,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.innerHTML = `<img src="${imgUrl}" alt="Creación Mandalas" loading="lazy" width="600" height="600">`;
                 galeriaGrid.appendChild(item);
               });
-              setTimeout(() => window.actualizarObservadorElementos?.(), 50);
+              setTimeout(() => window.actualizarObservadorElementos?.(), 80);
             }
           }
         }
@@ -2617,8 +2232,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       } catch (error) {
         console.error("Error al cargar base de datos:", error);
-      } finally {
-        setTimeout(quitarSplashScreen, 600);
         const grilla = document.getElementById("grilla-productos");
         if (grilla) {
           grilla.innerHTML = `
@@ -2628,6 +2241,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           `;
         }
+      } finally {
+        setTimeout(quitarSplashScreen, 600);
       }
     }
 
@@ -2770,7 +2385,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const rawMsg = `¡Hola Mandalas! Quisiera consultar la disponibilidad de: ${prod.nombre}.`;
       const encodedMsg = encodeURIComponent(rawMsg);
-      // Both https://api.whatsapp.com/send and https://wa.me work across mobile Android browsers & desktop
       const waUrl = `https://api.whatsapp.com/send?phone=${telefonoWhatsapp}&text=${encodedMsg}`;
       
       const btnWa = document.getElementById('btn-pedir-whatsapp');
@@ -2834,7 +2448,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 300);
     };
 
-    // Cerrar modales con clic fuera o escape
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         cerrarModalProducto();
