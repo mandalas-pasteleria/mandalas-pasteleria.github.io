@@ -486,26 +486,9 @@ ul {
   align-items: center;
 }
 
-/* Large Background Logo effect */
+/* Desactivado para evitar el bloque borroso en el centro del Hero */
 .hero-content::before {
-  content: 'MANDALAS';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: var(--font-heading);
-  font-size: clamp(34px, 14vw, 180px);
-  font-weight: 700;
-  letter-spacing: clamp(4px, 2vw, 20px);
-  color: var(--white);
-  opacity: 0.08;
-  z-index: -1;
-  pointer-events: none;
-  white-space: nowrap;
-  user-select: none;
-  max-width: 95vw;
-  text-align: center;
-  overflow: hidden;
+  display: none;
 }
 
 .hero-logo {
